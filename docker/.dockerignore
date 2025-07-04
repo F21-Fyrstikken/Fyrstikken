@@ -1,0 +1,39 @@
+# Git files
+.git
+.gitignore
+
+# Documentation
+README.md
+docs/
+
+# Environment files
+.env
+.env.*
+
+# CI/CD files
+.github/
+
+# Docker files (not needed in container)
+docker/
+
+# Development files
+.vscode/
+.idea/
+
+# Logs and temporary files
+*.log
+*.tmp
+logs/
+.tmp/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Language-specific (customize as needed)
+node_modules/
+__pycache__/
+*.pyc
+dist/
+build/
+out/
