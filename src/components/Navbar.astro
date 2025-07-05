@@ -1,0 +1,84 @@
+---
+// No props needed for now
+---
+
+<nav class="navbar">
+  <div class="navbar-container">
+    <a href="/" class="logo">Fyrstikken</a>
+    <div class="nav-links">
+      <a href="/about" class="link">About</a>
+      <a href="/projects" class="link">Projects</a>
+    </div>
+  </div>
+</nav>
+
+<style>
+  .navbar {
+    width: 100%;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.75); /* swap to rgba(0,0,0,0.4) for dark mode */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .navbar-container {
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #3245ff, #bc52ee);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .link {
+    position: relative;
+    font-size: 1rem;
+    color: #111827;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+
+  .link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    height: 2px;
+    width: 100%;
+    background: linear-gradient(90deg, #3245ff, #bc52ee);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+
+  .link:hover::after {
+    transform: scaleX(1);
+  }
+
+  .link:hover {
+    color: #000;
+  }
+
+  @media (max-width: 640px) {
+    .nav-links {
+      display: none;
+    }
+  }
+</style>
