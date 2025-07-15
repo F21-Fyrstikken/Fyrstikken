@@ -2,9 +2,9 @@ name: Deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   schedule:
-    - cron: '0 */2 * * *'
+    - cron: "0 */2 * * *"
   workflow_dispatch:
 
 env:
@@ -57,7 +57,7 @@ jobs:
           else
             IMAGE_TAG="${{ github.sha }}"
           fi
-          
+
           # Build image with build context optimization
           docker build \
             -f docker/Dockerfile \
@@ -71,18 +71,18 @@ jobs:
             --build-arg BUILDKIT_INLINE_CACHE=1 \
             --cache-from $REGISTRY/$APP_NAME:latest \
             .
-          
+
           # Push to registry
           docker push $REGISTRY/$APP_NAME:$IMAGE_TAG
           docker push $REGISTRY/$APP_NAME:latest
-          
+
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
       - name: Deploy
         run: |
           # Deploy using docker-compose
           cd docker
-          
+
           # Set environment variables for docker-compose
           export IMAGE_TAG=$IMAGE_TAG
           export IMAGE_FULL="$REGISTRY/$APP_NAME:$IMAGE_TAG"
@@ -98,12 +98,12 @@ jobs:
           export VERSION=$VERSION
           export MAINTAINER_EMAIL=$MAINTAINER_EMAIL
           export ENVIRONMENT=$ENVIRONMENT
-          
+
           # Save deployment variables for subsequent steps
           echo "IMAGE_FULL=$IMAGE_FULL" >> $GITHUB_ENV
           echo "CONTAINER_NAME=$CONTAINER_NAME" >> $GITHUB_ENV
           echo "NETWORK_NAME=$NETWORK_NAME" >> $GITHUB_ENV
-          
+
           # Debug: Show environment variables
           echo "Environment variables for docker-compose:"
           echo "APP_NAME=$APP_NAME"
@@ -112,17 +112,17 @@ jobs:
           echo "NETWORK_NAME=$NETWORK_NAME"
           echo "HOST_PORT=$HOST_PORT"
           echo "APP_PORT=$APP_PORT"
-          
+
           # Stop existing containers gracefully
           docker compose -f docker-compose.yml -f docker-compose.prod.yml down --timeout 30 || true
-          
+
           # Deploy with production overrides
           docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-          
+
           # Wait for service to be ready
           echo "Waiting for service to be ready..."
           sleep 15
-          
+
           # Verify deployment with retries
           RETRY_COUNT=0
           MAX_RETRIES=5
@@ -149,7 +149,7 @@ jobs:
           # Perform health check
           echo "Performing health check..."
           echo "Checking service at http://localhost:$HOST_PORT"
-          
+
           # Wait for health check to pass
           HEALTH_RETRY=0
           MAX_HEALTH_RETRIES=10
@@ -212,7 +212,7 @@ jobs:
           # Clean up old images (keep last 5 instead of 3 for better rollback capability)
           echo "Cleaning up old images..."
           docker images $REGISTRY/$APP_NAME --format "table {{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.CreatedAt}}" | head -n 10
-          
+
           # Remove old images but keep latest 5
           OLD_IMAGES=$(docker images $REGISTRY/$APP_NAME --format "{{.ID}}" | tail -n +6)
           if [ ! -z "$OLD_IMAGES" ]; then
@@ -221,11 +221,11 @@ jobs:
           else
             echo "No old images to remove"
           fi
-          
+
           # Clean up dangling images with project label
           docker image prune -f --filter "label=project=$APP_NAME" || true
-          
+
           # Clean up unused networks
           docker network prune -f || true
-          
+
           echo "Cleanup completed"
