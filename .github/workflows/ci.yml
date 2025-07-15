@@ -1,0 +1,231 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '0 */2 * * *'
+  workflow_dispatch:
+
+env:
+  REGISTRY: localhost:5001
+
+jobs:
+  deploy:
+    runs-on: [self-hosted]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Load Environment Variables
+        run: |
+          # Load production environment variables
+          if [ -f .env.production ]; then
+            set -a
+            source .env.production
+            set +a
+            
+            # Export for use in subsequent steps
+            echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+            echo "APP_PORT=$APP_PORT" >> $GITHUB_ENV
+            echo "HOST_PORT=$HOST_PORT" >> $GITHUB_ENV
+            echo "CPU_LIMIT=$CPU_LIMIT" >> $GITHUB_ENV
+            echo "MEMORY_LIMIT=$MEMORY_LIMIT" >> $GITHUB_ENV
+            echo "MIN_CPU_LIMIT=${MIN_CPU_LIMIT:-0.25}" >> $GITHUB_ENV
+            echo "MIN_MEMORY_LIMIT=${MIN_MEMORY_LIMIT:-256M}" >> $GITHUB_ENV
+            echo "VERSION=${VERSION:-1.0.0}" >> $GITHUB_ENV
+            echo "MAINTAINER_EMAIL=${MAINTAINER_EMAIL:-your-email@example.com}" >> $GITHUB_ENV
+            echo "ENVIRONMENT=${ENVIRONMENT:-production}" >> $GITHUB_ENV
+          else
+            echo "Warning: .env.production not found, using defaults"
+            echo "APP_NAME=myapp" >> $GITHUB_ENV
+            echo "APP_PORT=8000" >> $GITHUB_ENV
+            echo "HOST_PORT=8000" >> $GITHUB_ENV
+            echo "CPU_LIMIT=0.5" >> $GITHUB_ENV
+            echo "MEMORY_LIMIT=512M" >> $GITHUB_ENV
+            echo "MIN_CPU_LIMIT=0.25" >> $GITHUB_ENV
+            echo "MIN_MEMORY_LIMIT=256M" >> $GITHUB_ENV
+            echo "VERSION=1.0.0" >> $GITHUB_ENV
+            echo "MAINTAINER_EMAIL=your-email@example.com" >> $GITHUB_ENV
+            echo "ENVIRONMENT=production" >> $GITHUB_ENV
+          fi
+
+      - name: Build & Push
+        run: |
+          # Set image tag
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            IMAGE_TAG="daily-$(date +'%Y%m%d')"
+          else
+            IMAGE_TAG="${{ github.sha }}"
+          fi
+          
+          # Build image with build context optimization
+          docker build \
+            -f docker/Dockerfile \
+            -t $REGISTRY/$APP_NAME:$IMAGE_TAG \
+            -t $REGISTRY/$APP_NAME:latest \
+            --label "project=$APP_NAME" \
+            --label "version=$IMAGE_TAG" \
+            --label "environment=production" \
+            --label "build-date=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
+            --label "commit-sha=${{ github.sha }}" \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
+            --cache-from $REGISTRY/$APP_NAME:latest \
+            .
+          
+          # Push to registry
+          docker push $REGISTRY/$APP_NAME:$IMAGE_TAG
+          docker push $REGISTRY/$APP_NAME:latest
+          
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+
+      - name: Deploy
+        run: |
+          # Deploy using docker-compose
+          cd docker
+          
+          # Set environment variables for docker-compose
+          export IMAGE_TAG=$IMAGE_TAG
+          export IMAGE_FULL="$REGISTRY/$APP_NAME:$IMAGE_TAG"
+          export CONTAINER_NAME="$APP_NAME-prod"
+          export NETWORK_NAME="$APP_NAME-prod-network"
+          export APP_NAME=$APP_NAME
+          export APP_PORT=$APP_PORT
+          export HOST_PORT=$HOST_PORT
+          export CPU_LIMIT=$CPU_LIMIT
+          export MEMORY_LIMIT=$MEMORY_LIMIT
+          export MIN_CPU_LIMIT=$MIN_CPU_LIMIT
+          export MIN_MEMORY_LIMIT=$MIN_MEMORY_LIMIT
+          export VERSION=$VERSION
+          export MAINTAINER_EMAIL=$MAINTAINER_EMAIL
+          export ENVIRONMENT=$ENVIRONMENT
+          
+          # Save deployment variables for subsequent steps
+          echo "IMAGE_FULL=$IMAGE_FULL" >> $GITHUB_ENV
+          echo "CONTAINER_NAME=$CONTAINER_NAME" >> $GITHUB_ENV
+          echo "NETWORK_NAME=$NETWORK_NAME" >> $GITHUB_ENV
+          
+          # Debug: Show environment variables
+          echo "Environment variables for docker-compose:"
+          echo "APP_NAME=$APP_NAME"
+          echo "IMAGE_FULL=$IMAGE_FULL"
+          echo "CONTAINER_NAME=$CONTAINER_NAME"
+          echo "NETWORK_NAME=$NETWORK_NAME"
+          echo "HOST_PORT=$HOST_PORT"
+          echo "APP_PORT=$APP_PORT"
+          
+          # Stop existing containers gracefully
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml down --timeout 30 || true
+          
+          # Deploy with production overrides
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+          
+          # Wait for service to be ready
+          echo "Waiting for service to be ready..."
+          sleep 15
+          
+          # Verify deployment with retries
+          RETRY_COUNT=0
+          MAX_RETRIES=5
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            if docker compose -f docker-compose.yml -f docker-compose.prod.yml ps --services --filter "status=running" | grep -q "app"; then
+              echo "✅ Deployment successful"
+              docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
+              break
+            else
+              RETRY_COUNT=$((RETRY_COUNT + 1))
+              echo "⏳ Attempt $RETRY_COUNT/$MAX_RETRIES - Service not ready yet, waiting..."
+              if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+                echo "❌ Deployment failed - service not ready after $MAX_RETRIES attempts"
+                docker compose -f docker-compose.yml -f docker-compose.prod.yml logs
+                docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
+                exit 1
+              fi
+              sleep 10
+            fi
+          done
+
+      - name: Health Check
+        run: |
+          # Perform health check
+          echo "Performing health check..."
+          echo "Checking service at http://localhost:$HOST_PORT"
+          
+          # Wait for health check to pass
+          HEALTH_RETRY=0
+          MAX_HEALTH_RETRIES=10
+          while [ $HEALTH_RETRY -lt $MAX_HEALTH_RETRIES ]; do
+            # Try different health check endpoints in order of preference
+            if curl -f -s http://localhost:$HOST_PORT/health >/dev/null 2>&1; then
+              echo "✅ Health check passed - /health endpoint responding"
+              break
+            elif curl -f -s http://localhost:$HOST_PORT >/dev/null 2>&1; then
+              echo "✅ Health check passed - root endpoint responding"
+              break
+            elif curl -s http://localhost:$HOST_PORT >/dev/null 2>&1; then
+              echo "✅ Health check passed - service is responding"
+              break
+            else
+              HEALTH_RETRY=$((HEALTH_RETRY + 1))
+              echo "⏳ Health check attempt $HEALTH_RETRY/$MAX_HEALTH_RETRIES..."
+              if [ $HEALTH_RETRY -eq $MAX_HEALTH_RETRIES ]; then
+                echo "⚠️ Health check failed after $MAX_HEALTH_RETRIES attempts"
+                echo "Container status:"
+                cd docker && \
+                  IMAGE_FULL="$REGISTRY/$APP_NAME:$IMAGE_TAG" \
+                  CONTAINER_NAME="$APP_NAME-prod" \
+                  NETWORK_NAME="$APP_NAME-prod-network" \
+                  APP_NAME=$APP_NAME \
+                  APP_PORT=$APP_PORT \
+                  HOST_PORT=$HOST_PORT \
+                  CPU_LIMIT=$CPU_LIMIT \
+                  MEMORY_LIMIT=$MEMORY_LIMIT \
+                  MIN_CPU_LIMIT=$MIN_CPU_LIMIT \
+                  MIN_MEMORY_LIMIT=$MIN_MEMORY_LIMIT \
+                  VERSION=$VERSION \
+                  MAINTAINER_EMAIL=$MAINTAINER_EMAIL \
+                  ENVIRONMENT=$ENVIRONMENT \
+                  docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
+                echo "Container logs (last 20 lines):"
+                cd docker && \
+                  IMAGE_FULL="$REGISTRY/$APP_NAME:$IMAGE_TAG" \
+                  CONTAINER_NAME="$APP_NAME-prod" \
+                  NETWORK_NAME="$APP_NAME-prod-network" \
+                  APP_NAME=$APP_NAME \
+                  APP_PORT=$APP_PORT \
+                  HOST_PORT=$HOST_PORT \
+                  CPU_LIMIT=$CPU_LIMIT \
+                  MEMORY_LIMIT=$MEMORY_LIMIT \
+                  MIN_CPU_LIMIT=$MIN_CPU_LIMIT \
+                  MIN_MEMORY_LIMIT=$MIN_MEMORY_LIMIT \
+                  VERSION=$VERSION \
+                  MAINTAINER_EMAIL=$MAINTAINER_EMAIL \
+                  ENVIRONMENT=$ENVIRONMENT \
+                  docker compose -f docker-compose.yml -f docker-compose.prod.yml logs --tail=20
+                break
+              fi
+              sleep 5
+            fi
+          done
+
+      - name: Cleanup
+        run: |
+          # Clean up old images (keep last 5 instead of 3 for better rollback capability)
+          echo "Cleaning up old images..."
+          docker images $REGISTRY/$APP_NAME --format "table {{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.CreatedAt}}" | head -n 10
+          
+          # Remove old images but keep latest 5
+          OLD_IMAGES=$(docker images $REGISTRY/$APP_NAME --format "{{.ID}}" | tail -n +6)
+          if [ ! -z "$OLD_IMAGES" ]; then
+            echo "Removing old images: $OLD_IMAGES"
+            echo "$OLD_IMAGES" | xargs -r docker rmi -f || true
+          else
+            echo "No old images to remove"
+          fi
+          
+          # Clean up dangling images with project label
+          docker image prune -f --filter "label=project=$APP_NAME" || true
+          
+          # Clean up unused networks
+          docker network prune -f || true
+          
+          echo "Cleanup completed"

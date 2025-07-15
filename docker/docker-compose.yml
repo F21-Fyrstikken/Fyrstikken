@@ -1,0 +1,31 @@
+services:
+  app:
+    image: ${IMAGE_FULL}
+    container_name: ${CONTAINER_NAME}
+    restart: always
+    labels:
+      - "project=${APP_NAME}"
+      - "environment=${ENVIRONMENT}"
+      - "version=${IMAGE_TAG:-latest}"
+    deploy:
+      resources:
+        limits:
+          cpus: "${CPU_LIMIT}"
+          memory: "${MEMORY_LIMIT}"
+    ports:
+      - "${HOST_PORT}:${APP_PORT}"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${APP_PORT}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    name: ${NETWORK_NAME}
+    labels:
+      - "project=${APP_NAME}"
+      - "environment=${ENVIRONMENT}"

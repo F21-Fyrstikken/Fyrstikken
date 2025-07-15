@@ -1,0 +1,20 @@
+services:
+  app:
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+    deploy:
+      resources:
+        reservations:
+          cpus: "${MIN_CPU_LIMIT:-0.25}"
+          memory: "${MIN_MEMORY_LIMIT:-256M}"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    # Production-specific configurations
+    security_opt:
+      - no-new-privileges:true
+    read_only: false
+    tmpfs:
+      - /tmp:noexec,nosuid,size=100m
