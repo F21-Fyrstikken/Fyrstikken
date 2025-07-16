@@ -1,0 +1,33 @@
+---
+import Link from "../components/Link.astro";
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title = "Fyrstikken", description } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <nav>
+      <Link href="/">Hjem</Link>
+      <Link href="/about">Arrangemetet</Link>
+    </nav>
+    <header>
+      <slot name="pageTitle" />
+    </header>
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>

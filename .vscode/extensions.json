@@ -1,4 +1,10 @@
 {
-  "recommendations": ["astro-build.astro-vscode"],
+  "recommendations": [
+    "astro-build.astro-vscode", // Språkstøtte for .astro-filer
+    "esbenp.prettier-vscode", // Automatisk kodefomatering ved lagring
+    "yoavbls.pretty-ts-errors", // Mer deskriptive TypeScript error-meldinger
+    "dbaeumer.vscode-eslint", // Linting for å oppdage feil i koden
+    "usernamehw.errorlens" // Visualliserer feilmeldinger direkte i koden
+  ],
   "unwantedRecommendations": []
 }
