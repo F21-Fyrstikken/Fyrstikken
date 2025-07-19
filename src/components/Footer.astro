@@ -1,0 +1,13 @@
+---
+
+---
+
+<p>Opphavsrett © <span id="copyright"></span> Fyrstikkalleen Skole</p>
+<p>Alle rettigheter hevdet</p>
+
+<script>
+  import { getCopyRightYear } from "../lib/utils"; // import i script for å være client-side
+  const year = getCopyRightYear();
+  const copyright = document.getElementById("copyright") as unknown as HTMLParagraphElement;
+  copyright.textContent = year.toString();
+</script>

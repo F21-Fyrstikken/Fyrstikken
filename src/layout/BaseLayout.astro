@@ -1,5 +1,7 @@
 ---
-import Link from "../components/Link.astro";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+import "../styles/global.css";
 
 interface Props {
   title: string;
@@ -19,15 +21,13 @@ const { title = "Fyrstikken", description } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
-    <nav>
-      <Link href="/">Hjem</Link>
-      <Link href="/about">Arrangemetet</Link>
-    </nav>
+    <Nav />
     <header>
       <slot name="pageTitle" />
     </header>
     <main>
       <slot />
     </main>
+    <Footer />
   </body>
 </html>

@@ -1,0 +1,43 @@
+* {
+  margin: 0;
+}
+:root {
+  --clr-main: #d3d3d3;
+  --clr-tekst: #3e4247;
+  --clr-ixDBoks: #f5f6f5;
+  --clr-ramme: #b9bec2;
+  --clr-tabellBoks: #d4d4d8;
+  --clr-tekstBoks: #dfdfdf;
+  --clr-bakgrunn: #b6b6b6;
+
+  --clr-safir: #367fff;
+  --clr-akvamarin: #1892ba;
+  --clr-amazonitt: #228468;
+  --clr-smaragd: #518238;
+  --clr-citrin: #a18603;
+  --clr-spessartin: #d1690f;
+  --clr-rubin: #d24040;
+  --clr-thulitt: #b44f99;
+  --clr-kunzitt: #9a5daf;
+  --clr-ametyst: #7258bb;
+}
+.darkmode {
+  --clr-main: #14151f;
+  --clr-tekst: #a8a8a8;
+  --clr-ramme: #57637a;
+  --clr-ixDBoks: #0b0c13;
+  --clr-tabellBoks: #1a1c29;
+  --clr-tekstBoks: #262738;
+  --clr-bakgrunn: #07070b;
+
+  --clr-safir: #1fa6e2;
+  --clr-akvamarin: #33c9c4;
+  --clr-amazonitt: #35b06f;
+  --clr-smaragd: #839e53;
+  --clr-citrin: #e6ce2f;
+  --clr-spessartin: #e68d2f;
+  --clr-rubin: #ec4f28;
+  --clr-thulitt: #c973af;
+  --clr-kunzitt: #b18bf4;
+  --clr-ametyst: #7b77ff;
+}
