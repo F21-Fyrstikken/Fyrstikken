@@ -1,5 +1,4 @@
 # Fyrstikken
-
 Offisiel Fyrstikken repo
 
 # I nåverende fase finnes den under 
