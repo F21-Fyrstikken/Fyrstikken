@@ -1,0 +1,19 @@
+---
+export async function getStaticPaths() {
+  const numbers = ['100','200','300','400','500','600','700','800','900'];
+  return numbers.map(num => ({
+    params: { number: num }
+  }));
+}
+
+const { number } = Astro.params;
+---
+<html lang="en">
+  <head>
+    <title>Page {number}</title>
+  </head>
+  <body class="bg-gray-50 p-8 flex flex-col items-center justify-center min-h-screen">
+    <h1 class="text-3xl font-bold mb-4">This is page {number}</h1>
+    <a href="/" class="text-blue-500 underline mt-4">Back Home</a>
+  </body>
+</html>
