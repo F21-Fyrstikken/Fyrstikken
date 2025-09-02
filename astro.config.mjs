@@ -8,6 +8,7 @@ import netlify from "@astrojs/netlify";
 
 // https://astro.build/config
 export default defineConfig({
+  base: "/",
   integrations: [
     sanity({
       projectId: "531mn2v8",
