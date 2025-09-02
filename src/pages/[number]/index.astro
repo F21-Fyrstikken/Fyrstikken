@@ -1,10 +1,13 @@
 ---
+import WBG from '../../components/WBG.astro';
+
 export async function getStaticPaths() {
   const numbers = ['100','200','300','400','500','600','700','800','900'];
   return numbers.map(num => ({
     params: { number: num }
   }));
 }
+
 
 const { number } = Astro.params;
 ---
@@ -17,3 +20,4 @@ const { number } = Astro.params;
     <a href="/" class="text-blue-500 underline mt-4">Back Home</a>
   </body>
 </html>
+<WBG />

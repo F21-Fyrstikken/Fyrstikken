@@ -1,5 +1,6 @@
 ---
 import Card from '../components/Card.astro';
+import WBG from '../components/WBG.astro';
 
 const cardData = [
   { label: '100', path: '/100/' },
@@ -13,6 +14,7 @@ const cardData = [
   { label: '900', path: '/900/' },
 ];
 ---
+<WBG />
 <div class="cards">
   {cardData.map(card => (
     <Card {...card} />
