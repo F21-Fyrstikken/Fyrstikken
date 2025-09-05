@@ -9,27 +9,27 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/netlify": "^6.5.3",
+    "@astrojs/netlify": "^6.5.9",
     "@astrojs/react": "^4.3.0",
     "@sanity/astro": "^3.2.10",
-    "@sanity/client": "^7.6.0",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
-    "astro": "^5.11.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "react-is": "^19.1.0",
-    "sanity": "^3.96.0",
+    "@sanity/client": "^7.11.0",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.9",
+    "astro": "^5.13.5",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-is": "^19.1.1",
+    "sanity": "^4.6.1",
     "styled-components": "^6.1.19"
   },
   "devDependencies": {
-    "@eslint/js": "^9.31.0",
-    "eslint": "^9.31.0",
-    "eslint-config-prettier": "^10.1.5",
+    "@eslint/js": "^9.34.0",
+    "eslint": "^9.34.0",
+    "eslint-config-prettier": "^10.1.8",
     "globals": "^16.3.0",
     "prettier": "3.6.2",
     "prettier-plugin-astro": "^0.14.1",
-    "typescript": "^5.8.3",
-    "typescript-eslint": "^8.37.0"
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.42.0"
   }
 }
