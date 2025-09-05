@@ -1,5 +1,7 @@
 # Fyrstikken
-Offisiel Fyrstikken repo
 
-# I nåverende fase finnes den under 
+Offisiell Fyrstikken repo
+
+# I nåverende fase finnes den under
+
 https://f21-fyrstikken.github.io/Fyrstikken/
