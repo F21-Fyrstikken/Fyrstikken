@@ -1,12 +1,34 @@
 ---
-// index.astro
-import Welcome from '../components/Welcome.astro';
+import Card from '../components/Card.astro';
+import WBG from '../components/WBG.astro';
 import Layout from '../layouts/Layout.astro';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const cardData = [
+  { label: '100', path: '/100/' },
+  { label: '200', path: '/200/' },
+  { label: '300', path: '/300/' },
+  { label: '400', path: '/400/' },
+  { label: '500', path: '/500/' },
+  { label: '600', path: '/600/' },
+  { label: '700', path: '/700/' },
+  { label: '800', path: '/800/' },
+  { label: '900', path: '/900/' },
+];
 ---
-
 <Layout>
-	<Welcome />
+  <WBG />
+  <h1 class="text-3xl font-bold mb-4">Home</h1>
+  <div class="cards">
+    {cardData.map(card => (
+      <Card {...card} />
+    ))}
+  </div>
+  <style>
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 1rem;
+      padding: 2rem;
+    }
+  </style>
 </Layout>

@@ -1,5 +1,7 @@
 ---
+import Card from '../../components/Card.astro';
 import WBG from '../../components/WBG.astro';
+import Layout from '../../layouts/Layout.astro';
 
 export async function getStaticPaths() {
   const numbers = ['100','200','300','400','500','600','700','800','900'];
@@ -8,16 +10,26 @@ export async function getStaticPaths() {
   }));
 }
 
-
 const { number } = Astro.params;
+const cardData = Array.from({ length: 9 }, (_, i) => ({
+  label: `${i + 1}`,
+  path: `/${number}/${i + 1}/`
+}));
 ---
-<html lang="en">
-  <head>
-    <title>Page {number}</title>
-  </head>
-  <body class="bg-gray-50 p-8 flex flex-col items-center justify-center min-h-screen">
-    <h1 class="text-3xl font-bold mb-4">This is page {number}</h1>
-    <a href="/" class="text-blue-500 underline mt-4">Back Home</a>
-  </body>
-</html>
-<WBG />
+<Layout>
+  <WBG />
+  <h1 class="text-3xl font-bold mb-4">Section {number}</h1>
+  <div class="cards">
+    {cardData.map(card => (
+      <Card {...card} />
+    ))}
+  </div>
+  <style>
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 1rem;
+      padding: 2rem;
+    }
+  </style>
+</Layout>

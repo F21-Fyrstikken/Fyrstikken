@@ -1,0 +1,21 @@
+---
+import WBG from '../../../components/WBG.astro';
+import Layout from '../../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const outerNumbers = ['100','200','300','400','500','600','700','800','900'];
+  const innerNumbers = ['1','2','3','4','5','6','7','8','9'];
+  return outerNumbers.flatMap(outer =>
+    innerNumbers.map(inner => ({
+      params: { number: outer, number2: inner }
+    }))
+  );
+}
+
+const { number, number2 } = Astro.params;
+---
+<Layout>
+  <WBG />
+  <h1 class="text-3xl font-bold mb-4">This is page {number}/{number2}</h1>
+  <a href={`/${number}/`} class="text-blue-500 underline mt-4 block">Back to {number}</a>
+</Layout>
