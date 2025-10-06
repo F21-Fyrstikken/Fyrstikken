@@ -4,11 +4,19 @@
 
 <nav class="navbar">
   <div class="navbar-container">
-    <a href="/" class="logo">Fyrstikken</a>
-    <div class="nav-links">
+    <a href="/"><video
+    autoplay
+    muted
+    playsinline
+    style="width:120px; height:500px; overflow:hidden;"
+  >
+    <source src="/FyrstikkenLanding.webm" type="video/webm" />
+  </video></a>
+      <div class="nav-links">
       <a href="/" class="link">About</a>
       <a href="/bob" class="link">Projects</a>
     </div>
+
   </div>
 </nav>
 
@@ -25,6 +33,7 @@
 
   .navbar-container {
     max-width: 1024px;
+    max-height: 40px;
     margin: 0 auto;
     padding: 0.75rem 1rem;
     display: flex;
