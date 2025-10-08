@@ -1,0 +1,34 @@
+.svgIkon {
+  background-color: var(--ikon-farge);
+  -webkit-mask: var(--ikon-url) no-repeat center / contain;
+  mask: var(--ikon-url) no-repeat center / contain;
+}
+.ikonStr3 {
+  width: 5rem;
+  height: 5rem;
+}
+.ikonStr2 {
+  width: 4rem;
+  height: 4rem;
+}
+.ikonStr1 {
+  width: 3rem;
+  height: 3rem;
+}
+/* --- /// NAV IKONER ///--- */
+.navikonHjem {
+  --ikon-farge: light-dark(var(--light-tekst), var(--dark-tekst));
+  --ikon-url: url(../images/svg/navikon-hjem.svg);
+}
+.navikonPilNeste {
+  --ikon-farge: light-dark(var(--light-tekst), var(--dark-tekst));
+  --ikon-url: url(../images/svg/navikon-pil-tilbake.svg);
+}
+.navikonPilTilbake {
+  --ikon-farge: light-dark(var(--light-tekst), var(--dark-tekst));
+  --ikon-url: url(../images/svg/navikon-pil-neste.svg);
+}
+.navikonMeny {
+  --ikon-farge: light-dark(var(--light-tekst), var(--dark-tekst));
+  --ikon-url: url(../images/svg/navikon-meny.svg);
+}
