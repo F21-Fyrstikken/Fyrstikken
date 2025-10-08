@@ -5,7 +5,11 @@
 
 const config = {
   tabWidth: 2,
-  printWidth: 180,
+  useTabs: false,
+  printWidth: 120,
+  semi: true,
+  singleQuote: false,
+  trailingComma: "es5",
   bracketSameLine: true,
   htmlWhitespaceSensitivity: "strict",
   endOfLine: "lf",
