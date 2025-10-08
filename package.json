@@ -6,7 +6,15 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "eslint:fix": "eslint . --fix",
+    "eslint:check": "eslint .",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,mjs,ts,tsx,astro}": [
+      "eslint --fix"
+    ]
   },
   "dependencies": {
     "@astrojs/netlify": "^6.5.9",
@@ -26,7 +34,11 @@
     "@eslint/js": "^9.34.0",
     "eslint": "^9.34.0",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-sonarjs": "^3.0.5",
     "globals": "^16.3.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.3",
     "prettier": "3.6.2",
     "prettier-plugin-astro": "^0.14.1",
     "typescript": "^5.9.2",
