@@ -1,0 +1,174 @@
+/* --- /// H1 /// --- */
+@font-face {
+  font-display: swap;
+  font-family: "Roboto Slab";
+  font-style: normal;
+  font-weight: 600;
+  src: url("../fonts/roboto-slab-600.woff2") format("woff2");
+}
+/* --- /// H2 - H5 /// --- */
+@font-face {
+  font-display: swap;
+  font-family: "Roboto Slab";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/roboto-slab-400.woff2") format("woff2");
+}
+/* --- /// H6 /// --- */
+@font-face {
+  font-display: swap;
+  font-family: "Roboto Mono";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/roboto-mono-400.woff2") format("woff2");
+}
+/* --- /// P /// --- */
+@font-face {
+  font-display: swap;
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/roboto-400.woff2") format("woff2");
+}
+/* --- /// UL, OL, LI /// --- */
+@font-face {
+  font-display: swap;
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 300;
+  src: url("../fonts/roboto-300.woff2") format("woff2");
+}
+/* ---// I, EM //--- */
+@font-face {
+  font-display: swap;
+  font-family: "Roboto";
+  font-style: italic;
+  font-weight: 300;
+  src: url("../fonts/roboto-300-italic.woff2") format("woff2");
+}
+/* ---// B, STRONG, A, BUTTON //--- */
+@font-face {
+  font-display: swap;
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 600;
+  src: url("../fonts/roboto-600.woff2") format("woff2");
+}
+/* ---// B, STRONG, A, BUTTON //--- */
+@font-face {
+  font-display: swap;
+  font-family: "Roboto Serif";
+  font-style: normal;
+  font-weight: 300;
+  src: url("../fonts/roboto-serif-300.woff2") format("woff2");
+}
+
+html {
+  font-size: 62.5%;
+}
+/* ---// HEADER //--- */
+h1,
+h2 {
+  color: light-dark(var(--light-tekst), var(--dark-tekst));
+  font-family: "Roboto Slab";
+  font-weight: 600;
+}
+h1 {
+  font-size: 3rem;
+}
+h2 {
+  font-size: 2.6rem;
+}
+h3,
+h4,
+h5 {
+  color: light-dark(var(--light-tekst), var(--dark-tekst));
+  font-family: "Roboto Slab";
+  font-weight: 400;
+}
+h3 {
+  font-size: 2.2rem;
+}
+h4 {
+  font-size: 1.8rem;
+}
+h5 {
+  font-size: 1.6rem;
+}
+h6,
+code {
+  color: light-dark(var(--light-tekst), var(--dark-tekst));
+  font-family: "Roboto mono";
+  font-weight: 400;
+}
+h6 {
+  font-size: 1.2rem;
+}
+/* ---// BRØDTEKST //--- */
+p,
+a,
+b,
+i,
+em,
+strong,
+button,
+ul,
+ol {
+  color: light-dark(var(--light-tekst), var(--dark-tekst));
+  font-family: "Roboto";
+  font-size: 1.4rem;
+}
+em,
+i {
+  font-style: italic;
+  font-weight: 300;
+}
+ul,
+ol {
+  font-weight: 300;
+}
+p {
+  font-weight: 400;
+}
+footer p {
+  font-family: "Roboto Serif", serif;
+  font-weight: 300;
+}
+b,
+a,
+strong,
+button {
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+/* ---/// LISTER ///--- */
+ol,
+ul {
+  margin-inline-start: 2rem;
+}
+li {
+  margin-inline-end: 1rem;
+}
+article ol li::before {
+  content: "\25CF";
+}
+article ul li::before {
+  content: "\2022";
+  font-weight: bold;
+  position: absolute;
+  left: -1.4rem;
+  top: 0;
+}
+ul li {
+  position: relative;
+  margin-block-end: 0.5rem;
+}
+ul li ul li,
+ol li ol li {
+  margin-left: 1.5rem;
+  margin-block: 0.5rem;
+}
+article p {
+  margin-block-end: 1rem;
+  line-height: 1.4;
+}
