@@ -1,0 +1,75 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+}
+body,
+html {
+  height: 100%;
+}
+body {
+  position: relative;
+}
+/* ---/// LENKER OG INTERAKTIVITET ///--- */
+button {
+  background-color: transparent;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+/* ---/// LISTER ///--- */
+ul,
+ol {
+  list-style: none;
+}
+img,
+video,
+iframe {
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+/* ---/// FARGEPALETT ///--- */
+:root {
+  color-scheme: light dark;
+
+  --light-bakgrunn: #b6b6b6;
+  --light-main: #d3d3d3;
+  --light-tekst: #3e4247;
+  --light-ramme: #b9bec2;
+  --light-ixDBoks: #f5f6f5;
+  --light-tabellBoks: #d4d4d8;
+  --light-tekstBoks: #dfdfdf;
+  --light-code: #dedede;
+  --light-safir: #367fff; 
+  --light-akvamarin: #1892ba; 
+  --light-amazonitt: #228468; 
+  --light-smaragd: #518238; 
+  --light-citrin: #a18603;
+  --light-spessartin: #d1690f; 
+  --light-rubin: #d24040;
+  --light-thulitt: #b44f99;
+  --light-kunzitt: #9a5daf; 
+  --light-ametyst: #7258bb;
+
+  /* --- ///DARK THEME ///--- */
+  --dark-bakgrunn: #07070b;
+  --dark-main: #14151f;
+  --dark-tekst: #a8a8a8;
+  --dark-ramme: #57637a;
+  --dark-ixDBoks: #0b0c13;
+  --dark-tabellBoks: #1a1c29;
+  --dark-tekstBoks: #262738;
+  --dark-code: #1f1f1f;
+  --dark-safir: #1fa6e2; 
+  --dark-akvamarin: #33c9c4; 
+  --dark-amazonitt: #35b06f;
+  --dark-smaragd: #839e53;
+  --dark-citrin: #e6ce2f;
+  --dark-spessartin: #e68d2f;
+  --dark-rubin: #ec4f28;
+  --dark-thulitt: #c973af;
+  --dark-kunzitt: #b18bf4;
+  --dark-ametyst: #7b77ff;
+}
