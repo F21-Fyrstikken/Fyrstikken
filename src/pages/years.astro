@@ -1,0 +1,56 @@
+---
+import BaseLayout from "../layout/BaseLayout.astro";
+import Link from "../components/Link.astro";
+import { getAllYears } from "../lib/sanity";
+
+const years = await getAllYears();
+---
+
+<BaseLayout title="Fyrstikken - Års" description="Utforsk Fyrstikken priser gjennom årene">
+  <h1 slot="pageTitle">Fyrstikken gjennom årene</h1>
+
+  <div class="years-grid">
+    {
+      years.map((year) => (
+        <Link href={`/years/${year.year}`} class="year-card">
+          <h2>{year.year}</h2>
+          {year.description && <p>{year.description}</p>}
+        </Link>
+      ))
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  .years-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .year-card {
+    padding: 2rem;
+    border: 2px solid currentColor;
+    border-radius: 8px;
+    text-decoration: none;
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
+  }
+
+  .year-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .year-card h2 {
+    font-size: 2rem;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .year-card p {
+    margin: 0;
+    opacity: 0.8;
+  }
+</style>

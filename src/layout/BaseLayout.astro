@@ -1,8 +1,9 @@
 ---
+import type { HTMLAttributes } from "astro/types";
 import Link from "../components/Link.astro";
 
-interface IProps {
-  title: string;
+interface Props extends HTMLAttributes<"html"> {
+  title?: string;
   description: string;
 }
 
@@ -21,7 +22,10 @@ const { title = "Fyrstikken", description } = Astro.props;
   <body>
     <nav>
       <Link href="/">Hjem</Link>
+      <br />
       <Link href="/about">Arrangemetet</Link>
+      <br />
+      <Link href="/years">Års</Link>
     </nav>
     <header>
       <slot name="pageTitle" />

@@ -1,0 +1,111 @@
+---
+import BaseLayout from "../../layout/BaseLayout.astro";
+import Link from "../../components/Link.astro";
+import { getYear, getCategoriesForYear } from "../../lib/sanity";
+
+const { year } = Astro.params;
+
+if (!year) {
+  return Astro.redirect("/years");
+}
+
+const yearData = await getYear(year);
+const categories = await getCategoriesForYear(year);
+
+if (!yearData) {
+  return Astro.redirect("/years");
+}
+---
+
+<BaseLayout title={`Fyrstikken ${yearData.year}`} description={`Kategorier for Fyrstikken ${yearData.year}`}>
+  <div slot="pageTitle">
+    <Link href="/years" class="breadcrumb">← Tilbake til års</Link>
+    <h1>Fyrstikken {yearData.year}</h1>
+    {yearData.description && <p class="year-description">{yearData.description}</p>}
+  </div>
+
+  {
+    categories.length > 0 ? (
+      <div class="categories-grid">
+        {categories.map((category) => (
+          <Link href={`/years/${year}/${category.slug.current}`} class="category-card">
+            {category.coverImage && category.coverImage.asset?.url && (
+              <img
+                src={category.coverImage.asset.url}
+                alt={category.coverImage.alt || category.title}
+                class="category-image"
+              />
+            )}
+            <div class="category-content">
+              <h2>{category.title}</h2>
+              {category.description && <p>{category.description}</p>}
+            </div>
+          </Link>
+        ))}
+      </div>
+    ) : (
+      <p>Ingen kategorier funnet for dette året.</p>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .breadcrumb {
+    display: inline-block;
+    margin-bottom: 1rem;
+    text-decoration: none;
+    opacity: 0.8;
+  }
+
+  .breadcrumb:hover {
+    opacity: 1;
+  }
+
+  .year-description {
+    font-size: 1.2rem;
+    opacity: 0.8;
+    margin-top: 0.5rem;
+  }
+
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .category-card {
+    border: 2px solid currentColor;
+    border-radius: 8px;
+    text-decoration: none;
+    overflow: hidden;
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
+  }
+
+  .category-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .category-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+  }
+
+  .category-content {
+    padding: 1.5rem;
+  }
+
+  .category-content h2 {
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .category-content p {
+    margin: 0;
+    opacity: 0.8;
+  }
+</style>

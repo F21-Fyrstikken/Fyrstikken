@@ -1,0 +1,132 @@
+---
+import BaseLayout from "../../../../layout/BaseLayout.astro";
+import Link from "../../../../components/Link.astro";
+import { getProject } from "../../../../lib/sanity";
+import { PortableText } from "astro-portabletext";
+import YouTube from "../../../../components/portabletext/YouTube.astro";
+import Vimeo from "../../../../components/portabletext/Vimeo.astro";
+import Embed from "../../../../components/portabletext/Embed.astro";
+import Image from "../../../../components/portabletext/Image.astro";
+import File from "../../../../components/portabletext/File.astro";
+import Audio from "../../../../components/portabletext/Audio.astro";
+
+const { year, category, project } = Astro.params;
+
+if (!year || !category || !project) {
+  return Astro.redirect("/years");
+}
+
+const projectData = await getProject(project);
+
+if (!projectData) {
+  return Astro.redirect(`/years/${year}/${category}`);
+}
+
+// Custom components for PortableText rendering
+const components = {
+  type: {
+    youtube: YouTube,
+    vimeo: Vimeo,
+    embed: Embed,
+    image: Image,
+    file: File,
+    audio: Audio,
+  },
+};
+---
+
+<BaseLayout title={`${projectData.title} - Fyrstikken`} description={projectData.description || projectData.title}>
+  <div slot="pageTitle">
+    <Link href="/years" class="breadcrumb">Års</Link>
+    <span class="breadcrumb-separator">/</span>
+    <Link href={`/years/${year}`} class="breadcrumb">{year}</Link>
+    <span class="breadcrumb-separator">/</span>
+    <Link href={`/years/${year}/${category}`} class="breadcrumb">{projectData.category.title}</Link>
+    <h1>{projectData.title}</h1>
+  </div>
+
+  <article class="project-detail">
+    {
+      projectData.image && projectData.image.asset?.url && (
+        <img
+          src={projectData.image.asset.url}
+          alt={projectData.image.alt || projectData.title}
+          class="project-hero-image"
+        />
+      )
+    }
+
+    {projectData.description && <p class="project-description">{projectData.description}</p>}
+
+    {
+      projectData.content && (
+        <div class="project-content">
+          <PortableText value={projectData.content} components={components} />
+        </div>
+      )
+    }
+  </article>
+</BaseLayout>
+
+<style>
+  .breadcrumb {
+    display: inline;
+    text-decoration: none;
+    opacity: 0.8;
+  }
+
+  .breadcrumb:hover {
+    opacity: 1;
+  }
+
+  .breadcrumb-separator {
+    margin: 0 0.5rem;
+    opacity: 0.5;
+  }
+
+  .project-detail {
+    margin-top: 2rem;
+  }
+
+  .project-hero-image {
+    width: 100%;
+    max-height: 500px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+  }
+
+  .project-description {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+  }
+
+  .project-content {
+    line-height: 1.8;
+  }
+
+  .project-content :global(h2) {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .project-content :global(h3) {
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .project-content :global(p) {
+    margin-bottom: 1rem;
+  }
+
+  .project-content :global(ul),
+  .project-content :global(ol) {
+    margin-bottom: 1rem;
+    padding-left: 2rem;
+  }
+
+  .project-content :global(li) {
+    margin-bottom: 0.5rem;
+  }
+</style>

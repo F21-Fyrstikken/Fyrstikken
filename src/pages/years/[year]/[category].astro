@@ -1,0 +1,115 @@
+---
+import BaseLayout from "../../../layout/BaseLayout.astro";
+import Link from "../../../components/Link.astro";
+import { getCategory, getProjectsForCategory } from "../../../lib/sanity";
+
+const { year, category } = Astro.params;
+
+if (!year || !category) {
+  return Astro.redirect("/years");
+}
+
+const categoryData = await getCategory(category);
+const projects = await getProjectsForCategory(category);
+
+if (!categoryData) {
+  return Astro.redirect(`/years/${year}`);
+}
+---
+
+<BaseLayout
+  title={`${categoryData.title} - Fyrstikken ${categoryData.year}`}
+  description={categoryData.description || `Prosjekter i kategorien ${categoryData.title}`}>
+  <div slot="pageTitle">
+    <Link href="/years" class="breadcrumb">Års</Link>
+    <span class="breadcrumb-separator">/</span>
+    <Link href={`/years/${year}`} class="breadcrumb">{year}</Link>
+    <h1>{categoryData.title}</h1>
+    {categoryData.description && <p class="category-description">{categoryData.description}</p>}
+  </div>
+
+  {
+    projects.length > 0 ? (
+      <div class="projects-grid">
+        {projects.map((project) => (
+          <Link href={`/years/${year}/${category}/${project.slug.current}`} class="project-card">
+            {project.image && project.image.asset?.url && (
+              <img src={project.image.asset.url} alt={project.image.alt || project.title} class="project-image" />
+            )}
+            <div class="project-content">
+              <h2>{project.title}</h2>
+              {project.description && <p>{project.description}</p>}
+            </div>
+          </Link>
+        ))}
+      </div>
+    ) : (
+      <p>Ingen prosjekter funnet i denne kategorien.</p>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .breadcrumb {
+    display: inline;
+    text-decoration: none;
+    opacity: 0.8;
+  }
+
+  .breadcrumb:hover {
+    opacity: 1;
+  }
+
+  .breadcrumb-separator {
+    margin: 0 0.5rem;
+    opacity: 0.5;
+  }
+
+  .category-description {
+    font-size: 1.2rem;
+    opacity: 0.8;
+    margin-top: 0.5rem;
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .project-card {
+    border: 2px solid currentColor;
+    border-radius: 8px;
+    text-decoration: none;
+    overflow: hidden;
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
+  }
+
+  .project-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .project-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+
+  .project-content {
+    padding: 1.5rem;
+  }
+
+  .project-content h2 {
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .project-content p {
+    margin: 0;
+    opacity: 0.8;
+  }
+</style>

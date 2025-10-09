@@ -5,15 +5,26 @@ import sonarjsPlugin from "eslint-plugin-sonarjs";
 import tseslint from "typescript-eslint";
 import eslintPluginAstro from "eslint-plugin-astro";
 
+const TS_JS_FILES = "**/*.{js,mjs,cjs,ts,tsx}";
+
 export default [
   {
-    ignores: ["dist", "node_modules", "**/.astro/**", "!**/*.astro"],
+    ignores: ["dist", "node_modules", "**/.astro/**", "!**/*.astro", ".netlify/**"],
   },
   eslint.configs.recommended,
-  ...tseslint.configs.strictTypeChecked,
-  ...tseslint.configs.stylisticTypeChecked,
+  // Base TypeScript configs for all files
+  ...tseslint.configs.recommended,
+  // Strict type-checked rules ONLY for TS/JS files (not Astro)
+  ...tseslint.configs.strictTypeChecked.map((config) => ({
+    ...config,
+    files: [TS_JS_FILES],
+  })),
+  ...tseslint.configs.stylisticTypeChecked.map((config) => ({
+    ...config,
+    files: [TS_JS_FILES],
+  })),
   {
-    files: ["**/*.{js,mjs,cjs,ts,tsx}"],
+    files: [TS_JS_FILES],
     languageOptions: {
       parserOptions: {
         projectService: true,
@@ -25,21 +36,13 @@ export default [
   ...eslintPluginAstro.configs["flat/recommended"],
   {
     files: ["**/*.astro"],
-    languageOptions: {
-      parserOptions: {
-        project: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
     rules: {
-      // Disable problematic TypeScript rules for Astro files
-      "@typescript-eslint/no-unsafe-assignment": "off",
-      "@typescript-eslint/no-unsafe-member-access": "off",
-      "@typescript-eslint/no-unsafe-call": "off",
-      "@typescript-eslint/no-unsafe-return": "off",
+      // Override to allow common patterns in Astro files
+      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
     },
   },
   {
+    files: [TS_JS_FILES], // Apply custom rules only to TS/JS files
     plugins: {
       sonarjs: sonarjsPlugin,
     },
