@@ -13,7 +13,11 @@ const { node } = Astro.props as IFileProps;
 // Build Sanity file URL from asset reference
 function buildFileUrl(ref: string): string {
   const [, id, extension] = ref.split("-");
-  return `https://cdn.sanity.io/files/531mn2v8/production/${id}.${extension}`;
+  const projectId = import.meta.env.PUBLIC_SANITY_PROJECT_ID;
+  if (!projectId) {
+    throw new Error("Sanity project ID is not set. Please define PUBLIC_SANITY_PROJECT_ID in your environment variables.");
+  }
+  return `https://cdn.sanity.io/files/${projectId}/production/${id}.${extension}`;
 }
 
 const fileUrl = node.asset?.url || (node.asset?._ref ? buildFileUrl(node.asset._ref) : "");
