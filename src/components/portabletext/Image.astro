@@ -12,9 +12,10 @@ interface IImageProps {
 const { node } = Astro.props as IImageProps;
 
 // Build Sanity image URL from asset reference
+const SANITY_PROJECT_ID = import.meta.env.PUBLIC_SANITY_PROJECT_ID;
 function buildImageUrl(ref: string): string {
   const [, id, dimensions, format] = ref.split("-");
-  return `https://cdn.sanity.io/images/531mn2v8/production/${id}-${dimensions}.${format}`;
+  return `https://cdn.sanity.io/images/${SANITY_PROJECT_ID}/production/${id}-${dimensions}.${format}`;
 }
 
 const imageUrl = node.asset?._ref ? buildImageUrl(node.asset._ref) : "";
