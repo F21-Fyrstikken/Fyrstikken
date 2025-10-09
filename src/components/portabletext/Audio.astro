@@ -1,0 +1,73 @@
+---
+interface IAudioProps {
+  node: {
+    asset: {
+      _ref?: string;
+      url?: string;
+    };
+  };
+}
+
+const { node } = Astro.props as IAudioProps;
+
+// Build Sanity file URL from asset reference
+function buildFileUrl(ref: string): string {
+  const parts = ref.split("-");
+  const id = parts[1];
+  const extension = parts[parts.length - 1];
+  return `https://cdn.sanity.io/files/531mn2v8/production/${id}.${extension}`;
+}
+
+const audioUrl = node.asset?.url ?? (node.asset?._ref ? buildFileUrl(node.asset._ref) : "");
+const fileName = audioUrl.split("/").pop() ?? "Audio file";
+
+// Determine audio type from extension
+const extension = fileName.split(".").pop()?.toLowerCase() ?? "";
+const mimeType =
+  extension === "mp3"
+    ? "audio/mpeg"
+    : extension === "wav"
+      ? "audio/wav"
+      : extension === "ogg"
+        ? "audio/ogg"
+        : extension === "m4a"
+          ? "audio/mp4"
+          : "audio/mpeg";
+---
+
+{
+  audioUrl && (
+    <div class="audio-player">
+      <p class="audio-label">🎵 {fileName}</p>
+      <audio controls>
+        <source src={audioUrl} type={mimeType} />
+        Your browser does not support the audio element.
+      </audio>
+    </div>
+  )
+}
+
+<style>
+  .audio-player {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: #f5f5f5;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+  }
+
+  .audio-label {
+    margin: 0 0 1rem 0;
+    font-weight: 500;
+    color: #333;
+  }
+
+  audio {
+    width: 100%;
+    outline: none;
+  }
+
+  audio::-webkit-media-controls-panel {
+    background-color: #fff;
+  }
+</style>

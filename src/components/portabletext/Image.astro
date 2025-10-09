@@ -1,0 +1,50 @@
+---
+interface IImageProps {
+  node: {
+    asset: {
+      _ref: string;
+    };
+    alt?: string;
+    caption?: string;
+  };
+}
+
+const { node } = Astro.props as IImageProps;
+
+// Build Sanity image URL from asset reference
+function buildImageUrl(ref: string): string {
+  const [, id, dimensions, format] = ref.split("-");
+  return `https://cdn.sanity.io/images/531mn2v8/production/${id}-${dimensions}.${format}`;
+}
+
+const imageUrl = node.asset?._ref ? buildImageUrl(node.asset._ref) : "";
+---
+
+{
+  imageUrl && (
+    <figure class="content-image">
+      <img src={imageUrl} alt={node.alt || ""} loading="lazy" />
+      {node.caption && <figcaption>{node.caption}</figcaption>}
+    </figure>
+  )
+}
+
+<style>
+  .content-image {
+    margin: 2rem 0;
+  }
+
+  .content-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+
+  .content-image figcaption {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+    text-align: center;
+    font-style: italic;
+  }
+</style>
