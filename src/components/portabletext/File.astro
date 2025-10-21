@@ -15,7 +15,9 @@ function buildFileUrl(ref: string): string {
   const [, id, extension] = ref.split("-");
   const projectId = import.meta.env.PUBLIC_SANITY_PROJECT_ID;
   if (!projectId) {
-    throw new Error("Sanity project ID is not set. Please define PUBLIC_SANITY_PROJECT_ID in your environment variables.");
+    throw new Error(
+      "Sanity project ID is not set. Please define PUBLIC_SANITY_PROJECT_ID in your environment variables."
+    );
   }
   return `https://cdn.sanity.io/files/${projectId}/production/${id}.${extension}`;
 }
