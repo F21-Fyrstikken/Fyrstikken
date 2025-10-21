@@ -4,7 +4,10 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
+    "dev:sanity": "sanity dev",
     "build": "astro build",
+    "build:sanity": "sanity build studio -y",
+    "build:all": "npm run build && npm run build:sanity && node scripts/copy-studio.js",
     "preview": "astro preview",
     "astro": "astro",
     "eslint:fix": "eslint . --fix",
