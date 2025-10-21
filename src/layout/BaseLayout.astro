@@ -1,6 +1,8 @@
 ---
 import type { HTMLAttributes } from "astro/types";
 import Link from "../components/Link.astro";
+import "../css/global.css";
+import "../css/typografi.css";
 
 interface Props extends HTMLAttributes<"html"> {
   title?: string;
@@ -20,18 +22,99 @@ const { title = "Fyrstikken", description } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
-    <nav>
-      <Link href="/">Hjem</Link>
-      <br />
-      <Link href="/about">Arrangemetet</Link>
-      <br />
-      <Link href="/years">Års</Link>
+    <nav class="main-nav">
+      <div class="nav-content">
+        <Link href="/" class="nav-link">Hjem</Link>
+        <Link href="/about" class="nav-link">Arrangemetet</Link>
+        <Link href="/years" class="nav-link">Års</Link>
+      </div>
     </nav>
-    <header>
-      <slot name="pageTitle" />
-    </header>
-    <main>
-      <slot />
-    </main>
+    <div class="container">
+      <header class="page-header">
+        <slot name="pageTitle" />
+      </header>
+      <main class="main-content">
+        <slot />
+      </main>
+    </div>
   </body>
 </html>
+
+<style>
+  body {
+    background: light-dark(var(--light-bakgrunn), var(--dark-bakgrunn));
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+    min-height: 100vh;
+    font-family:
+      system-ui,
+      -apple-system,
+      sans-serif;
+    line-height: 1.6;
+  }
+
+  .main-nav {
+    background: light-dark(var(--light-main), var(--dark-main));
+    border-bottom: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .nav-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    gap: 2rem;
+  }
+
+  .nav-content :global(.nav-link) {
+    text-decoration: none;
+    color: inherit;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+
+  .nav-content :global(.nav-link:hover) {
+    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .page-header {
+    margin-bottom: 2rem;
+  }
+
+  .page-header :global(h1) {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+
+  .main-content {
+    min-height: 60vh;
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      padding: 1rem;
+    }
+
+    .nav-content {
+      padding: 0 1rem;
+      gap: 1rem;
+    }
+
+    .page-header :global(h1) {
+      font-size: 2rem;
+    }
+  }
+</style>

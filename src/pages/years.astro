@@ -24,33 +24,57 @@ const years = await getAllYears();
 <style>
   .years-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 2rem;
     margin-top: 2rem;
   }
 
   .year-card {
-    padding: 2rem;
-    border: 2px solid currentColor;
-    border-radius: 8px;
+    padding: 2.5rem;
+    background: light-dark(var(--light-main), var(--dark-main));
+    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    border-radius: 12px;
     text-decoration: none;
     transition:
-      transform 0.2s,
-      box-shadow 0.2s;
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+    color: inherit;
+    text-align: center;
   }
 
   .year-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    border-color: light-dark(var(--light-amazonitt), var(--dark-amazonitt));
   }
 
   .year-card h2 {
-    font-size: 2rem;
-    margin: 0 0 0.5rem 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 0.75rem 0;
+    color: light-dark(var(--light-safir), var(--dark-safir));
   }
 
   .year-card p {
     margin: 0;
-    opacity: 0.8;
+    opacity: 0.85;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 768px) {
+    .years-grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .year-card {
+      padding: 2rem;
+    }
+
+    .year-card h2 {
+      font-size: 2rem;
+    }
   }
 </style>

@@ -36,17 +36,27 @@ const fileName = fileUrl.split("/").pop() || "Download file";
 
 <style>
   .file-download {
-    margin: 1.5rem 0;
-    padding: 1rem;
-    background: #f5f5f5;
-    border-radius: 8px;
-    border: 1px solid #ddd;
+    margin: 2rem 0;
+    padding: 1.25rem 1.5rem;
+    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
+    border-radius: 12px;
+    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    transition: all 0.2s ease;
+  }
+
+  .file-download:hover {
+    border-color: light-dark(var(--light-safir), var(--dark-safir));
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
   .file-download a {
-    color: #0066cc;
+    color: light-dark(var(--light-safir), var(--dark-safir));
     text-decoration: none;
     font-weight: 500;
+    font-size: 1.05rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .file-download a:hover {

@@ -72,7 +72,9 @@ const components = {
   .breadcrumb {
     display: inline;
     text-decoration: none;
-    opacity: 0.8;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    font-size: 0.95rem;
   }
 
   .breadcrumb:hover {
@@ -86,47 +88,129 @@ const components = {
 
   .project-detail {
     margin-top: 2rem;
+    background: light-dark(var(--light-main), var(--dark-main));
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid light-dark(var(--light-ramme), var(--dark-ramme));
   }
 
   .project-hero-image {
     width: 100%;
     max-height: 500px;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 12px;
     margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
   .project-description {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     opacity: 0.9;
     margin-bottom: 2rem;
+    line-height: 1.7;
+    font-weight: 500;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
   }
 
   .project-content {
     line-height: 1.8;
+    max-width: 800px;
   }
 
   .project-content :global(h2) {
-    margin-top: 2rem;
+    margin-top: 2.5rem;
     margin-bottom: 1rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: light-dark(var(--light-safir), var(--dark-safir));
   }
 
   .project-content :global(h3) {
-    margin-top: 1.5rem;
+    margin-top: 2rem;
     margin-bottom: 0.75rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: light-dark(var(--light-akvamarin), var(--dark-akvamarin));
   }
 
   .project-content :global(p) {
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    font-size: 1.05rem;
   }
 
   .project-content :global(ul),
   .project-content :global(ol) {
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     padding-left: 2rem;
   }
 
   .project-content :global(li) {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.05rem;
+  }
+
+  .project-content :global(ul li) {
+    list-style-type: disc;
+  }
+
+  .project-content :global(ol li) {
+    list-style-type: decimal;
+  }
+
+  .project-content :global(blockquote) {
+    border-left: 4px solid light-dark(var(--light-safir), var(--dark-safir));
+    padding-left: 1.5rem;
+    margin: 2rem 0;
+    font-style: italic;
+    opacity: 0.9;
+  }
+
+  .project-content :global(code) {
+    background: light-dark(var(--light-code), var(--dark-code));
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-family: "Courier New", monospace;
+  }
+
+  .project-content :global(pre) {
+    background: light-dark(var(--light-code), var(--dark-code));
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+  }
+
+  .project-content :global(pre code) {
+    background: none;
+    padding: 0;
+  }
+
+  .project-content :global(a) {
+    color: light-dark(var(--light-safir), var(--dark-safir));
+    text-decoration: underline;
+    transition: opacity 0.2s;
+  }
+
+  .project-content :global(a:hover) {
+    opacity: 0.8;
+  }
+
+  @media (max-width: 768px) {
+    .project-detail {
+      padding: 1.5rem;
+    }
+
+    .project-description {
+      font-size: 1.1rem;
+    }
+
+    .project-content :global(h2) {
+      font-size: 1.5rem;
+    }
+
+    .project-content :global(h3) {
+      font-size: 1.2rem;
+    }
   }
 </style>

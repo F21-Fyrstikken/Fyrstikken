@@ -50,25 +50,35 @@ const mimeType =
 
 <style>
   .audio-player {
-    margin: 2rem 0;
-    padding: 1.5rem;
-    background: #f5f5f5;
-    border-radius: 8px;
-    border: 1px solid #ddd;
+    margin: 2.5rem 0;
+    padding: 1.75rem;
+    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
+    border-radius: 12px;
+    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   }
 
   .audio-label {
     margin: 0 0 1rem 0;
-    font-weight: 500;
-    color: #333;
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
   }
 
   audio {
     width: 100%;
     outline: none;
+    border-radius: 8px;
   }
 
   audio::-webkit-media-controls-panel {
-    background-color: #fff;
+    background-color: light-dark(var(--light-main), var(--dark-main));
+  }
+
+  @media (max-width: 768px) {
+    .audio-player {
+      margin: 2rem 0;
+      padding: 1.5rem;
+    }
   }
 </style>

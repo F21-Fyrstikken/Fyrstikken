@@ -54,7 +54,9 @@ if (!yearData) {
     display: inline-block;
     margin-bottom: 1rem;
     text-decoration: none;
-    opacity: 0.8;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    font-size: 0.95rem;
   }
 
   .breadcrumb:hover {
@@ -63,49 +65,69 @@ if (!yearData) {
 
   .year-description {
     font-size: 1.2rem;
-    opacity: 0.8;
-    margin-top: 0.5rem;
+    opacity: 0.85;
+    margin-top: 0.75rem;
+    font-weight: 400;
   }
 
   .categories-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
     margin-top: 2rem;
   }
 
   .category-card {
-    border: 2px solid currentColor;
-    border-radius: 8px;
+    background: light-dark(var(--light-main), var(--dark-main));
+    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    border-radius: 12px;
     text-decoration: none;
     overflow: hidden;
     transition:
-      transform 0.2s,
-      box-shadow 0.2s;
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
   }
 
   .category-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    border-color: light-dark(var(--light-akvamarin), var(--dark-akvamarin));
   }
 
   .category-image {
     width: 100%;
-    height: 180px;
+    height: 200px;
     object-fit: cover;
+    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
   }
 
   .category-content {
     padding: 1.5rem;
+    flex: 1;
   }
 
   .category-content h2 {
     font-size: 1.5rem;
-    margin: 0 0 0.5rem 0;
+    font-weight: 600;
+    margin: 0 0 0.75rem 0;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
   }
 
   .category-content p {
     margin: 0;
-    opacity: 0.8;
+    opacity: 0.85;
+    line-height: 1.6;
+    font-size: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .categories-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
   }
 </style>
