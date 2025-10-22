@@ -1,7 +1,26 @@
 ---
 import BaseLayout from "../../../layout/BaseLayout.astro";
 import Link from "../../../components/Link.astro";
-import { getCategory, getProjectsForCategory } from "../../../lib/sanity";
+import { getAllYears, getCategoriesForYear, getCategory, getProjectsForCategory } from "../../../lib/sanity";
+
+export async function getStaticPaths() {
+  const years = await getAllYears();
+  const paths = [];
+
+  for (const yearData of years) {
+    const categories = await getCategoriesForYear(yearData.year.toString());
+    for (const category of categories) {
+      paths.push({
+        params: {
+          year: yearData.year.toString(),
+          category: category.slug.current,
+        },
+      });
+    }
+  }
+
+  return paths;
+}
 
 const { year, category } = Astro.params;
 
