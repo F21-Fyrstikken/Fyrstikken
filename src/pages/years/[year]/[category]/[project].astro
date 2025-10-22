@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../../../../layout/BaseLayout.astro";
 import Link from "../../../../components/Link.astro";
-import { getProject, getProjectsForCategory } from "../../../../lib/sanity";
+import { getAllYears, getCategoriesForYear, getProjectsForCategory, getProject } from "../../../../lib/sanity";
 import { PortableText } from "astro-portabletext";
 import YouTube from "../../../../components/portabletext/YouTube.astro";
 import Vimeo from "../../../../components/portabletext/Vimeo.astro";
@@ -9,6 +9,29 @@ import Embed from "../../../../components/portabletext/Embed.astro";
 import Image from "../../../../components/portabletext/Image.astro";
 import File from "../../../../components/portabletext/File.astro";
 import Audio from "../../../../components/portabletext/Audio.astro";
+
+export async function getStaticPaths() {
+  const years = await getAllYears();
+  const paths = [];
+
+  for (const yearData of years) {
+    const categories = await getCategoriesForYear(yearData.year.toString());
+    for (const category of categories) {
+      const projects = await getProjectsForCategory(category.slug.current);
+      for (const project of projects) {
+        paths.push({
+          params: {
+            year: yearData.year.toString(),
+            category: category.slug.current,
+            project: project.slug.current,
+          },
+        });
+      }
+    }
+  }
+
+  return paths;
+}
 
 const { year, category, project } = Astro.params;
 

@@ -1,8 +1,15 @@
 ---
 import BaseLayout from "../../layout/BaseLayout.astro";
 import Link from "../../components/Link.astro";
-import { getYear, getCategoriesWithProjectsForYear } from "../../lib/sanity";
+import { getAllYears, getYear, getCategoriesWithProjectsForYear } from "../../lib/sanity";
 import type { ICategoryWithProjects } from "../../lib/sanity";
+
+export async function getStaticPaths() {
+  const years = await getAllYears();
+  return years.map((yearData) => ({
+    params: { year: yearData.year.toString() },
+  }));
+}
 
 const { year } = Astro.params;
 

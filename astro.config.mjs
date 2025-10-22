@@ -7,7 +7,7 @@ import react from "@astrojs/react";
 // https://astro.build/config
 export default defineConfig({
   base: "/",
-  output: "server",
+  output: "static",
   integrations: [
     sanity({
       projectId: "531mn2v8",
