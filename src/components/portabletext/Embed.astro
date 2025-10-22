@@ -1,0 +1,43 @@
+---
+interface IEmbedProps {
+  node: {
+    url: string;
+    height?: number;
+  };
+}
+
+const { node } = Astro.props as IEmbedProps;
+const height = node.height ?? 450;
+---
+
+<div class="embed-container" style={`height: ${String(height)}px`}>
+  <iframe src={node.url} title="Embedded content" frameborder="0" allowfullscreen></iframe>
+</div>
+
+<style>
+  .embed-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    margin: 2.5rem 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
+  }
+
+  .embed-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 12px;
+  }
+
+  @media (max-width: 768px) {
+    .embed-container {
+      margin: 2rem 0;
+    }
+  }
+</style>

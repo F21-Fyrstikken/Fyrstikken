@@ -1,0 +1,354 @@
+---
+import BaseLayout from "../../../../layout/BaseLayout.astro";
+import Link from "../../../../components/Link.astro";
+import { getProject, getProjectsForCategory } from "../../../../lib/sanity";
+import { PortableText } from "astro-portabletext";
+import YouTube from "../../../../components/portabletext/YouTube.astro";
+import Vimeo from "../../../../components/portabletext/Vimeo.astro";
+import Embed from "../../../../components/portabletext/Embed.astro";
+import Image from "../../../../components/portabletext/Image.astro";
+import File from "../../../../components/portabletext/File.astro";
+import Audio from "../../../../components/portabletext/Audio.astro";
+
+const { year, category, project } = Astro.params;
+
+if (!year || !category || !project) {
+  return Astro.redirect("/years");
+}
+
+const projectData = await getProject(project);
+const allProjects = await getProjectsForCategory(category);
+
+if (!projectData) {
+  return Astro.redirect(`/years/${year}/${category}`);
+}
+
+// Custom components for PortableText rendering
+const components = {
+  type: {
+    youtube: YouTube,
+    vimeo: Vimeo,
+    embed: Embed,
+    image: Image,
+    file: File,
+    audio: Audio,
+  },
+};
+---
+
+<BaseLayout title={`${projectData.title} - Fyrstikken`} description={projectData.description || projectData.title}>
+  <div slot="pageTitle">
+    <Link href="/years" class="breadcrumb">Års</Link>
+    <span class="breadcrumb-separator">/</span>
+    <Link href={`/years/${year}`} class="breadcrumb">{year}</Link>
+    <span class="breadcrumb-separator">/</span>
+    <Link href={`/years/${year}/${category}`} class="breadcrumb">{projectData.category.title}</Link>
+  </div>
+
+  <div class="project-layout">
+    <!-- Sidebar with project list -->
+    <aside class="project-sidebar">
+      <h2 class="sidebar-title">Fyrstikken {year}</h2>
+      <nav class="project-list">
+        {
+          allProjects.map((proj) => (
+            <Link
+              href={`/years/${year}/${category}/${proj.slug.current}`}
+              class={`project-list-item ${proj.slug.current === project ? "active" : ""}`}>
+              {proj.image && proj.image.asset?.url && (
+                <img src={proj.image.asset.url} alt={proj.image.alt || proj.title} class="project-thumb" />
+              )}
+              <span class="project-name">{proj.title}</span>
+            </Link>
+          ))
+        }
+      </nav>
+    </aside>
+
+    <!-- Main content area -->
+    <article class="project-detail">
+      <h1 class="project-title">{projectData.title}</h1>
+
+      {
+        projectData.image && projectData.image.asset?.url && (
+          <img
+            src={projectData.image.asset.url}
+            alt={projectData.image.alt || projectData.title}
+            class="project-hero-image"
+          />
+        )
+      }
+
+      {projectData.description && <p class="project-description">{projectData.description}</p>}
+
+      {
+        projectData.content && (
+          <div class="project-content">
+            <PortableText value={projectData.content} components={components} />
+          </div>
+        )
+      }
+    </article>
+  </div>
+</BaseLayout>
+
+<style>
+  .breadcrumb {
+    display: inline;
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    font-size: 0.95rem;
+  }
+
+  .breadcrumb:hover {
+    opacity: 1;
+  }
+
+  .breadcrumb-separator {
+    margin: 0 0.5rem;
+    opacity: 0.5;
+  }
+
+  .project-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+    align-items: start;
+  }
+
+  /* Sidebar */
+  .project-sidebar {
+    background: light-dark(var(--light-main), var(--dark-main));
+    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    border-radius: 12px;
+    padding: 1.5rem;
+    position: sticky;
+    top: 100px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+
+  .sidebar-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+
+  .project-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .project-list-item {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+  }
+
+  .project-list-item:hover {
+    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
+    border-color: light-dark(var(--light-ramme), var(--dark-ramme));
+  }
+
+  .project-list-item.active {
+    background: light-dark(var(--light-safir), var(--dark-safir));
+    color: white;
+    border-color: light-dark(var(--light-safir), var(--dark-safir));
+  }
+
+  .project-thumb {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
+  }
+
+  .project-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  /* Main content */
+  .project-detail {
+    background: light-dark(var(--light-main), var(--dark-main));
+    border-radius: 12px;
+    padding: 2.5rem;
+    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+  }
+
+  .project-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+
+  .project-hero-image {
+    width: 100%;
+    max-height: 600px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  .project-description {
+    font-size: 1.25rem;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+    line-height: 1.7;
+    font-weight: 500;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+
+  .project-content {
+    line-height: 1.8;
+  }
+
+  .project-content :global(h2) {
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: light-dark(var(--light-safir), var(--dark-safir));
+  }
+
+  .project-content :global(h3) {
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: light-dark(var(--light-akvamarin), var(--dark-akvamarin));
+  }
+
+  .project-content :global(p) {
+    margin-bottom: 1.25rem;
+    font-size: 1.05rem;
+  }
+
+  .project-content :global(ul),
+  .project-content :global(ol) {
+    margin-bottom: 1.5rem;
+    padding-left: 2rem;
+  }
+
+  .project-content :global(li) {
+    margin-bottom: 0.75rem;
+    font-size: 1.05rem;
+  }
+
+  .project-content :global(ul li) {
+    list-style-type: disc;
+  }
+
+  .project-content :global(ol li) {
+    list-style-type: decimal;
+  }
+
+  .project-content :global(blockquote) {
+    border-left: 4px solid light-dark(var(--light-safir), var(--dark-safir));
+    padding-left: 1.5rem;
+    margin: 2rem 0;
+    font-style: italic;
+    opacity: 0.9;
+  }
+
+  .project-content :global(code) {
+    background: light-dark(var(--light-code), var(--dark-code));
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-family: "Courier New", monospace;
+  }
+
+  .project-content :global(pre) {
+    background: light-dark(var(--light-code), var(--dark-code));
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+  }
+
+  .project-content :global(pre code) {
+    background: none;
+    padding: 0;
+  }
+
+  .project-content :global(a) {
+    color: light-dark(var(--light-safir), var(--dark-safir));
+    text-decoration: underline;
+    transition: opacity 0.2s;
+  }
+
+  .project-content :global(a:hover) {
+    opacity: 0.8;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .project-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .project-sidebar {
+      position: static;
+      max-height: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .project-detail {
+      padding: 1.5rem;
+    }
+
+    .project-title {
+      font-size: 2rem;
+    }
+
+    .project-description {
+      font-size: 1.1rem;
+    }
+
+    .project-content :global(h2) {
+      font-size: 1.5rem;
+    }
+
+    .project-content :global(h3) {
+      font-size: 1.2rem;
+    }
+
+    .project-sidebar {
+      padding: 1rem;
+    }
+
+    .sidebar-title {
+      font-size: 1.1rem;
+    }
+
+    .project-list-item {
+      grid-template-columns: 60px 1fr;
+    }
+
+    .project-thumb {
+      width: 60px;
+      height: 45px;
+    }
+
+    .project-name {
+      font-size: 0.9rem;
+    }
+  }
+</style>

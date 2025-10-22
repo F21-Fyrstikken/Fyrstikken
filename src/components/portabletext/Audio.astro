@@ -1,0 +1,84 @@
+---
+interface IAudioProps {
+  node: {
+    asset: {
+      _ref?: string;
+      url?: string;
+    };
+  };
+}
+
+const { node } = Astro.props as IAudioProps;
+
+function buildFileUrl(ref: string): string {
+  const refWithoutPrefix = ref.replace(/^file-/, "");
+  const lastDashIndex = refWithoutPrefix.lastIndexOf("-");
+  const id = refWithoutPrefix.substring(0, lastDashIndex);
+  const extension = refWithoutPrefix.substring(lastDashIndex + 1);
+  const projectId = "531mn2v8";
+  return `https://cdn.sanity.io/files/${projectId}/production/${id}.${extension}`;
+}
+
+const audioUrl = node.asset?.url ?? (node.asset?._ref ? buildFileUrl(node.asset._ref) : "");
+const fileName = audioUrl.split("/").pop() ?? "Audio file";
+
+// Determine audio type from extension
+const extension = fileName.split(".").pop()?.toLowerCase() ?? "";
+const mimeType =
+  extension === "mp3"
+    ? "audio/mpeg"
+    : extension === "wav"
+      ? "audio/wav"
+      : extension === "ogg"
+        ? "audio/ogg"
+        : extension === "m4a"
+          ? "audio/mp4"
+          : "audio/mpeg";
+---
+
+{
+  audioUrl && (
+    <div class="audio-player">
+      <p class="audio-label">🎵 {fileName}</p>
+      <audio controls>
+        <source src={audioUrl} type={mimeType} />
+        Your browser does not support the audio element.
+      </audio>
+    </div>
+  )
+}
+
+<style>
+  .audio-player {
+    margin: 2.5rem 0;
+    padding: 1.75rem;
+    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
+    border-radius: 12px;
+    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .audio-label {
+    margin: 0 0 1rem 0;
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+
+  audio {
+    width: 100%;
+    outline: none;
+    border-radius: 8px;
+  }
+
+  audio::-webkit-media-controls-panel {
+    background-color: light-dark(var(--light-main), var(--dark-main));
+  }
+
+  @media (max-width: 768px) {
+    .audio-player {
+      margin: 2rem 0;
+      padding: 1.5rem;
+    }
+  }
+</style>

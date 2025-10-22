@@ -23,8 +23,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Astro project
-        run: npm run build
+      - name: Build Astro project and Sanity Studio
+        run: npm run build:all
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
