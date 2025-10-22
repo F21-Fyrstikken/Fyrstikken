@@ -10,13 +10,13 @@ interface IAudioProps {
 
 const { node } = Astro.props as IAudioProps;
 
-// Build Sanity file URL from asset reference
-const SANITY_PROJECT_ID = import.meta.env.SANITY_PROJECT_ID;
 function buildFileUrl(ref: string): string {
-  const parts = ref.split("-");
-  const id = parts[1];
-  const extension = parts[parts.length - 1];
-  return `https://cdn.sanity.io/files/${SANITY_PROJECT_ID}/production/${id}.${extension}`;
+  const refWithoutPrefix = ref.replace(/^file-/, "");
+  const lastDashIndex = refWithoutPrefix.lastIndexOf("-");
+  const id = refWithoutPrefix.substring(0, lastDashIndex);
+  const extension = refWithoutPrefix.substring(lastDashIndex + 1);
+  const projectId = "531mn2v8";
+  return `https://cdn.sanity.io/files/${projectId}/production/${id}.${extension}`;
 }
 
 const audioUrl = node.asset?.url ?? (node.asset?._ref ? buildFileUrl(node.asset._ref) : "");

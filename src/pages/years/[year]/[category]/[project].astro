@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../../../../layout/BaseLayout.astro";
 import Link from "../../../../components/Link.astro";
-import { getProject } from "../../../../lib/sanity";
+import { getProject, getProjectsForCategory } from "../../../../lib/sanity";
 import { PortableText } from "astro-portabletext";
 import YouTube from "../../../../components/portabletext/YouTube.astro";
 import Vimeo from "../../../../components/portabletext/Vimeo.astro";
@@ -17,6 +17,7 @@ if (!year || !category || !project) {
 }
 
 const projectData = await getProject(project);
+const allProjects = await getProjectsForCategory(category);
 
 if (!projectData) {
   return Astro.redirect(`/years/${year}/${category}`);
@@ -42,30 +43,53 @@ const components = {
     <Link href={`/years/${year}`} class="breadcrumb">{year}</Link>
     <span class="breadcrumb-separator">/</span>
     <Link href={`/years/${year}/${category}`} class="breadcrumb">{projectData.category.title}</Link>
-    <h1>{projectData.title}</h1>
   </div>
 
-  <article class="project-detail">
-    {
-      projectData.image && projectData.image.asset?.url && (
-        <img
-          src={projectData.image.asset.url}
-          alt={projectData.image.alt || projectData.title}
-          class="project-hero-image"
-        />
-      )
-    }
+  <div class="project-layout">
+    <!-- Sidebar with project list -->
+    <aside class="project-sidebar">
+      <h2 class="sidebar-title">Fyrstikken {year}</h2>
+      <nav class="project-list">
+        {
+          allProjects.map((proj) => (
+            <Link
+              href={`/years/${year}/${category}/${proj.slug.current}`}
+              class={`project-list-item ${proj.slug.current === project ? "active" : ""}`}>
+              {proj.image && proj.image.asset?.url && (
+                <img src={proj.image.asset.url} alt={proj.image.alt || proj.title} class="project-thumb" />
+              )}
+              <span class="project-name">{proj.title}</span>
+            </Link>
+          ))
+        }
+      </nav>
+    </aside>
 
-    {projectData.description && <p class="project-description">{projectData.description}</p>}
+    <!-- Main content area -->
+    <article class="project-detail">
+      <h1 class="project-title">{projectData.title}</h1>
 
-    {
-      projectData.content && (
-        <div class="project-content">
-          <PortableText value={projectData.content} components={components} />
-        </div>
-      )
-    }
-  </article>
+      {
+        projectData.image && projectData.image.asset?.url && (
+          <img
+            src={projectData.image.asset.url}
+            alt={projectData.image.alt || projectData.title}
+            class="project-hero-image"
+          />
+        )
+      }
+
+      {projectData.description && <p class="project-description">{projectData.description}</p>}
+
+      {
+        projectData.content && (
+          <div class="project-content">
+            <PortableText value={projectData.content} components={components} />
+          </div>
+        )
+      }
+    </article>
+  </div>
 </BaseLayout>
 
 <style>
@@ -86,21 +110,99 @@ const components = {
     opacity: 0.5;
   }
 
-  .project-detail {
+  .project-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 2rem;
     margin-top: 2rem;
+    align-items: start;
+  }
+
+  /* Sidebar */
+  .project-sidebar {
+    background: light-dark(var(--light-main), var(--dark-main));
+    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    border-radius: 12px;
+    padding: 1.5rem;
+    position: sticky;
+    top: 100px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+
+  .sidebar-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+
+  .project-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .project-list-item {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+  }
+
+  .project-list-item:hover {
+    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
+    border-color: light-dark(var(--light-ramme), var(--dark-ramme));
+  }
+
+  .project-list-item.active {
+    background: light-dark(var(--light-safir), var(--dark-safir));
+    color: white;
+    border-color: light-dark(var(--light-safir), var(--dark-safir));
+  }
+
+  .project-thumb {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
+  }
+
+  .project-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  /* Main content */
+  .project-detail {
     background: light-dark(var(--light-main), var(--dark-main));
     border-radius: 12px;
-    padding: 2rem;
-    border: 1px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    padding: 2.5rem;
+    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+  }
+
+  .project-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
   }
 
   .project-hero-image {
     width: 100%;
-    max-height: 500px;
+    max-height: 600px;
     object-fit: cover;
     border-radius: 12px;
     margin-bottom: 2rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   }
 
   .project-description {
@@ -114,7 +216,6 @@ const components = {
 
   .project-content {
     line-height: 1.8;
-    max-width: 800px;
   }
 
   .project-content :global(h2) {
@@ -196,9 +297,25 @@ const components = {
     opacity: 0.8;
   }
 
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .project-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .project-sidebar {
+      position: static;
+      max-height: none;
+    }
+  }
+
   @media (max-width: 768px) {
     .project-detail {
       padding: 1.5rem;
+    }
+
+    .project-title {
+      font-size: 2rem;
     }
 
     .project-description {
@@ -211,6 +328,27 @@ const components = {
 
     .project-content :global(h3) {
       font-size: 1.2rem;
+    }
+
+    .project-sidebar {
+      padding: 1rem;
+    }
+
+    .sidebar-title {
+      font-size: 1.1rem;
+    }
+
+    .project-list-item {
+      grid-template-columns: 60px 1fr;
+    }
+
+    .project-thumb {
+      width: 60px;
+      height: 45px;
+    }
+
+    .project-name {
+      font-size: 0.9rem;
     }
   }
 </style>

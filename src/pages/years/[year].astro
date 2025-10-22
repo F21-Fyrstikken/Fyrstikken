@@ -1,7 +1,8 @@
 ---
 import BaseLayout from "../../layout/BaseLayout.astro";
 import Link from "../../components/Link.astro";
-import { getYear, getCategoriesForYear } from "../../lib/sanity";
+import { getYear, getCategoriesWithProjectsForYear } from "../../lib/sanity";
+import type { ICategoryWithProjects } from "../../lib/sanity";
 
 const { year } = Astro.params;
 
@@ -10,7 +11,7 @@ if (!year) {
 }
 
 const yearData = await getYear(year);
-const categories = await getCategoriesForYear(year);
+const categoriesWithProjects = await getCategoriesWithProjectsForYear(year);
 
 if (!yearData) {
   return Astro.redirect("/years");
@@ -25,22 +26,35 @@ if (!yearData) {
   </div>
 
   {
-    categories.length > 0 ? (
-      <div class="categories-grid">
-        {categories.map((category) => (
-          <Link href={`/years/${year}/${category.slug.current}`} class="category-card">
-            {category.coverImage && category.coverImage.asset?.url && (
-              <img
-                src={category.coverImage.asset.url}
-                alt={category.coverImage.alt || category.title}
-                class="category-image"
-              />
-            )}
-            <div class="category-content">
-              <h2>{category.title}</h2>
-              {category.description && <p>{category.description}</p>}
+    categoriesWithProjects.length > 0 ? (
+      <div class="year-content">
+        {categoriesWithProjects.map((category: ICategoryWithProjects) => (
+          <section class="category-section" id={category.slug.current}>
+            <div class="category-header">
+              <h2 class="category-title">{category.title}</h2>
+              {category.description && <p class="category-description">{category.description}</p>}
             </div>
-          </Link>
+
+            {category.projects && category.projects.length > 0 && (
+              <div class="projects-grid">
+                {category.projects.map((project) => (
+                  <Link href={`/years/${year}/${category.slug.current}/${project.slug.current}`} class="project-card">
+                    {project.image && project.image.asset?.url && (
+                      <img
+                        src={project.image.asset.url}
+                        alt={project.image.alt || project.title}
+                        class="project-image"
+                      />
+                    )}
+                    <div class="project-content">
+                      <h3>{project.title}</h3>
+                      {project.description && <p>{project.description}</p>}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </section>
         ))}
       </div>
     ) : (
@@ -70,14 +84,40 @@ if (!yearData) {
     font-weight: 400;
   }
 
-  .categories-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 2rem;
+  .year-content {
     margin-top: 2rem;
   }
 
-  .category-card {
+  .category-section {
+    margin-bottom: 4rem;
+  }
+
+  .category-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid light-dark(var(--light-safir), var(--dark-safir));
+  }
+
+  .category-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+
+  .category-description {
+    font-size: 1.1rem;
+    opacity: 0.85;
+    margin: 0;
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .project-card {
     background: light-dark(var(--light-main), var(--dark-main));
     border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
     border-radius: 12px;
@@ -92,32 +132,34 @@ if (!yearData) {
     flex-direction: column;
   }
 
-  .category-card:hover {
+  .project-card:hover {
     transform: translateY(-6px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    border-color: light-dark(var(--light-akvamarin), var(--dark-akvamarin));
+    border-color: light-dark(var(--light-safir), var(--dark-safir));
   }
 
-  .category-image {
+  .project-image {
     width: 100%;
-    height: 200px;
+    height: 220px;
     object-fit: cover;
     background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
   }
 
-  .category-content {
+  .project-content {
     padding: 1.5rem;
     flex: 1;
+    display: flex;
+    flex-direction: column;
   }
 
-  .category-content h2 {
+  .project-content h3 {
     font-size: 1.5rem;
     font-weight: 600;
     margin: 0 0 0.75rem 0;
     color: light-dark(var(--light-tekst), var(--dark-tekst));
   }
 
-  .category-content p {
+  .project-content p {
     margin: 0;
     opacity: 0.85;
     line-height: 1.6;
@@ -125,9 +167,23 @@ if (!yearData) {
   }
 
   @media (max-width: 768px) {
-    .categories-grid {
+    .category-title {
+      font-size: 1.75rem;
+    }
+
+    .projects-grid {
       grid-template-columns: 1fr;
       gap: 1.5rem;
+    }
+
+    .category-section {
+      margin-bottom: 3rem;
+    }
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .projects-grid {
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 </style>

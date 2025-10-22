@@ -54,6 +54,15 @@ interface IProjectDetail {
   };
 }
 
+export interface ICategoryWithProjects {
+  _id: string;
+  title: string;
+  slug: { current: string };
+  description?: string;
+  order?: number;
+  projects?: IProject[];
+}
+
 // Query to get all years
 export async function getAllYears(): Promise<IYear[]> {
   return client.fetch(
@@ -73,7 +82,7 @@ export async function getYear(yearId: string): Promise<IYear | null> {
       year,
       description
     }`,
-    { yearId: parseInt(yearId) }
+    { yearId: Number.parseInt(yearId) }
   );
 }
 
@@ -94,7 +103,7 @@ export async function getCategoriesForYear(yearId: string): Promise<ICategory[]>
       order,
       "year": year->year
     }`,
-    { yearId: parseInt(yearId) }
+    { yearId: Number.parseInt(yearId) }
   );
 }
 
@@ -164,5 +173,32 @@ export async function getProject(slug: string): Promise<IProjectDetail | null> {
       }
     }`,
     { slug }
+  );
+}
+
+export async function getCategoriesWithProjectsForYear(yearId: string): Promise<ICategoryWithProjects[]> {
+  return client.fetch(
+    `*[_type == "category" && year->year == $yearId] | order(order asc) {
+      _id,
+      title,
+      slug,
+      description,
+      order,
+      "projects": *[_type == "project" && category._ref == ^._id] | order(order asc) {
+        _id,
+        title,
+        slug,
+        description,
+        content,
+        image {
+          asset->{
+            url
+          },
+          alt
+        },
+        order
+      }
+    }`,
+    { yearId: Number.parseInt(yearId) }
   );
 }
