@@ -3,6 +3,7 @@ import type { HTMLAttributes } from "astro/types";
 import Link from "../components/Link.astro";
 import "../css/global.css";
 import "../css/typografi.css";
+import HeaderImg from "../components/HeaderImg.astro";
 
 interface Props extends HTMLAttributes<"html"> {
   title?: string;
@@ -30,6 +31,7 @@ const base = import.meta.env.BASE_URL;
         <Link href={`${base}years/`} class="nav-link">Års</Link>
       </div>
     </nav>
+    <HeaderImg />
     <div class="container">
       <header class="page-header">
         <slot name="pageTitle" />
