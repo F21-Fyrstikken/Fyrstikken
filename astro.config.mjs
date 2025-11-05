@@ -16,7 +16,7 @@ export default defineConfig({
     sanity({
       projectId: "531mn2v8",
       dataset: "production",
-      useCdn: false, // Use Live API for real-time updates during development
+      useCdn: import.meta.env.PROD, // Use CDN in production for SSG, Live API in dev
     }),
     react(),
   ],
