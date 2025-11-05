@@ -31,7 +31,7 @@ export default function YearsList({ basePath = "" }: IYearListProps) {
   return (
     <div className="years-grid">
       {years.map((year) => (
-        <a key={year._id} href={`${basePath}/years/${String(year.year)}`} className="year-card">
+        <a key={year._id} href={`${basePath}/years/${String(year.year)}/`} className="year-card">
           <h2>{year.year}</h2>
           {year.description !== undefined && <p>{year.description}</p>}
         </a>

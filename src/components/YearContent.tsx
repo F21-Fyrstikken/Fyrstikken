@@ -39,7 +39,7 @@ export default function YearContent({ year, basePath = "" }: IYearContentProps) 
   return (
     <div>
       <div className="page-header-content">
-        <a href={`${basePath}/years`} className="breadcrumb">
+        <a href={`${basePath}/years/`} className="breadcrumb">
           ← Tilbake til års
         </a>
         <h1>Fyrstikken {yearData.year}</h1>
@@ -60,7 +60,7 @@ export default function YearContent({ year, basePath = "" }: IYearContentProps) 
                   {category.projects.map((project) => (
                     <a
                       key={project._id}
-                      href={`${basePath}/years/${year}/${category.slug.current}/${project.slug.current}`}
+                      href={`${basePath}/years/${year}/${category.slug.current}/${project.slug.current}/`}
                       className="project-card">
                       {project.image?.asset?.url !== undefined && (
                         <img

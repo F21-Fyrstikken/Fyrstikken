@@ -27,7 +27,7 @@ const { year, category } = Astro.params;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 if (!year || !category) {
-  return Astro.redirect("/years");
+  return Astro.redirect("/years/");
 }
 ---
 

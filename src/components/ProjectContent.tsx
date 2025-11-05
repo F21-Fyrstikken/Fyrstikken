@@ -44,15 +44,15 @@ export default function ProjectContent({ year, category, project, basePath = "" 
   return (
     <div>
       <div className="page-header-content">
-        <a href={`${basePath}/years`} className="breadcrumb">
+        <a href={`${basePath}/years/`} className="breadcrumb">
           Års
         </a>
         <span className="breadcrumb-separator">/</span>
-        <a href={`${basePath}/years/${year}`} className="breadcrumb">
+        <a href={`${basePath}/years/${year}/`} className="breadcrumb">
           {year}
         </a>
         <span className="breadcrumb-separator">/</span>
-        <a href={`${basePath}/years/${year}/${category}`} className="breadcrumb">
+        <a href={`${basePath}/years/${year}/${category}/`} className="breadcrumb">
           {projectData.category.title}
         </a>
       </div>
@@ -64,7 +64,7 @@ export default function ProjectContent({ year, category, project, basePath = "" 
             {allProjects.map((proj) => (
               <a
                 key={proj._id}
-                href={`${basePath}/years/${year}/${category}/${String(proj.slug.current)}`}
+                href={`${basePath}/years/${year}/${category}/${String(proj.slug.current)}/`}
                 className={`project-list-item ${proj.slug.current === project ? "active" : ""}`}>
                 {proj.image?.asset?.url !== null && proj.image?.asset?.url !== undefined && (
                   <img src={proj.image.asset.url} alt={proj.image.alt ?? proj.title} className="project-thumb" />

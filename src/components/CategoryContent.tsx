@@ -43,11 +43,11 @@ export default function CategoryContent({ year, category, basePath = "" }: ICate
   return (
     <div>
       <div className="page-header-content">
-        <a href={`${basePath}/years`} className="breadcrumb">
+        <a href={`${basePath}/years/`} className="breadcrumb">
           Års
         </a>
         <span className="breadcrumb-separator">/</span>
-        <a href={`${basePath}/years/${year}`} className="breadcrumb">
+        <a href={`${basePath}/years/${year}/`} className="breadcrumb">
           {year}
         </a>
         <h1>{categoryData.title}</h1>
@@ -61,7 +61,7 @@ export default function CategoryContent({ year, category, basePath = "" }: ICate
           {projects.map((project) => (
             <a
               key={project._id}
-              href={`${basePath}/years/${year}/${category}/${String(project.slug.current)}`}
+              href={`${basePath}/years/${year}/${category}/${String(project.slug.current)}/`}
               className="project-card">
               {project.image?.asset?.url !== null && project.image?.asset?.url !== undefined && (
                 <img src={project.image.asset.url} alt={project.image.alt ?? project.title} className="project-image" />
