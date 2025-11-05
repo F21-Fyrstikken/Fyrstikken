@@ -1,10 +1,10 @@
 ---
 import BaseLayout from "../../layout/BaseLayout.astro";
-import Link from "../../components/Link.astro";
-import { getAllYears, getYear, getCategoriesWithProjectsForYear } from "../../lib/sanity";
-import type { ICategoryWithProjects } from "../../lib/sanity";
+import YearContent from "../../components/YearContent";
 
 export async function getStaticPaths() {
+  // Fetch years to generate routes - lightweight query
+  const { getAllYears } = await import("../../lib/sanity");
   const years = await getAllYears();
   return years.map((yearData) => ({
     params: { year: yearData.year.toString() },
@@ -12,62 +12,15 @@ export async function getStaticPaths() {
 }
 
 const { year } = Astro.params;
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 if (!year) {
   return Astro.redirect("/years");
 }
-
-const yearData = await getYear(year);
-const categoriesWithProjects = await getCategoriesWithProjectsForYear(year);
-
-if (!yearData) {
-  return Astro.redirect("/years");
-}
 ---
 
-<BaseLayout title={`Fyrstikken ${yearData.year}`} description={`Kategorier for Fyrstikken ${yearData.year}`}>
-  <div slot="pageTitle">
-    <Link href="/years" class="breadcrumb">← Tilbake til års</Link>
-    <h1>Fyrstikken {yearData.year}</h1>
-    {yearData.description && <p class="year-description">{yearData.description}</p>}
-  </div>
-
-  {
-    categoriesWithProjects.length > 0 ? (
-      <div class="year-content">
-        {categoriesWithProjects.map((category: ICategoryWithProjects) => (
-          <section class="category-section" id={category.slug.current}>
-            <div class="category-header">
-              <h2 class="category-title">{category.title}</h2>
-              {category.description && <p class="category-description">{category.description}</p>}
-            </div>
-
-            {category.projects && category.projects.length > 0 && (
-              <div class="projects-grid">
-                {category.projects.map((project) => (
-                  <Link href={`/years/${year}/${category.slug.current}/${project.slug.current}`} class="project-card">
-                    {project.image && project.image.asset?.url && (
-                      <img
-                        src={project.image.asset.url}
-                        alt={project.image.alt || project.title}
-                        class="project-image"
-                      />
-                    )}
-                    <div class="project-content">
-                      <h3>{project.title}</h3>
-                      {project.description && <p>{project.description}</p>}
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </section>
-        ))}
-      </div>
-    ) : (
-      <p>Ingen kategorier funnet for dette året.</p>
-    )
-  }
+<BaseLayout title={`Fyrstikken ${year}`} description={`Kategorier for Fyrstikken ${year}`}>
+  <YearContent client:load year={year} basePath={basePath} />
 </BaseLayout>
 
 <style>
