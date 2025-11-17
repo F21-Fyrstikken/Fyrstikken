@@ -1,16 +1,10 @@
 ---
 import BaseLayout from "../../../../layout/BaseLayout.astro";
-import Link from "../../../../components/Link.astro";
-import { getAllYears, getCategoriesForYear, getProjectsForCategory, getProject } from "../../../../lib/sanity";
-import { PortableText } from "astro-portabletext";
-import YouTube from "../../../../components/portabletext/YouTube.astro";
-import Vimeo from "../../../../components/portabletext/Vimeo.astro";
-import Embed from "../../../../components/portabletext/Embed.astro";
-import Image from "../../../../components/portabletext/Image.astro";
-import File from "../../../../components/portabletext/File.astro";
-import Audio from "../../../../components/portabletext/Audio.astro";
+import ProjectContent from "../../../../components/ProjectContent";
 
 export async function getStaticPaths() {
+  // Fetch routes to generate all project pages - but content loads client-side
+  const { getAllYears, getCategoriesForYear, getProjectsForCategory } = await import("../../../../lib/sanity");
   const years = await getAllYears();
   const paths = [];
 
@@ -34,85 +28,15 @@ export async function getStaticPaths() {
 }
 
 const { year, category, project } = Astro.params;
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 if (!year || !category || !project) {
-  return Astro.redirect("/years");
+  return Astro.redirect("/years/");
 }
-
-const projectData = await getProject(project);
-const allProjects = await getProjectsForCategory(category);
-
-if (!projectData) {
-  return Astro.redirect(`/years/${year}/${category}`);
-}
-
-// Custom components for PortableText rendering
-const components = {
-  type: {
-    youtube: YouTube,
-    vimeo: Vimeo,
-    embed: Embed,
-    image: Image,
-    file: File,
-    audio: Audio,
-  },
-};
 ---
 
-<BaseLayout title={`${projectData.title} - Fyrstikken`} description={projectData.description || projectData.title}>
-  <div slot="pageTitle">
-    <Link href="/years" class="breadcrumb">Års</Link>
-    <span class="breadcrumb-separator">/</span>
-    <Link href={`/years/${year}`} class="breadcrumb">{year}</Link>
-    <span class="breadcrumb-separator">/</span>
-    <Link href={`/years/${year}/${category}`} class="breadcrumb">{projectData.category.title}</Link>
-  </div>
-
-  <div class="project-layout">
-    <!-- Sidebar with project list -->
-    <aside class="project-sidebar">
-      <h2 class="sidebar-title">Fyrstikken {year}</h2>
-      <nav class="project-list">
-        {
-          allProjects.map((proj) => (
-            <Link
-              href={`/years/${year}/${category}/${proj.slug.current}`}
-              class={`project-list-item ${proj.slug.current === project ? "active" : ""}`}>
-              {proj.image && proj.image.asset?.url && (
-                <img src={proj.image.asset.url} alt={proj.image.alt || proj.title} class="project-thumb" />
-              )}
-              <span class="project-name">{proj.title}</span>
-            </Link>
-          ))
-        }
-      </nav>
-    </aside>
-
-    <!-- Main content area -->
-    <article class="project-detail">
-      <h1 class="project-title">{projectData.title}</h1>
-
-      {
-        projectData.image && projectData.image.asset?.url && (
-          <img
-            src={projectData.image.asset.url}
-            alt={projectData.image.alt || projectData.title}
-            class="project-hero-image"
-          />
-        )
-      }
-
-      {projectData.description && <p class="project-description">{projectData.description}</p>}
-
-      {
-        projectData.content && (
-          <div class="project-content">
-            <PortableText value={projectData.content} components={components} />
-          </div>
-        )
-      }
-    </article>
-  </div>
+<BaseLayout title={`Project - Fyrstikken`} description="Fyrstikken project">
+  <ProjectContent client:load year={year} category={category} project={project} basePath={basePath} />
 </BaseLayout>
 
 <style>

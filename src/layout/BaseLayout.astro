@@ -11,12 +11,13 @@ interface Props extends HTMLAttributes<"html"> {
 }
 
 const { title = "Fyrstikken", description } = Astro.props;
+const base = import.meta.env.BASE_URL;
 ---
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
@@ -25,9 +26,9 @@ const { title = "Fyrstikken", description } = Astro.props;
   <body>
     <nav class="main-nav">
       <div class="nav-content">
-        <Link href="/" class="nav-link">Hjem</Link>
-        <Link href="/about" class="nav-link">Arrangemetet</Link>
-        <Link href="/years" class="nav-link">Års</Link>
+        <Link href={base} class="nav-link">Hjem</Link>
+        <Link href={`${base}about/`} class="nav-link">Arrangemetet</Link>
+        <Link href={`${base}years/`} class="nav-link">Års</Link>
       </div>
     </nav>
     <HeaderImg />
