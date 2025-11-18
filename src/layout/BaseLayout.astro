@@ -3,6 +3,8 @@ import type { HTMLAttributes } from "astro/types";
 import Link from "../components/Link.astro";
 import "../css/global.css";
 import "../css/typografi.css";
+import HeaderImg from "../components/HeaderImg.astro";
+import NightDay from "../components/NightDay.astro";
 
 interface Props extends HTMLAttributes<"html"> {
   title?: string;
@@ -29,7 +31,9 @@ const base = import.meta.env.BASE_URL;
         <Link href={`${base}about/`} class="nav-link">Arrangemetet</Link>
         <Link href={`${base}years/`} class="nav-link">Års</Link>
       </div>
+      <NightDay />
     </nav>
+    <HeaderImg />
     <div class="container">
       <header class="page-header">
         <slot name="pageTitle" />
@@ -54,6 +58,8 @@ const base = import.meta.env.BASE_URL;
   }
 
   .main-nav {
+    display: flex;
+    justify-content: space-between;
     background: light-dark(var(--light-main), var(--dark-main));
     border-bottom: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
     padding: 1rem 0;
@@ -64,9 +70,9 @@ const base = import.meta.env.BASE_URL;
 
   .nav-content {
     max-width: 1200px;
-    margin: 0 auto;
     padding: 0 2rem;
     display: flex;
+    justify-content: start;
     gap: 2rem;
   }
 
