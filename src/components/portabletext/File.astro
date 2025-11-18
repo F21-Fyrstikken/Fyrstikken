@@ -29,7 +29,13 @@ const isPdf = extension === "pdf";
   fileUrl && isPdf && (
     <div class="pdf-container">
       <div class="pdf-preview">
-        <embed src={fileUrl} type="application/pdf" width="100%" height="600px" />
+        <embed src={fileUrl} type="application/pdf" width="100%" height="600px">
+          <p>
+            PDF preview is not supported in your browser.
+            <a href={fileUrl} target="_blank" rel="noopener noreferrer">Åpne PDF i ny fane</a> eller
+            <a href={fileUrl} download>last ned PDF</a>.
+          </p>
+        </embed>
       </div>
       <div class="pdf-actions">
         <a href={fileUrl} target="_blank" rel="noopener noreferrer">
