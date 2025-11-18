@@ -8,11 +8,11 @@ const year = 2026;
 <header>
   <Image
     src={Header1200}
-    width={1200}
     height={500}
     quality={"max"}
     loading="eager"
     alt="Regnbuefarget abstrakt kunst som symboliserer de ulike fagområdene i oppdragsbanken"
+    class="header-img"
   />
   <!-- <Picture src={Header1600} alt="Regnbuefarget abstrakt kunst som symboliserer de ulike fagområdene i oppdragsbanken" /> -->
   <div id="headeText">
@@ -22,6 +22,9 @@ const year = 2026;
 </header>
 
 <style>
+  .header-img {
+    width: 100vw;
+  }
   header {
     position: relative;
     width: fit-content;
