@@ -147,6 +147,44 @@ export default defineType({
           title: "File",
           description: "Upload any file (PDF, ZIP, etc.)",
         },
+        {
+          name: "linkButton",
+          type: "object",
+          title: "Link Button",
+          fields: [
+            {
+              name: "text",
+              type: "string",
+              title: "Button Text",
+              validation: (rule) => rule.required(),
+            },
+            {
+              name: "url",
+              type: "url",
+              title: "URL",
+              validation: (rule) => rule.required(),
+            },
+            {
+              name: "style",
+              type: "string",
+              title: "Style",
+              options: {
+                list: [
+                  { title: "Primary (Filled)", value: "primary" },
+                  { title: "Secondary (Outline)", value: "secondary" },
+                ],
+                layout: "radio",
+              },
+              initialValue: "primary",
+            },
+            {
+              name: "newTab",
+              type: "boolean",
+              title: "Open in new tab",
+              initialValue: false,
+            },
+          ],
+        },
       ],
       description: "Rich content with text, images, videos, and more",
     }),

@@ -1,0 +1,76 @@
+---
+interface ILinkButtonProps {
+  node: {
+    text: string;
+    url: string;
+    style?: "primary" | "secondary";
+    newTab?: boolean;
+  };
+}
+
+const { node } = Astro.props as ILinkButtonProps;
+const style = node.style || "primary";
+const target = node.newTab ? "_blank" : undefined;
+const rel = node.newTab ? "noopener noreferrer" : undefined;
+---
+
+<div class="link-button-container">
+  <a href={node.url} class={`link-button ${style}`} target={target} rel={rel}>
+    {node.text}
+    {node.newTab && <span class="external-icon">↗</span>}
+  </a>
+</div>
+
+<style>
+  .link-button-container {
+    margin: 2rem 0;
+    text-align: center;
+  }
+
+  .link-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    border: 2px solid;
+  }
+
+  .link-button.primary {
+    background: light-dark(var(--light-safir), var(--dark-safir));
+    color: white;
+    border-color: light-dark(var(--light-safir), var(--dark-safir));
+  }
+
+  .link-button.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .link-button.secondary {
+    background: transparent;
+    color: light-dark(var(--light-safir), var(--dark-safir));
+    border-color: light-dark(var(--light-safir), var(--dark-safir));
+  }
+
+  .link-button.secondary:hover {
+    background: light-dark(var(--light-safir), var(--dark-safir));
+    color: white;
+  }
+
+  .external-icon {
+    font-size: 0.9em;
+    opacity: 0.8;
+  }
+
+  @media (max-width: 768px) {
+    .link-button {
+      padding: 0.875rem 1.5rem;
+      font-size: 1rem;
+    }
+  }
+</style>
