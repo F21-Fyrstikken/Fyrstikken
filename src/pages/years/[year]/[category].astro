@@ -1,20 +1,35 @@
 ---
 import BaseLayout from "../../../layout/BaseLayout.astro";
-import CategoryContent from "../../../components/CategoryContent";
+import CategoryContent from "../../../components/CategoryContent.astro";
+import { getAllYears, getCategoriesForYear, getCategory, getProjectsForCategory } from "../../../lib/sanity-client";
 
+// This function fetches all the data needed to generate every category page at build time.
 export async function getStaticPaths() {
-  // Fetch years and categories to generate routes - but content loads client-side
-  const { getAllYears, getCategoriesForYear } = await import("../../../lib/sanity");
   const years = await getAllYears();
   const paths = [];
 
+  // Iterate through all years
   for (const yearData of years) {
-    const categories = await getCategoriesForYear(yearData.year.toString());
+    const yearString = yearData.year.toString();
+    // Get categories for this specific year
+    const categories = await getCategoriesForYear(yearString);
+
+    // Iterate through each category
     for (const category of categories) {
+      const categorySlug = category.slug.current;
+
+      // Fetch detailed category data and the projects within it
+      const categoryData = await getCategory(categorySlug);
+      const projects = await getProjectsForCategory(categorySlug);
+
       paths.push({
         params: {
-          year: yearData.year.toString(),
-          category: category.slug.current,
+          year: yearString,
+          category: categorySlug,
+        },
+        props: {
+          categoryData,
+          projects,
         },
       });
     }
@@ -23,109 +38,18 @@ export async function getStaticPaths() {
   return paths;
 }
 
+// Get params and props
 const { year, category } = Astro.params;
+const { categoryData, projects } = Astro.props;
+
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
-if (!year || !category) {
+// Safety check
+if (!year || !category || !categoryData) {
   return Astro.redirect("/years/");
 }
 ---
 
 <BaseLayout title={`${category} - Fyrstikken ${year}`} description={`Prosjekter i kategorien ${category}`}>
-  <CategoryContent client:load year={year} category={category} basePath={basePath} />
+  <CategoryContent year={year} categoryData={categoryData} projects={projects} basePath={basePath} />
 </BaseLayout>
-
-<style>
-  .breadcrumb {
-    display: inline;
-    text-decoration: none;
-    opacity: 0.7;
-    transition: opacity 0.2s;
-    font-size: 0.95rem;
-  }
-
-  .breadcrumb:hover {
-    opacity: 1;
-  }
-
-  .breadcrumb-separator {
-    margin: 0 0.5rem;
-    opacity: 0.5;
-  }
-
-  .category-description {
-    font-size: 1.2rem;
-    opacity: 0.85;
-    margin-top: 0.75rem;
-    font-weight: 400;
-  }
-
-  .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-  }
-
-  .project-card {
-    background: light-dark(var(--light-main), var(--dark-main));
-    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
-    border-radius: 12px;
-    text-decoration: none;
-    overflow: hidden;
-    transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease,
-      border-color 0.2s ease;
-    color: inherit;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .project-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    border-color: light-dark(var(--light-safir), var(--dark-safir));
-  }
-
-  .project-image {
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
-    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
-  }
-
-  .project-content {
-    padding: 1.5rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .project-content h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin: 0 0 0.75rem 0;
-    color: light-dark(var(--light-tekst), var(--dark-tekst));
-  }
-
-  .project-content p {
-    margin: 0;
-    opacity: 0.85;
-    line-height: 1.6;
-    font-size: 1rem;
-  }
-
-  @media (max-width: 768px) {
-    .projects-grid {
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-    }
-  }
-
-  @media (min-width: 769px) and (max-width: 1024px) {
-    .projects-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-</style>

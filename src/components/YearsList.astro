@@ -1,0 +1,86 @@
+---
+import type { IYear } from "../types/sanity";
+
+interface Props {
+  years: IYear[];
+  basePath?: string;
+}
+
+const { years, basePath = "" } = Astro.props;
+
+const hasYears = years && years.length > 0;
+---
+
+{
+  hasYears ? (
+    <div class="years-grid">
+      {years.map((year) => (
+        <a href={`${basePath}/years/${String(year.year)}/`} class="year-card">
+          <h2>{year.year}</h2>
+          {year.description && <p>{year.description}</p>}
+        </a>
+      ))}
+    </div>
+  ) : (
+    <div>Ingen år funnet.</div>
+  )
+}
+
+<style>
+  .years-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .year-card {
+    padding: 2.5rem;
+    background: light-dark(var(--light-main), var(--dark-main));
+    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    border-radius: 12px;
+    text-decoration: none;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+    color: inherit;
+    text-align: center;
+    display: block;
+  }
+
+  .year-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    border-color: light-dark(var(--light-amazonitt), var(--dark-amazonitt));
+  }
+
+  .year-card h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 0.75rem 0;
+    color: light-dark(var(--light-safir), var(--dark-safir));
+  }
+
+  .year-card p {
+    margin: 0;
+    opacity: 0.85;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 768px) {
+    .years-grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .year-card {
+      padding: 2rem;
+    }
+
+    .year-card h2 {
+      font-size: 2rem;
+    }
+  }
+</style>
