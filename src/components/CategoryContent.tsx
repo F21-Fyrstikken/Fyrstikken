@@ -1,8 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from "react";
+import { useCallback, type JSX } from "react";
 import { getCategory, getProjectsForCategory } from "../lib/sanity-client";
+import { useSanityData } from "../hooks/useSanityData";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
+import { ErrorMessage } from "./ui/ErrorMessage";
+import { Breadcrumb } from "./ui/Breadcrumb";
+import { ProjectCard } from "./ui/ProjectCard";
 
 interface ICategoryContentProps {
   year: string;
@@ -10,67 +12,55 @@ interface ICategoryContentProps {
   basePath?: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export default function CategoryContent({ year, category, basePath = "" }: ICategoryContentProps) {
-  const [categoryData, setCategoryData] = useState<any>(null);
-  const [projects, setProjects] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function CategoryContent({ year, category, basePath = "" }: ICategoryContentProps): JSX.Element {
+  const fetchCategoryData = useCallback(() => getCategory(category), [category]);
+  const fetchProjects = useCallback(() => getProjectsForCategory(category), [category]);
 
-  useEffect(() => {
-    async function fetchData(): Promise<void> {
-      try {
-        const categoryResult = await getCategory(category);
-        const projectsResult = await getProjectsForCategory(category);
-        setCategoryData(categoryResult);
-        setProjects(projectsResult);
-      } catch (error) {
-        console.error("Error fetching category data:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    void fetchData();
-  }, [category]);
+  const {
+    data: categoryData,
+    loading: categoryLoading,
+    error: categoryError,
+  } = useSanityData(fetchCategoryData, [category]);
+  const { data: projects, loading: projectsLoading, error: projectsError } = useSanityData(fetchProjects, [category]);
+
+  const loading = categoryLoading || projectsLoading;
+  const error = categoryError ?? projectsError;
 
   if (loading) {
-    return <div className="loading">Loading...</div>;
+    return <LoadingSpinner />;
+  }
+
+  if (error !== null) {
+    return <ErrorMessage message="Kunne ikke laste inn kategori" />;
   }
 
   if (categoryData === null) {
-    return <p>Category not found.</p>;
+    return <p>Kategori ikke funnet.</p>;
   }
+
+  const breadcrumbItems = [
+    { label: "Års", href: "/years" },
+    { label: year, href: `/years/${year}` },
+  ];
 
   return (
     <div>
       <div className="page-header-content">
-        <a href={`${basePath}/years/`} className="breadcrumb">
-          Års
-        </a>
-        <span className="breadcrumb-separator">/</span>
-        <a href={`${basePath}/years/${year}/`} className="breadcrumb">
-          {year}
-        </a>
+        <Breadcrumb items={breadcrumbItems} basePath={basePath} />
         <h1>{categoryData.title}</h1>
-        {categoryData.description !== null && categoryData.description !== undefined && (
+        {categoryData.description !== undefined && categoryData.description.length > 0 && (
           <p className="category-description">{categoryData.description}</p>
         )}
       </div>
 
-      {projects.length > 0 ? (
+      {projects !== null && projects.length > 0 ? (
         <div className="projects-grid">
           {projects.map((project) => (
-            <a
+            <ProjectCard
               key={project._id}
-              href={`${basePath}/years/${year}/${category}/${String(project.slug.current)}/`}
-              className="project-card">
-              {project.image?.asset?.url !== null && project.image?.asset?.url !== undefined && (
-                <img src={project.image.asset.url} alt={project.image.alt ?? project.title} className="project-image" />
-              )}
-              <div className="project-content">
-                <h2>{project.title}</h2>
-                {project.description !== null && project.description !== undefined && <p>{project.description}</p>}
-              </div>
-            </a>
+              project={project}
+              href={`${basePath}/years/${year}/${category}/${project.slug.current}/`}
+            />
           ))}
         </div>
       ) : (

@@ -1,31 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { getAllYears, type IYear } from "../lib/sanity-client";
+import { getAllYears } from "../lib/sanity-client";
+import { useSanityData } from "../hooks/useSanityData";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
+import { ErrorMessage } from "./ui/ErrorMessage";
+import type { JSX } from "react";
 
 interface IYearListProps {
   basePath?: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export default function YearsList({ basePath = "" }: IYearListProps) {
-  const [years, setYears] = useState<IYear[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchYears(): Promise<void> {
-      try {
-        const data = await getAllYears();
-        setYears(data);
-      } catch (error) {
-        console.error("Error fetching years:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    void fetchYears();
-  }, []);
+export default function YearsList({ basePath = "" }: IYearListProps): JSX.Element {
+  const { data: years, loading, error } = useSanityData(() => getAllYears(), []);
 
   if (loading) {
-    return <div className="loading">Loading...</div>;
+    return <LoadingSpinner />;
+  }
+
+  if (error !== null) {
+    return <ErrorMessage message="Kunne ikke laste inn år" />;
+  }
+
+  if (years === null || years.length === 0) {
+    return <div>Ingen år funnet.</div>;
   }
 
   return (
@@ -33,7 +28,7 @@ export default function YearsList({ basePath = "" }: IYearListProps) {
       {years.map((year) => (
         <a key={year._id} href={`${basePath}/years/${String(year.year)}/`} className="year-card">
           <h2>{year.year}</h2>
-          {year.description !== undefined && <p>{year.description}</p>}
+          {year.description !== undefined && year.description.length > 0 && <p>{year.description}</p>}
         </a>
       ))}
     </div>

@@ -1,204 +1,43 @@
 import { sanityClient } from "sanity:client";
 import type { SanityClient } from "@sanity/client";
+import { GROQ_QUERIES } from "../constants/queries";
+import { parseYearId } from "../utils/sanity";
+import type { IYear, ICategory, IProject, IProjectDetail, ICategoryWithProjects } from "../types/sanity";
 
 export const client: SanityClient = sanityClient;
 
-interface IYear {
-  _id: string;
-  year: number;
-  description?: string;
-}
+export type { IYear, ICategory, IProject, IProjectDetail, ICategoryWithProjects };
 
-interface ICategory {
-  _id: string;
-  title: string;
-  slug: { current: string };
-  description?: string;
-  coverImage?: {
-    asset?: { url: string };
-    alt?: string;
-  };
-  order?: number;
-  year: number;
-}
-
-interface IProject {
-  _id: string;
-  title: string;
-  slug: { current: string };
-  description?: string;
-  image?: {
-    asset?: { url: string };
-    alt?: string;
-  };
-  order?: number;
-  category: string;
-  categorySlug: string;
-}
-
-interface IProjectDetail {
-  _id: string;
-  title: string;
-  slug: { current: string };
-  description?: string;
-  content?: unknown;
-  image?: {
-    asset?: { url: string };
-    alt?: string;
-  };
-  order?: number;
-  category: {
-    title: string;
-    slug: { current: string };
-    year: number;
-  };
-}
-
-export interface ICategoryWithProjects {
-  _id: string;
-  title: string;
-  slug: { current: string };
-  description?: string;
-  order?: number;
-  projects?: IProject[];
-}
-
-// Query to get all years
 export async function getAllYears(): Promise<IYear[]> {
-  return client.fetch(
-    `*[_type == "year"] | order(year desc) {
-      _id,
-      year,
-      description
-    }`
-  );
+  return client.fetch(GROQ_QUERIES.ALL_YEARS);
 }
 
-// Query to get a specific year
 export async function getYear(yearId: string): Promise<IYear | null> {
-  return client.fetch(
-    `*[_type == "year" && year == $yearId][0] {
-      _id,
-      year,
-      description
-    }`,
-    { yearId: Number.parseInt(yearId) }
-  );
+  return client.fetch(GROQ_QUERIES.YEAR_BY_ID, {
+    yearId: parseYearId(yearId),
+  });
 }
 
-// Query to get categories for a specific year
 export async function getCategoriesForYear(yearId: string): Promise<ICategory[]> {
-  return client.fetch(
-    `*[_type == "category" && year->year == $yearId] | order(order asc) {
-      _id,
-      title,
-      slug,
-      description,
-      coverImage {
-        asset->{
-          url
-        },
-        alt
-      },
-      order,
-      "year": year->year
-    }`,
-    { yearId: Number.parseInt(yearId) }
-  );
+  return client.fetch(GROQ_QUERIES.CATEGORIES_FOR_YEAR, {
+    yearId: parseYearId(yearId),
+  });
 }
 
-// Query to get a specific category
 export async function getCategory(slug: string): Promise<ICategory | null> {
-  return client.fetch(
-    `*[_type == "category" && slug.current == $slug][0] {
-      _id,
-      title,
-      slug,
-      description,
-      coverImage {
-        asset->{
-          url
-        },
-        alt
-      },
-      order,
-      "year": year->year
-    }`,
-    { slug }
-  );
+  return client.fetch(GROQ_QUERIES.CATEGORY_BY_SLUG, { slug });
 }
 
-// Query to get projects for a specific category
 export async function getProjectsForCategory(categorySlug: string): Promise<IProject[]> {
-  return client.fetch(
-    `*[_type == "project" && category->slug.current == $categorySlug] | order(order asc) {
-      _id,
-      title,
-      slug,
-      description,
-      image {
-        asset->{
-          url
-        },
-        alt
-      },
-      order,
-      "category": category->title,
-      "categorySlug": category->slug.current
-    }`,
-    { categorySlug }
-  );
+  return client.fetch(GROQ_QUERIES.PROJECTS_FOR_CATEGORY, { categorySlug });
 }
 
-// Query to get a specific project
 export async function getProject(slug: string): Promise<IProjectDetail | null> {
-  return client.fetch(
-    `*[_type == "project" && slug.current == $slug][0] {
-      _id,
-      title,
-      slug,
-      description,
-      content,
-      image {
-        asset->{
-          url
-        },
-        alt
-      },
-      order,
-      "category": category->{
-        title,
-        slug,
-        "year": year->year
-      }
-    }`,
-    { slug }
-  );
+  return client.fetch(GROQ_QUERIES.PROJECT_BY_SLUG, { slug });
 }
 
 export async function getCategoriesWithProjectsForYear(yearId: string): Promise<ICategoryWithProjects[]> {
-  return client.fetch(
-    `*[_type == "category" && year->year == $yearId] | order(order asc) {
-      _id,
-      title,
-      slug,
-      description,
-      order,
-      "projects": *[_type == "project" && category._ref == ^._id] | order(order asc) {
-        _id,
-        title,
-        slug,
-        description,
-        content,
-        image {
-          asset->{
-            url
-          },
-          alt
-        },
-        order
-      }
-    }`,
-    { yearId: Number.parseInt(yearId) }
-  );
+  return client.fetch(GROQ_QUERIES.CATEGORIES_WITH_PROJECTS_FOR_YEAR, {
+    yearId: parseYearId(yearId),
+  });
 }
