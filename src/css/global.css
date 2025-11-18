@@ -73,3 +73,13 @@ iframe {
   --dark-kunzitt: #b18bf4;
   --dark-ametyst: #7b77ff;
 }
+
+.lightmode {
+  /* forces light color-scheme */
+  color-scheme: light;
+}
+.darkmode {
+  /* forces dark color-scheme */
+  color-scheme: dark;
+}
+
