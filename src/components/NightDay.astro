@@ -1,0 +1,209 @@
+---
+
+---
+
+<!-- /// HTML /// -->
+<button id="dark-mode-toggle" aria-label="dark mode toggle">
+  <svg class="svg-anim" viewBox="0 70 100 100">
+    <line
+      class="sun"
+      x1="83.14"
+      y1="153.14"
+      x2="69"
+      y2="139"
+      stroke-width="6"
+      stroke-dasharray="20"
+      stroke-dashoffset="0"></line>
+    <line class="sun" x1="3" y1="120" x2="23" y2="120" stroke-width="6" stroke-dasharray="20" stroke-dashoffset="0"
+    ></line>
+    <line
+      class="sun"
+      x1="16.86"
+      y1="153.14"
+      x2="31"
+      y2="139"
+      stroke-width="6"
+      stroke-dasharray="20"
+      stroke-dashoffset="0"></line>
+    <line class="sun" x1="50" y1="167" x2="50" y2="147" stroke-width="6" stroke-dasharray="20" stroke-dashoffset="0"
+    ></line>
+    <line
+      class="sun"
+      x1="16.86"
+      y1="86.86"
+      x2="31"
+      y2="101"
+      stroke-width="6"
+      stroke-dasharray="20"
+      stroke-dashoffset="0"></line>
+    <line class="sun" x1="97" y1="120" x2="77" y2="120" stroke-width="6" stroke-dasharray="20" stroke-dashoffset="0"
+    ></line>
+    <line
+      class="sun"
+      x1="83.25"
+      y1="86.86"
+      x2="69.11"
+      y2="101"
+      stroke-width="6"
+      stroke-dasharray="20"
+      stroke-dashoffset="0"></line>
+    <line class="sun" x1="50" y1="73" x2="50" y2="93" stroke-width="6" stroke-dasharray="20" stroke-dashoffset="0"
+    ></line>
+    <circle class="sun" cx="50" cy="120" r="20"></circle>
+    <circle class="moon" cx="135" cy="40" r="40"></circle>
+  </svg>
+</button>
+
+<!-- /// CSS /// -->
+<style>
+  button {
+    margin-block: auto;
+    margin-inline: 2rem;
+    width: 3.5rem;
+    height: 3.5rem;
+    z-index: 1000;
+  }
+  /*______ Dag/natt-tema ______*/
+  .sun {
+    fill: light-dark(var(--light-tekst), var(--dark-tekst));
+    stroke: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+  .moon {
+    fill: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
+  }
+  /*______ Animasjoner ______*/
+  .moonAnim {
+    animation: moon ease-in forwards;
+    transform-origin: 50px 120px;
+  }
+  .sunAnim {
+    animation: sun ease-in forwards;
+    transform-origin: 50px 120px;
+  }
+  .moonAnimRev {
+    animation: moonrev ease-in forwards;
+    transform-origin: 50px 120px;
+  }
+  .sunAnimRev {
+    animation: sunrev ease-in forwards;
+    transform-origin: 50px 120px;
+  }
+  .animasjonstimer {
+    animation-duration: 500ms;
+  }
+  @keyframes sun {
+    0% {
+      transform: scale(1);
+      stroke-dashoffset: 0;
+    }
+    100% {
+      transform: scale(2.4);
+      stroke-dashoffset: 19.9;
+    }
+  }
+  @keyframes moon {
+    0% {
+      transform: translate(0px, 0px);
+    }
+    100% {
+      transform: translate(-70px, 70px);
+    }
+  }
+  @keyframes sunrev {
+    0% {
+      transform: scale(2.4);
+      stroke-dashoffset: 19.9;
+    }
+    100% {
+      transform: scale(1);
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes moonrev {
+    0% {
+      transform: translate(-70px, 70px);
+    }
+    100% {
+      transform: translate(0px, 0px);
+    }
+  }
+</style>
+
+<!-- /// SCRIPT /// -->
+
+<script>
+  let darkMode: string | null = localStorage.getItem("darkMode");
+  let lightMode: string | null = localStorage.getItem("lightMode");
+
+  const lightDarkToggle = document.getElementById("dark-mode-toggle") as unknown as HTMLButtonElement;
+
+  const DtN = () => {
+    const moon = document.querySelector(".moon") as HTMLElement | null;
+    if (moon) {
+      moon.classList.remove("moonAnimRev");
+      moon.classList.add("moonAnim");
+    }
+
+    const suns = document.getElementsByClassName("sun");
+    for (let i = 0; i < suns.length; i++) {
+      const element = suns[i] as HTMLElement;
+      element.classList.remove("sunAnimRev");
+      element.classList.add("sunAnim");
+    }
+  };
+
+  const NtD = () => {
+    const moon = document.querySelector(".moon") as HTMLElement | null;
+    if (moon) {
+      moon.classList.remove("moonAnim");
+      moon.classList.add("moonAnimRev");
+    }
+
+    const suns = document.getElementsByClassName("sun");
+    for (let i = 0; i < suns.length; i++) {
+      const element = suns[i] as HTMLElement;
+      element.classList.remove("sunAnim");
+      element.classList.add("sunAnimRev");
+    }
+  };
+
+  const enableDarkMode = () => {
+    document.body.classList.remove("lightmode");
+    document.body.classList.add("darkmode");
+    DtN();
+    localStorage.setItem("darkMode", "enabled");
+    localStorage.removeItem("lightMode");
+  };
+
+  const disableDarkMode = () => {
+    document.body.classList.remove("darkmode");
+    document.body.classList.add("lightmode");
+    NtD();
+    localStorage.setItem("lightMode", "enabled");
+    localStorage.removeItem("darkMode");
+  };
+
+  if (darkMode === "enabled") {
+    enableDarkMode();
+  }
+
+  if (lightDarkToggle) {
+    lightDarkToggle.addEventListener("click", () => {
+      darkMode = localStorage.getItem("darkMode");
+
+      if (darkMode !== "enabled") {
+        enableDarkMode();
+      } else {
+        disableDarkMode();
+      }
+    });
+  }
+
+  function svgAnim() {
+    document.querySelectorAll(".svg-anim *").forEach((element) => {
+      (element as HTMLElement).classList.add("animasjonstimer");
+    });
+  }
+
+  setTimeout(svgAnim, 800);
+</script>
