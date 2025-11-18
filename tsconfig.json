@@ -2,8 +2,24 @@
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
     "strictNullChecks": true,
-    "allowJs": true
+    "allowJs": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
   },
-  "include": [".astro/types.d.ts", ".astro/content-assets.mjs", ".astro/content-modules.mjs", "**/*", "src/env.d.ts"],
-  "exclude": ["dist"]
+  "include": [
+    ".astro/types.d.ts",
+    ".astro/content-assets.mjs",
+    ".astro/content-modules.mjs",
+    "**/*",
+    "src/env.d.ts"
+  ],
+  "exclude": ["dist", "node_modules", ".netlify"]
 }

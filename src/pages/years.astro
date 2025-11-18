@@ -1,7 +1,9 @@
 ---
 import BaseLayout from "../layout/BaseLayout.astro";
 import YearsList from "../components/YearsList";
-const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+import { getBasePath } from "../utils/paths";
+
+const basePath = getBasePath();
 ---
 
 <BaseLayout title="Fyrstikken - Års" description="Utforsk Fyrstikken priser gjennom årene">

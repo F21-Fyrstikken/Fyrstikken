@@ -10,8 +10,11 @@
     "build:all": "npm run build && npm run build:sanity && node scripts/copy-studio.js",
     "preview": "astro preview",
     "astro": "astro",
+    "lint": "npm run eslint:check",
+    "lint:fix": "npm run eslint:fix",
     "eslint:fix": "eslint . --fix",
     "eslint:check": "eslint .",
+    "type-check": "tsc --noEmit",
     "prepare": "husky"
   },
   "lint-staged": {
