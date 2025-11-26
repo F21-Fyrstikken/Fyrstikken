@@ -133,7 +133,6 @@
 
 <script>
   let darkMode: string | null = localStorage.getItem("darkMode");
-  let lightMode: string | null = localStorage.getItem("lightMode");
 
   const lightDarkToggle = document.getElementById("dark-mode-toggle") as unknown as HTMLButtonElement;
 
@@ -168,18 +167,14 @@
   };
 
   const enableDarkMode = () => {
-    document.body.classList.remove("lightmode");
     document.body.classList.add("darkmode");
     DtN();
     localStorage.setItem("darkMode", "enabled");
-    localStorage.removeItem("lightMode");
   };
 
   const disableDarkMode = () => {
     document.body.classList.remove("darkmode");
-    document.body.classList.add("lightmode");
     NtD();
-    localStorage.setItem("lightMode", "enabled");
     localStorage.removeItem("darkMode");
   };
 

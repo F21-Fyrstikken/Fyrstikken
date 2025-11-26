@@ -10,6 +10,7 @@ html {
 }
 body {
   position: relative;
+  color-scheme: light;
 }
 /* ---/// LENKER OG INTERAKTIVITET ///--- */
 button {
@@ -42,15 +43,15 @@ iframe {
   --light-tabellBoks: #d4d4d8;
   --light-tekstBoks: #dfdfdf;
   --light-code: #dedede;
-  --light-safir: #367fff; 
-  --light-akvamarin: #1892ba; 
-  --light-amazonitt: #228468; 
-  --light-smaragd: #518238; 
+  --light-safir: #367fff;
+  --light-akvamarin: #1892ba;
+  --light-amazonitt: #228468;
+  --light-smaragd: #518238;
   --light-citrin: #a18603;
-  --light-spessartin: #d1690f; 
+  --light-spessartin: #d1690f;
   --light-rubin: #d24040;
   --light-thulitt: #b44f99;
-  --light-kunzitt: #9a5daf; 
+  --light-kunzitt: #9a5daf;
   --light-ametyst: #7258bb;
 
   /* --- ///DARK THEME ///--- */
@@ -62,8 +63,8 @@ iframe {
   --dark-tabellBoks: #1a1c29;
   --dark-tekstBoks: #262738;
   --dark-code: #1f1f1f;
-  --dark-safir: #1fa6e2; 
-  --dark-akvamarin: #33c9c4; 
+  --dark-safir: #1fa6e2;
+  --dark-akvamarin: #33c9c4;
   --dark-amazonitt: #35b06f;
   --dark-smaragd: #839e53;
   --dark-citrin: #e6ce2f;
@@ -76,10 +77,8 @@ iframe {
 
 .lightmode {
   /* forces light color-scheme */
-  color-scheme: light;
 }
 .darkmode {
   /* forces dark color-scheme */
   color-scheme: dark;
 }
-
