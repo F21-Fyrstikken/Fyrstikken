@@ -2,12 +2,13 @@ import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { schemaTypes } from "./schemas";
 import { structure } from "./schemas/structure";
+import { SANITY_CONFIG } from "./src/constants/config";
 
 export default defineConfig({
   name: "project-name",
   title: "Project Name",
-  projectId: "531mn2v8",
-  dataset: "production",
+  projectId: SANITY_CONFIG.projectId,
+  dataset: SANITY_CONFIG.dataset,
   basePath: "/studio",
   plugins: [
     structureTool({

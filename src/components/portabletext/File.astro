@@ -1,4 +1,6 @@
 ---
+import { SANITY_CONFIG } from "../../constants/config";
+
 interface IFileProps {
   node: {
     asset: {
@@ -15,8 +17,7 @@ function buildFileUrl(ref: string): string {
   const lastDashIndex = refWithoutPrefix.lastIndexOf("-");
   const id = refWithoutPrefix.substring(0, lastDashIndex);
   const extension = refWithoutPrefix.substring(lastDashIndex + 1);
-  const projectId = "531mn2v8";
-  return `https://cdn.sanity.io/files/${projectId}/production/${id}.${extension}`;
+  return `https://cdn.sanity.io/files/${SANITY_CONFIG.projectId}/${SANITY_CONFIG.dataset}/${id}.${extension}`;
 }
 
 const fileUrl = node.asset?.url || (node.asset?._ref ? buildFileUrl(node.asset._ref) : "");
