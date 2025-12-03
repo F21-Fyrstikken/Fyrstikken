@@ -9,7 +9,7 @@ const TS_JS_FILES = "**/*.{js,mjs,cjs,ts,tsx}";
 
 export default [
   {
-    ignores: ["dist", "node_modules", "**/.astro/**", "!**/*.astro", ".netlify/**"],
+    ignores: ["dist", "node_modules", "**/.astro/**", "!**/*.astro", ".netlify/**", "studio/**"],
   },
   eslint.configs.recommended,
   // Base TypeScript configs for all files

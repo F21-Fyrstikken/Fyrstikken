@@ -21,5 +21,5 @@
     "**/*",
     "src/env.d.ts"
   ],
-  "exclude": ["dist", "node_modules", ".netlify"]
+  "exclude": ["dist", "node_modules", ".netlify", "studio"]
 }

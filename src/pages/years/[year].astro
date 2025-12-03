@@ -1,17 +1,32 @@
 ---
 import BaseLayout from "../../layout/BaseLayout.astro";
-import YearContent from "../../components/YearContent";
+import YearContent from "../../components/YearContent.astro";
+import { getAllYears, getCategoriesWithProjectsForYear } from "../../lib/sanity-client";
 
 export async function getStaticPaths() {
-  // Fetch years to generate routes - lightweight query
-  const { getAllYears } = await import("../../lib/sanity");
+  // 1. Fetch all available years
   const years = await getAllYears();
-  return years.map((yearData) => ({
-    params: { year: yearData.year.toString() },
-  }));
+
+  // 2. For each year, fetch all categories and their projects
+  // Promise.all lets us fetch data for all years in parallel, which is faster
+  return await Promise.all(
+    years.map(async (yearData) => {
+      const yearString = yearData.year.toString();
+      const categories = await getCategoriesWithProjectsForYear(yearString);
+
+      return {
+        params: { year: yearString },
+        props: {
+          yearData,
+          categories,
+        },
+      };
+    })
+  );
 }
 
 const { year } = Astro.params;
+const { yearData, categories } = Astro.props;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 if (!year) {
@@ -20,130 +35,5 @@ if (!year) {
 ---
 
 <BaseLayout title={`Fyrstikken ${year}`} description={`Kategorier for Fyrstikken ${year}`}>
-  <YearContent client:load year={year} basePath={basePath} />
+  <YearContent yearData={yearData} categories={categories} basePath={basePath} />
 </BaseLayout>
-
-<style>
-  .breadcrumb {
-    display: inline-block;
-    margin-bottom: 1rem;
-    text-decoration: none;
-    opacity: 0.7;
-    transition: opacity 0.2s;
-    font-size: 0.95rem;
-  }
-
-  .breadcrumb:hover {
-    opacity: 1;
-  }
-
-  .year-description {
-    font-size: 1.2rem;
-    opacity: 0.85;
-    margin-top: 0.75rem;
-    font-weight: 400;
-  }
-
-  .year-content {
-    margin-top: 2rem;
-  }
-
-  .category-section {
-    margin-bottom: 4rem;
-  }
-
-  .category-header {
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 3px solid light-dark(var(--light-safir), var(--dark-safir));
-  }
-
-  .category-title {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    color: light-dark(var(--light-tekst), var(--dark-tekst));
-  }
-
-  .category-description {
-    font-size: 1.1rem;
-    opacity: 0.85;
-    margin: 0;
-  }
-
-  .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2rem;
-  }
-
-  .project-card {
-    background: light-dark(var(--light-main), var(--dark-main));
-    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
-    border-radius: 12px;
-    text-decoration: none;
-    overflow: hidden;
-    transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease,
-      border-color 0.2s ease;
-    color: inherit;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .project-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    border-color: light-dark(var(--light-safir), var(--dark-safir));
-  }
-
-  .project-image {
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
-    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
-  }
-
-  .project-content {
-    padding: 1.5rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .project-content h3 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin: 0 0 0.75rem 0;
-    color: light-dark(var(--light-tekst), var(--dark-tekst));
-  }
-
-  .project-content p {
-    margin: 0;
-    opacity: 0.85;
-    line-height: 1.6;
-    font-size: 1rem;
-  }
-
-  @media (max-width: 768px) {
-    .category-title {
-      font-size: 1.75rem;
-    }
-
-    .projects-grid {
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-    }
-
-    .category-section {
-      margin-bottom: 3rem;
-    }
-  }
-
-  @media (min-width: 769px) and (max-width: 1024px) {
-    .projects-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-</style>

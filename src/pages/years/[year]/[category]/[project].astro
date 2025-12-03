@@ -1,25 +1,45 @@
 ---
 import BaseLayout from "../../../../layout/BaseLayout.astro";
-import ProjectContent from "../../../../components/ProjectContent";
+import ProjectContent from "../../../../components/ProjectContent.astro";
+import { getAllYears, getCategoriesForYear, getProjectsForCategory, getProject } from "../../../../lib/sanity-client";
 
+// This function is required for Static Site Generation (SSG).
+// It tells Astro exactly which pages to build by returning an array of route params.
 export async function getStaticPaths() {
-  // Fetch routes to generate all project pages - but content loads client-side
-  const { getAllYears, getCategoriesForYear, getProjectsForCategory } = await import("../../../../lib/sanity");
+  // 1. Get all years from Sanity
   const years = await getAllYears();
   const paths = [];
 
+  // 2. Iterate through each year to find its categories
   for (const yearData of years) {
-    const categories = await getCategoriesForYear(yearData.year.toString());
+    const yearString = yearData.year.toString();
+    const categories = await getCategoriesForYear(yearString);
+
+    // 3. Iterate through each category to find its projects
     for (const category of categories) {
-      const projects = await getProjectsForCategory(category.slug.current);
+      const categorySlug = category.slug.current;
+      const projects = await getProjectsForCategory(categorySlug);
+
+      // 4. Iterate through each project to create a page for it
       for (const project of projects) {
-        paths.push({
-          params: {
-            year: yearData.year.toString(),
-            category: category.slug.current,
-            project: project.slug.current,
-          },
-        });
+        const projectSlug = project.slug.current;
+        // We need the full project details for the page content
+        const projectData = await getProject(projectSlug);
+
+        if (projectData) {
+          paths.push({
+            params: {
+              year: yearString,
+              category: categorySlug,
+              project: projectSlug,
+            },
+            // We pass the data as props so the page doesn't need to fetch it again
+            props: {
+              projectData,
+              allProjects: projects, // We pass all projects in this category for the sidebar list
+            },
+          });
+        }
       }
     }
   }
@@ -27,275 +47,27 @@ export async function getStaticPaths() {
   return paths;
 }
 
+// Get params from the URL (e.g. /years/2024/film/my-movie)
 const { year, category, project } = Astro.params;
+
+// Get data passed from getStaticPaths
+const { projectData, allProjects } = Astro.props;
+
+// Get the base path for links (useful if site is hosted in a subdirectory)
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
-if (!year || !category || !project) {
+// Safety check: if any required data is missing, redirect to the main years page
+if (!year || !category || !project || !projectData) {
   return Astro.redirect("/years/");
 }
 ---
 
-<BaseLayout title={`Project - Fyrstikken`} description="Fyrstikken project">
-  <ProjectContent client:load year={year} category={category} project={project} basePath={basePath} />
+<BaseLayout title={`${projectData.title} - Fyrstikken`} description={projectData.description || "Fyrstikken project"}>
+  <ProjectContent
+    year={year}
+    category={category}
+    projectData={projectData}
+    allProjects={allProjects}
+    basePath={basePath}
+  />
 </BaseLayout>
-
-<style>
-  .breadcrumb {
-    display: inline;
-    text-decoration: none;
-    opacity: 0.7;
-    transition: opacity 0.2s;
-    font-size: 0.95rem;
-  }
-
-  .breadcrumb:hover {
-    opacity: 1;
-  }
-
-  .breadcrumb-separator {
-    margin: 0 0.5rem;
-    opacity: 0.5;
-  }
-
-  .project-layout {
-    display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: 2rem;
-    margin-top: 2rem;
-    align-items: start;
-  }
-
-  /* Sidebar */
-  .project-sidebar {
-    background: light-dark(var(--light-main), var(--dark-main));
-    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
-    border-radius: 12px;
-    padding: 1.5rem;
-    position: sticky;
-    top: 100px;
-    max-height: calc(100vh - 120px);
-    overflow-y: auto;
-  }
-
-  .sidebar-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    color: light-dark(var(--light-tekst), var(--dark-tekst));
-  }
-
-  .project-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .project-list-item {
-    display: grid;
-    grid-template-columns: 80px 1fr;
-    gap: 0.75rem;
-    align-items: center;
-    padding: 0.75rem;
-    border-radius: 8px;
-    text-decoration: none;
-    color: inherit;
-    transition: all 0.2s ease;
-    border: 2px solid transparent;
-  }
-
-  .project-list-item:hover {
-    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
-    border-color: light-dark(var(--light-ramme), var(--dark-ramme));
-  }
-
-  .project-list-item.active {
-    background: light-dark(var(--light-safir), var(--dark-safir));
-    color: white;
-    border-color: light-dark(var(--light-safir), var(--dark-safir));
-  }
-
-  .project-thumb {
-    width: 80px;
-    height: 60px;
-    object-fit: cover;
-    border-radius: 6px;
-    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
-  }
-
-  .project-name {
-    font-size: 0.95rem;
-    font-weight: 500;
-    line-height: 1.3;
-  }
-
-  /* Main content */
-  .project-detail {
-    background: light-dark(var(--light-main), var(--dark-main));
-    border-radius: 12px;
-    padding: 2.5rem;
-    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
-  }
-
-  .project-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    color: light-dark(var(--light-tekst), var(--dark-tekst));
-  }
-
-  .project-hero-image {
-    width: 100%;
-    max-height: 600px;
-    object-fit: cover;
-    border-radius: 12px;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  }
-
-  .project-description {
-    font-size: 1.25rem;
-    opacity: 0.9;
-    margin-bottom: 2rem;
-    line-height: 1.7;
-    font-weight: 500;
-    color: light-dark(var(--light-tekst), var(--dark-tekst));
-  }
-
-  .project-content {
-    line-height: 1.8;
-  }
-
-  .project-content :global(h2) {
-    margin-top: 2.5rem;
-    margin-bottom: 1rem;
-    font-size: 1.8rem;
-    font-weight: 600;
-    color: light-dark(var(--light-safir), var(--dark-safir));
-  }
-
-  .project-content :global(h3) {
-    margin-top: 2rem;
-    margin-bottom: 0.75rem;
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: light-dark(var(--light-akvamarin), var(--dark-akvamarin));
-  }
-
-  .project-content :global(p) {
-    margin-bottom: 1.25rem;
-    font-size: 1.05rem;
-  }
-
-  .project-content :global(ul),
-  .project-content :global(ol) {
-    margin-bottom: 1.5rem;
-    padding-left: 2rem;
-  }
-
-  .project-content :global(li) {
-    margin-bottom: 0.75rem;
-    font-size: 1.05rem;
-  }
-
-  .project-content :global(ul li) {
-    list-style-type: disc;
-  }
-
-  .project-content :global(ol li) {
-    list-style-type: decimal;
-  }
-
-  .project-content :global(blockquote) {
-    border-left: 4px solid light-dark(var(--light-safir), var(--dark-safir));
-    padding-left: 1.5rem;
-    margin: 2rem 0;
-    font-style: italic;
-    opacity: 0.9;
-  }
-
-  .project-content :global(code) {
-    background: light-dark(var(--light-code), var(--dark-code));
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.9em;
-    font-family: "Courier New", monospace;
-  }
-
-  .project-content :global(pre) {
-    background: light-dark(var(--light-code), var(--dark-code));
-    padding: 1rem;
-    border-radius: 8px;
-    overflow-x: auto;
-    margin: 1.5rem 0;
-  }
-
-  .project-content :global(pre code) {
-    background: none;
-    padding: 0;
-  }
-
-  .project-content :global(a) {
-    color: light-dark(var(--light-safir), var(--dark-safir));
-    text-decoration: underline;
-    transition: opacity 0.2s;
-  }
-
-  .project-content :global(a:hover) {
-    opacity: 0.8;
-  }
-
-  /* Responsive */
-  @media (max-width: 1024px) {
-    .project-layout {
-      grid-template-columns: 1fr;
-    }
-
-    .project-sidebar {
-      position: static;
-      max-height: none;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .project-detail {
-      padding: 1.5rem;
-    }
-
-    .project-title {
-      font-size: 2rem;
-    }
-
-    .project-description {
-      font-size: 1.1rem;
-    }
-
-    .project-content :global(h2) {
-      font-size: 1.5rem;
-    }
-
-    .project-content :global(h3) {
-      font-size: 1.2rem;
-    }
-
-    .project-sidebar {
-      padding: 1rem;
-    }
-
-    .sidebar-title {
-      font-size: 1.1rem;
-    }
-
-    .project-list-item {
-      grid-template-columns: 60px 1fr;
-    }
-
-    .project-thumb {
-      width: 60px;
-      height: 45px;
-    }
-
-    .project-name {
-      font-size: 0.9rem;
-    }
-  }
-</style>
