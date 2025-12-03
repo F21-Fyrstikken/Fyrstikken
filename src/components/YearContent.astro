@@ -1,14 +1,8 @@
 ---
 import ProjectCard from "./ui/ProjectCard.astro";
-import type { IYear, ICategoryWithProjects } from "../types/sanity";
+import type { IYearContentProps } from "../types";
 
-interface Props {
-  yearData: IYear;
-  categories: ICategoryWithProjects[];
-  basePath?: string;
-}
-
-const { yearData, categories, basePath = "" } = Astro.props;
+const { yearData, categories, basePath = "" } = Astro.props as IYearContentProps;
 
 const hasCategories = categories && categories.length > 0;
 ---

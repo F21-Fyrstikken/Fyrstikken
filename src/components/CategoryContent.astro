@@ -1,16 +1,9 @@
 ---
 import ProjectCard from "./ui/ProjectCard.astro";
 import Breadcrumb from "./ui/Breadcrumb.astro";
-import type { ICategory, IProject } from "../types/sanity";
+import type { ICategoryContentProps } from "../types";
 
-interface Props {
-  year: string;
-  categoryData: ICategory;
-  projects: IProject[];
-  basePath?: string;
-}
-
-const { year, categoryData, projects, basePath = "" } = Astro.props;
+const { year, categoryData, projects, basePath = "" } = Astro.props as ICategoryContentProps;
 
 const breadcrumbItems = [
   { label: "Års", href: "/years" },

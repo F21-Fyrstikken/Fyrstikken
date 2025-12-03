@@ -2,6 +2,7 @@
 import BaseLayout from "../../../../layout/BaseLayout.astro";
 import ProjectContent from "../../../../components/ProjectContent.astro";
 import { getAllProjectsWithDetails } from "../../../../lib/sanity-client";
+import { getBasePath } from "../../../../utils/paths";
 
 // This function is required for Static Site Generation (SSG).
 // It tells Astro exactly which pages to build by returning an array of route params.
@@ -38,7 +39,7 @@ const { year, category, project } = Astro.params;
 const { projectData, allProjects } = Astro.props;
 
 // Get the base path for links (useful if site is hosted in a subdirectory)
-const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+const basePath = getBasePath();
 
 // Safety check: if any required data is missing, redirect to the main years page
 if (!year || !category || !project || !projectData) {

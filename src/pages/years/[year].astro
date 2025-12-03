@@ -2,6 +2,7 @@
 import BaseLayout from "../../layout/BaseLayout.astro";
 import YearContent from "../../components/YearContent.astro";
 import { getAllYears, getCategoriesWithProjectsForYear } from "../../lib/sanity-client";
+import { getBasePath } from "../../utils/paths";
 
 export async function getStaticPaths() {
   // 1. Fetch all available years
@@ -27,7 +28,7 @@ export async function getStaticPaths() {
 
 const { year } = Astro.params;
 const { yearData, categories } = Astro.props;
-const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+const basePath = getBasePath();
 
 if (!year) {
   return Astro.redirect("/years/");
