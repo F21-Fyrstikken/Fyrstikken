@@ -41,7 +41,7 @@ const ogImage = image ?? `${canonicalUrl.origin}${base}og-image.png`;
     <link rel="canonical" href={canonicalUrl.href} />
   </head>
   <body>
-    <a href="#main-content" class="skip-link">Hopp til hovedinnhold</a>
+    <a href="#main-content" class="skiplink">Hopp til hovedinnhold</a>
     <nav class="main-nav" aria-label="Hovednavigasjon">
       <div class="nav-content">
         <Link href={base} class="nav-link">Hjem</Link>
@@ -51,19 +51,17 @@ const ogImage = image ?? `${canonicalUrl.origin}${base}og-image.png`;
       <NightDay />
     </nav>
     <HeaderImg />
-    <div class="container">
-      <header class="page-header">
-        <slot name="pageTitle" />
-      </header>
-      <main id="main-content" class="main-content">
-        <slot />
-      </main>
-    </div>
+    <main class="main-content">
+      <slot />
+    </main>
+    <footer>
+        <p>Opphavsrett © <span id="copyright">{new Date().getFullYear().toString()}</span> Fyrstikk-komitèen. Alle rettigheter hevdet</p>
+    </footer>
   </body>
 </html>
 
 <style>
-  .skip-link {
+  .skiplink {
     position: absolute;
     top: -100%;
     left: 50%;
@@ -78,7 +76,7 @@ const ogImage = image ?? `${canonicalUrl.origin}${base}og-image.png`;
     transition: top 0.2s ease;
   }
 
-  .skip-link:focus {
+  .skiplink:focus {
     top: 0;
   }
 
@@ -125,44 +123,36 @@ const ogImage = image ?? `${canonicalUrl.origin}${base}og-image.png`;
     background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
   }
 
-  .nav-content :global(.nav-link[aria-current="page"]) {
-    background: light-dark(var(--light-safir), var(--dark-safir));
-    color: white;
-  }
-
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-
-  .page-header {
-    margin-bottom: 2rem;
-  }
-
-  .page-header :global(h1) {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    color: light-dark(var(--light-tekst), var(--dark-tekst));
-  }
-
   .main-content {
     min-height: 60vh;
   }
 
-  @media (max-width: 768px) {
-    .container {
-      padding: 1rem;
-    }
+  footer {
+    position: fixed;
+    bottom: 0;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
+    border-top: 3px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    height: 3rem;
+    width: 100%;
+    box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.2);
+  }
 
+  @media (max-width: 768px) {
     .nav-content {
       padding: 0 1rem;
       gap: 1rem;
     }
-
-    .page-header :global(h1) {
-      font-size: 2rem;
-    }
   }
+
 </style>
+<script>
+  import { getCopyRightYear } from "../lib/utils"; // import i script for å være client-side
+  const year = getCopyRightYear();
+  const copyright = document.getElementById("copyright") as unknown as HTMLParagraphElement;
+  copyright.textContent = year.toString();
+</script>

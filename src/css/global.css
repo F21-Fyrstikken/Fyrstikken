@@ -75,9 +75,6 @@ iframe {
   --dark-ametyst: #7b77ff;
 }
 
-.lightmode {
-  /* forces light color-scheme */
-}
 .darkmode {
   /* forces dark color-scheme */
   color-scheme: dark;
