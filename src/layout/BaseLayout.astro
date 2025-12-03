@@ -1,18 +1,12 @@
 ---
-import type { HTMLAttributes } from "astro/types";
 import Link from "../components/Link.astro";
 import "../css/global.css";
 import "../css/typografi.css";
 import HeaderImg from "../components/HeaderImg.astro";
 import NightDay from "../components/NightDay.astro";
+import type { IBaseLayoutProps } from "../types";
 
-interface Props extends HTMLAttributes<"html"> {
-  title?: string;
-  description: string;
-  image?: string;
-}
-
-const { title = "Fyrstikken", description, image } = Astro.props;
+const { title = "Fyrstikken", description, image } = Astro.props as IBaseLayoutProps;
 const base = import.meta.env.BASE_URL;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? "https://f21-fyrstikken.github.io/Fyrstikken/");
 const ogImage = image ?? `${canonicalUrl.origin}${base}og-image.png`;

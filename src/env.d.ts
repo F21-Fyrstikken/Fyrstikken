@@ -1,5 +1,7 @@
-/// <reference types="@sanity/astro/module" />
+/* eslint-disable @typescript-eslint/triple-slash-reference */
+/// <reference path="../.astro/types.d.ts" />
 /// <reference types="astro/client" />
+/// <reference types="@sanity/astro/module" />
 
 declare module "astro-portabletext" {
   import type { AstroComponentFactory } from "astro/runtime/server/index.js";
@@ -14,7 +16,7 @@ declare module "astro-portabletext" {
   }
 
   interface IPortableTextProps {
-    value: PortableTextBlock | PortableTextBlock[] | unknown;
+    value: PortableTextBlock | PortableTextBlock[];
     components?: IPortableTextComponents;
   }
 

@@ -3,7 +3,7 @@ import type { ILinkProps } from "../types";
 
 const { href, class: className } = Astro.props as ILinkProps;
 const currentPath = Astro.url.pathname;
-const isActive = currentPath === href || currentPath === `${href}/` || (href !== '/' && currentPath.startsWith(href));
+const isActive = currentPath === href || currentPath === `${href}/` || (href !== "/" && currentPath.startsWith(href));
 ---
 
 <a href={href} class={className} aria-current={isActive ? "page" : undefined}>

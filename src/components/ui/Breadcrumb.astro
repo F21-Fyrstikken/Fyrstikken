@@ -1,12 +1,7 @@
 ---
-import type { IBreadcrumbItem } from "../../types";
+import type { IBreadcrumbProps } from "../../types";
 
-interface Props {
-  items: IBreadcrumbItem[];
-  basePath?: string;
-}
-
-const { items, basePath = "" } = Astro.props;
+const { items, basePath = "" } = Astro.props as IBreadcrumbProps;
 ---
 
 <nav class="breadcrumb-nav">

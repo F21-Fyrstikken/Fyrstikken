@@ -2,7 +2,7 @@
 import { PortableText } from "astro-portabletext";
 import Breadcrumb from "./ui/Breadcrumb.astro";
 import { getImageUrl, getImageAlt } from "../utils/sanity";
-import type { IProjectDetail, IProject } from "../types/sanity";
+import type { IProjectContentProps } from "../types";
 
 // Portable Text components handles rendering of rich text from Sanity
 import Image from "./portabletext/Image.astro";
@@ -13,15 +13,7 @@ import Audio from "./portabletext/Audio.astro";
 import File from "./portabletext/File.astro";
 import Embed from "./portabletext/Embed.astro";
 
-interface Props {
-  year: string;
-  category: string;
-  projectData: IProjectDetail;
-  allProjects: IProject[];
-  basePath?: string;
-}
-
-const { year, category, projectData, allProjects, basePath = "" } = Astro.props;
+const { year, category, projectData, allProjects, basePath = "" } = Astro.props as IProjectContentProps;
 
 // Prepare breadcrumb navigation links
 const breadcrumbItems = [

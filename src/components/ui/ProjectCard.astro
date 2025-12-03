@@ -1,13 +1,8 @@
 ---
-import type { IProject } from "../../types/sanity";
+import type { IProjectCardProps } from "../../types";
 import { getImageUrl, getImageAlt } from "../../utils/sanity";
 
-interface Props {
-  project: IProject;
-  href: string;
-}
-
-const { project, href } = Astro.props;
+const { project, href } = Astro.props as IProjectCardProps;
 const imageUrl = getImageUrl(project.image);
 const imageAlt = getImageAlt(project.image, project.title);
 ---
