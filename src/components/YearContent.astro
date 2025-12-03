@@ -37,7 +37,7 @@ const hasCategories = categories && categories.length > 0;
 
               {hasProjects && (
                 <div class="projects-grid">
-                  {category.projects.map((project) => (
+                  {category.projects?.map((project) => (
                     <ProjectCard
                       project={project}
                       href={`${basePath}/years/${String(yearData.year)}/${category.slug.current}/${project.slug.current}/`}
