@@ -1,0 +1,33 @@
+<button id="voteButton"> Stem </button>
+
+<script>
+  const voteButton = document.getElementById("voteButton");
+  let voting = false;
+
+  voteButton?.addEventListener("click", () => {
+    voting = !voting;
+
+    if (voting) {
+      voteButton.classList.add("vote");
+      voteButton.textContent = "Avbryt";
+    } else {
+      voteButton.classList.remove("vote");
+      voteButton.textContent = "Stem";
+    }
+  });
+</script>
+
+<style>
+  button {
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+    background-color: light-dark(var(--light-ixDBoks), var(--dark-ixDBoks));
+    padding: 1rem 3rem;
+    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    border-radius: 1rem;
+    transition: border-color 0.3s ease;
+  }
+
+  button.vote {
+    border-color: light-dark(var(--light-safir), var(--dark-safir));
+  }
+</style>
