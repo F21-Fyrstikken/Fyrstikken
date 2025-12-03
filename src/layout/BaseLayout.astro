@@ -9,10 +9,13 @@ import NightDay from "../components/NightDay.astro";
 interface Props extends HTMLAttributes<"html"> {
   title?: string;
   description: string;
+  image?: string;
 }
 
-const { title = "Fyrstikken", description } = Astro.props;
+const { title = "Fyrstikken", description, image } = Astro.props;
 const base = import.meta.env.BASE_URL;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? "https://f21-fyrstikken.github.io/Fyrstikken/");
+const ogImage = image ?? `${canonicalUrl.origin}${base}og-image.png`;
 ---
 
 <html lang="no">
@@ -23,6 +26,25 @@ const base = import.meta.env.BASE_URL;
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <title>{title}</title>
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl.href} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="nb_NO" />
+    <meta property="og:site_name" content="Fyrstikken" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalUrl.href} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href={canonicalUrl.href} />
   </head>
   <body>
     <nav class="main-nav">
