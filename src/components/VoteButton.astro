@@ -1,19 +1,48 @@
-<button id="voteButton"> Stem </button>
+---
+interface Props {
+  categoryIndex: number;
+}
+
+const { categoryIndex } = Astro.props;
+
+const colors = [
+  { light: "var(--light-safir)", dark: "var(--dark-safir)" },
+  { light: "var(--light-akvamarin)", dark: "var(--dark-akvamarin)" },
+  { light: "var(--light-amazonitt)", dark: "var(--dark-amazonitt)" },
+  { light: "var(--light-smaragd)", dark: "var(--dark-smaragd)" },
+  { light: "var(--light-citrin)", dark: "var(--dark-citrin)" },
+  { light: "var(--light-spessartin)", dark: "var(--dark-spessartin)" },
+  { light: "var(--light-rubin)", dark: "var(--dark-rubin)" },
+  { light: "var(--light-thulitt)", dark: "var(--dark-thulitt)" },
+  { light: "var(--light-kunzitt)", dark: "var(--dark-kunzitt)" },
+  { light: "var(--light-ametyst)", dark: "var(--dark-ametyst)" },
+];
+
+const colorIndex = categoryIndex % colors.length;
+const categoryColor = colors[colorIndex];
+const buttonId = `voteButton-${categoryIndex}`;
+---
+
+<button id={buttonId} class="vote-button" data-light-color={categoryColor.light} data-dark-color={categoryColor.dark}>
+  Stem
+</button>
 
 <script>
-  const voteButton = document.getElementById("voteButton");
-  let voting = false;
+  document.querySelectorAll(".vote-button").forEach((button) => {
+    let voting = false;
 
-  voteButton?.addEventListener("click", () => {
-    voting = !voting;
+    button.addEventListener("click", () => {
+      voting = !voting;
+      console.log(`Voting state for category`, voting);
 
-    if (voting) {
-      voteButton.classList.add("vote");
-      voteButton.textContent = "Avbryt";
-    } else {
-      voteButton.classList.remove("vote");
-      voteButton.textContent = "Stem";
-    }
+      if (voting) {
+        button.classList.add("vote");
+        button.textContent = "Avbryt";
+      } else {
+        button.classList.remove("vote");
+        button.textContent = "Stem";
+      }
+    });
   });
 </script>
 
@@ -28,6 +57,8 @@
   }
 
   button.vote {
-    border-color: light-dark(var(--light-safir), var(--dark-safir));
+    border-color: light-dark(var(--category-light-color), var(--category-dark-color));
   }
 </style>
+
+<style define:vars={{ "category-light-color": categoryColor.light, "category-dark-color": categoryColor.dark }}></style>
