@@ -88,4 +88,35 @@ export const GROQ_QUERIES = {
       order
     }
   }`,
+
+  // Fetches all projects with full details in a single query for SSG
+  ALL_PROJECTS_WITH_DETAILS: `*[_type == "project"] | order(order asc) {
+    _id,
+    title,
+    slug,
+    description,
+    content,
+    image {
+      asset->{ url },
+      alt
+    },
+    order,
+    "category": category->{
+      _id,
+      title,
+      slug,
+      "year": year->year
+    },
+    "siblingProjects": *[_type == "project" && category._ref == ^.category._ref] | order(order asc) {
+      _id,
+      title,
+      slug,
+      description,
+      image {
+        asset->{ url },
+        alt
+      },
+      order
+    }
+  }`,
 } as const;

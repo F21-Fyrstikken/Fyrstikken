@@ -2,14 +2,14 @@ import { createClient } from "@sanity/client";
 import { SANITY_CONFIG } from "../constants/config";
 import { GROQ_QUERIES } from "../constants/queries";
 import { parseYearId } from "../utils/sanity";
-import type { IYear, ICategory, IProject, IProjectDetail, ICategoryWithProjects } from "../types/sanity";
+import type { IYear, ICategory, IProject, IProjectDetail, ICategoryWithProjects, IProjectWithSiblings } from "../types/sanity";
 
 export const sanityClient = createClient({
   ...SANITY_CONFIG,
   useCdn: true,
 });
 
-export type { IYear, ICategory, IProject, IProjectDetail, ICategoryWithProjects };
+export type { IYear, ICategory, IProject, IProjectDetail, ICategoryWithProjects, IProjectWithSiblings };
 
 export async function getAllYears(): Promise<IYear[]> {
   return sanityClient.fetch(GROQ_QUERIES.ALL_YEARS);
@@ -43,4 +43,8 @@ export async function getCategoriesWithProjectsForYear(yearId: string): Promise<
   return sanityClient.fetch(GROQ_QUERIES.CATEGORIES_WITH_PROJECTS_FOR_YEAR, {
     yearId: parseYearId(yearId),
   });
+}
+
+export async function getAllProjectsWithDetails(): Promise<IProjectWithSiblings[]> {
+  return sanityClient.fetch(GROQ_QUERIES.ALL_PROJECTS_WITH_DETAILS);
 }
