@@ -47,7 +47,8 @@ const ogImage = image ?? `${canonicalUrl.origin}${base}og-image.png`;
     <link rel="canonical" href={canonicalUrl.href} />
   </head>
   <body>
-    <nav class="main-nav">
+    <a href="#main-content" class="skip-link">Hopp til hovedinnhold</a>
+    <nav class="main-nav" aria-label="Hovednavigasjon">
       <div class="nav-content">
         <Link href={base} class="nav-link">Hjem</Link>
         <Link href={`${base}about/`} class="nav-link">Arrangementet</Link>
@@ -60,7 +61,7 @@ const ogImage = image ?? `${canonicalUrl.origin}${base}og-image.png`;
       <header class="page-header">
         <slot name="pageTitle" />
       </header>
-      <main class="main-content">
+      <main id="main-content" class="main-content">
         <slot />
       </main>
     </div>
@@ -68,6 +69,25 @@ const ogImage = image ?? `${canonicalUrl.origin}${base}og-image.png`;
 </html>
 
 <style>
+  .skip-link {
+    position: absolute;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: light-dark(var(--light-safir), var(--dark-safir));
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0 0 8px 8px;
+    text-decoration: none;
+    font-weight: 600;
+    z-index: 1000;
+    transition: top 0.2s ease;
+  }
+
+  .skip-link:focus {
+    top: 0;
+  }
+
   body {
     background: light-dark(var(--light-bakgrunn), var(--dark-bakgrunn));
     color: light-dark(var(--light-tekst), var(--dark-tekst));
@@ -109,6 +129,11 @@ const ogImage = image ?? `${canonicalUrl.origin}${base}og-image.png`;
 
   .nav-content :global(.nav-link:hover) {
     background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
+  }
+
+  .nav-content :global(.nav-link[aria-current="page"]) {
+    background: light-dark(var(--light-safir), var(--dark-safir));
+    color: white;
   }
 
   .container {

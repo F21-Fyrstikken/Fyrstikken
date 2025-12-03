@@ -1,12 +1,14 @@
 ---
+interface Props {
+  href: string;
+  class?: string;
+}
+
 const { href, class: className } = Astro.props;
+const currentPath = Astro.url.pathname;
+const isActive = currentPath === href || currentPath === `${href}/` || (href !== '/' && currentPath.startsWith(href));
 ---
 
-<a href={href} class={className}>
+<a href={href} class={className} aria-current={isActive ? "page" : undefined}>
   <slot />
 </a>
-
-<style>
-  a {
-  }
-</style>
