@@ -1,15 +1,7 @@
 ---
-interface BreadcrumbItem {
-  label: string;
-  href: string;
-}
+import type { IBreadcrumbProps } from "../../types";
 
-interface Props {
-  items: BreadcrumbItem[];
-  basePath?: string;
-}
-
-const { items, basePath = "" } = Astro.props;
+const { items, basePath = "" } = Astro.props as IBreadcrumbProps;
 ---
 
 <nav class="breadcrumb-nav">

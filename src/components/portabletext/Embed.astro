@@ -1,12 +1,7 @@
 ---
-interface IEmbedProps {
-  node: {
-    url: string;
-    height?: number;
-  };
-}
+import type { IPortableTextNode, IEmbedNode } from "../../types";
 
-const { node } = Astro.props as IEmbedProps;
+const { node } = Astro.props as IPortableTextNode<IEmbedNode>;
 const height = node.height ?? 450;
 ---
 

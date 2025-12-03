@@ -2,7 +2,14 @@ import { createClient } from "@sanity/client";
 import { SANITY_CONFIG } from "../constants/config";
 import { GROQ_QUERIES } from "../constants/queries";
 import { parseYearId } from "../utils/sanity";
-import type { IYear, ICategory, IProject, IProjectDetail, ICategoryWithProjects, IProjectWithSiblings } from "../types/sanity";
+import type {
+  IYear,
+  ICategory,
+  IProject,
+  IProjectDetail,
+  ICategoryWithProjects,
+  IProjectWithSiblings,
+} from "../types/sanity";
 
 export const sanityClient = createClient({
   ...SANITY_CONFIG,

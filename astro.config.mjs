@@ -1,7 +1,6 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import sanity from "@sanity/astro";
-import react from "@astrojs/react";
 import { SANITY_CONFIG } from "./src/constants/config";
 
 export default defineConfig({
@@ -16,6 +15,5 @@ export default defineConfig({
       ...SANITY_CONFIG,
       useCdn: import.meta.env.PROD,
     }),
-    react(),
   ],
 });

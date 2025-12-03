@@ -1,16 +1,8 @@
 ---
 import { SANITY_CONFIG } from "../../constants/config";
+import type { IPortableTextNode, IAudioNode } from "../../types";
 
-interface IAudioProps {
-  node: {
-    asset: {
-      _ref?: string;
-      url?: string;
-    };
-  };
-}
-
-const { node } = Astro.props as IAudioProps;
+const { node } = Astro.props as IPortableTextNode<IAudioNode>;
 
 function buildFileUrl(ref: string): string {
   const refWithoutPrefix = ref.replace(/^file-/, "");

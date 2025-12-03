@@ -1,12 +1,11 @@
 ---
-import type { IYear } from "../types/sanity";
-
-interface Props {
-  years: IYear[];
+const { years, basePath = "" } = Astro.props as {
+  years: Array<{
+    year: number;
+    description?: string;
+  }>;
   basePath?: string;
-}
-
-const { years, basePath = "" } = Astro.props;
+};
 
 const hasYears = years && years.length > 0;
 ---

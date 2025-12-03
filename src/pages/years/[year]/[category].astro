@@ -2,6 +2,7 @@
 import BaseLayout from "../../../layout/BaseLayout.astro";
 import CategoryContent from "../../../components/CategoryContent.astro";
 import { getAllYears, getCategoriesForYear, getCategory, getProjectsForCategory } from "../../../lib/sanity-client";
+import { getBasePath } from "../../../utils/paths";
 
 // This function fetches all the data needed to generate every category page at build time.
 export async function getStaticPaths() {
@@ -42,7 +43,7 @@ export async function getStaticPaths() {
 const { year, category } = Astro.params;
 const { categoryData, projects } = Astro.props;
 
-const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+const basePath = getBasePath();
 
 // Safety check
 if (!year || !category || !categoryData) {

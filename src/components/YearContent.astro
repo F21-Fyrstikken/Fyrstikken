@@ -1,15 +1,28 @@
 ---
 import ProjectCard from "./ui/ProjectCard.astro";
-import type { IYear, ICategoryWithProjects } from "../types/sanity";
 import VoteButton from "./VoteButton.astro";
 
-interface Props {
-  yearData: IYear;
-  categories: ICategoryWithProjects[];
+const {
+  yearData,
+  categories,
+  basePath = "",
+} = Astro.props as {
+  yearData: {
+    year: number;
+    description?: string;
+  };
+  categories: Array<{
+    title: string;
+    description?: string;
+    slug: { current: string };
+    projects?: Array<{
+      title: string;
+      slug: { current: string };
+      [key: string]: any;
+    }>;
+  }>;
   basePath?: string;
-}
-
-const { yearData, categories, basePath = "" } = Astro.props;
+};
 
 const hasCategories = categories && categories.length > 0;
 ---
