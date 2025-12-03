@@ -1,11 +1,8 @@
 ---
-interface BreadcrumbItem {
-  label: string;
-  href: string;
-}
+import type { IBreadcrumbItem } from "../../types";
 
 interface Props {
-  items: BreadcrumbItem[];
+  items: IBreadcrumbItem[];
   basePath?: string;
 }
 

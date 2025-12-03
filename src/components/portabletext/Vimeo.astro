@@ -1,11 +1,7 @@
 ---
-interface IVimeoProps {
-  node: {
-    url: string;
-  };
-}
+import type { IPortableTextNode, IVimeoNode } from "../../types";
 
-const { node } = Astro.props as IVimeoProps;
+const { node } = Astro.props as IPortableTextNode<IVimeoNode>;
 
 // Extract video ID from various Vimeo URL formats
 function getVimeoId(url: string): string | null {

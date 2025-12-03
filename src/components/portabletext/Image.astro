@@ -1,17 +1,8 @@
 ---
 import { SANITY_CONFIG } from "../../constants/config";
+import type { IPortableTextNode, IImageNode } from "../../types";
 
-interface IImageProps {
-  node: {
-    asset: {
-      _ref: string;
-    };
-    alt?: string;
-    caption?: string;
-  };
-}
-
-const { node } = Astro.props as IImageProps;
+const { node } = Astro.props as IPortableTextNode<IImageNode>;
 
 function buildImageUrl(ref: string): string {
   const refWithoutPrefix = ref.replace(/^image-/, "");

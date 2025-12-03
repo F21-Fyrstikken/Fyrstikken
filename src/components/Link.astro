@@ -1,10 +1,7 @@
 ---
-interface Props {
-  href: string;
-  class?: string;
-}
+import type { ILinkProps } from "../types";
 
-const { href, class: className } = Astro.props;
+const { href, class: className } = Astro.props as ILinkProps;
 const currentPath = Astro.url.pathname;
 const isActive = currentPath === href || currentPath === `${href}/` || (href !== '/' && currentPath.startsWith(href));
 ---
