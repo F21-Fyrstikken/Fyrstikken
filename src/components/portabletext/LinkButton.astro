@@ -1,14 +1,7 @@
 ---
-interface ILinkButtonProps {
-  node: {
-    text: string;
-    url: string;
-    style?: "primary" | "secondary";
-    newTab?: boolean;
-  };
-}
+import type { IPortableTextNode, ILinkButtonNode } from "../../types";
 
-const { node } = Astro.props as ILinkButtonProps;
+const { node } = Astro.props as IPortableTextNode<ILinkButtonNode>;
 const style = node.style || "primary";
 const target = node.newTab ? "_blank" : undefined;
 const rel = node.newTab ? "noopener noreferrer" : undefined;

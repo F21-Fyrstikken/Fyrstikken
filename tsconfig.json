@@ -14,12 +14,6 @@
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "include": [
-    ".astro/types.d.ts",
-    ".astro/content-assets.mjs",
-    ".astro/content-modules.mjs",
-    "**/*",
-    "src/env.d.ts"
-  ],
-  "exclude": ["dist", "node_modules", ".netlify"]
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist", "node_modules", ".netlify", "studio"]
 }

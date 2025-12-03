@@ -1,0 +1,344 @@
+---
+import { PortableText } from "astro-portabletext";
+import Breadcrumb from "./ui/Breadcrumb.astro";
+import { getImageUrl, getImageAlt } from "../utils/sanity";
+import type { IProjectContentProps } from "../types";
+
+// Portable Text components handles rendering of rich text from Sanity
+import Image from "./portabletext/Image.astro";
+import LinkButton from "./portabletext/LinkButton.astro";
+import YouTube from "./portabletext/YouTube.astro";
+import Vimeo from "./portabletext/Vimeo.astro";
+import Audio from "./portabletext/Audio.astro";
+import File from "./portabletext/File.astro";
+import Embed from "./portabletext/Embed.astro";
+
+const { year, category, projectData, allProjects, basePath = "" } = Astro.props as IProjectContentProps;
+
+// Prepare breadcrumb navigation links
+const breadcrumbItems = [
+  { label: "Års", href: "/years" },
+  { label: year, href: `/years/${year}` },
+  { label: projectData.category.title, href: `/years/${year}/${category}` },
+];
+
+// Helper variables for the main project image
+const projectImageUrl = getImageUrl(projectData.image);
+const projectImageAlt = getImageAlt(projectData.image, projectData.title);
+
+// Configuration for how to render different types of content blocks from Sanity
+const portableTextComponents = {
+  type: {
+    image: Image,
+    youtube: YouTube,
+    vimeo: Vimeo,
+    audio: Audio,
+    file: File,
+    embed: Embed,
+    linkButton: LinkButton,
+  },
+};
+
+// Prepare the list of projects for the sidebar navigation
+// We verify that each project has an image before trying to render it
+const sidebarProjects = allProjects?.map((proj) => {
+  const imageUrl = getImageUrl(proj.image);
+  const imageAlt = getImageAlt(proj.image, proj.title);
+  const isActive = proj.slug.current === projectData.slug.current;
+  const link = `${basePath}/years/${year}/${category}/${proj.slug.current}/`;
+
+  return {
+    id: proj._id,
+    title: proj.title,
+    imageUrl,
+    imageAlt,
+    isActive,
+    link,
+  };
+});
+---
+
+<div>
+  <div class="page-header-content">
+    <Breadcrumb items={breadcrumbItems} basePath={basePath} />
+  </div>
+
+  <div class="project-layout">
+    {/* Sidebar with list of other projects in the same category */}
+    <aside class="project-sidebar">
+      <h2 class="sidebar-title">Fyrstikken {year}</h2>
+      <nav class="project-list">
+        {
+          sidebarProjects?.map((proj) => (
+            <a href={proj.link} class={`project-list-item ${proj.isActive ? "active" : ""}`}>
+              {proj.imageUrl && <img src={proj.imageUrl} alt={proj.imageAlt} class="project-thumb" loading="lazy" />}
+              <span class="project-name">{proj.title}</span>
+            </a>
+          ))
+        }
+      </nav>
+    </aside>
+
+    {/* Main content area for the project */}
+    <article class="project-detail">
+      <h1 class="project-title">{projectData.title}</h1>
+
+      {projectImageUrl && <img src={projectImageUrl} alt={projectImageAlt} class="project-hero-image" />}
+
+      {projectData.description && <p class="project-description">{projectData.description}</p>}
+
+      {
+        projectData.content && (
+          <div class="project-content">
+            <PortableText value={projectData.content} components={portableTextComponents} />
+          </div>
+        )
+      }
+    </article>
+  </div>
+</div>
+
+<style>
+  .project-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+    align-items: start;
+  }
+
+  /* Sidebar */
+  .project-sidebar {
+    background: light-dark(var(--light-main), var(--dark-main));
+    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    border-radius: 12px;
+    padding: 1.5rem;
+    position: sticky;
+    top: 100px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+
+  .sidebar-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+
+  .project-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .project-list-item {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+  }
+
+  .project-list-item:hover {
+    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
+    border-color: light-dark(var(--light-ramme), var(--dark-ramme));
+  }
+
+  .project-list-item.active {
+    background: light-dark(var(--light-safir), var(--dark-safir));
+    color: white;
+    border-color: light-dark(var(--light-safir), var(--dark-safir));
+  }
+
+  .project-thumb {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
+  }
+
+  .project-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  /* Main content */
+  .project-detail {
+    background: light-dark(var(--light-main), var(--dark-main));
+    border-radius: 12px;
+    padding: 2.5rem;
+    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+  }
+
+  .project-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+
+  .project-hero-image {
+    width: 100%;
+    max-height: 600px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  .project-description {
+    font-size: 1.25rem;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+    line-height: 1.7;
+    font-weight: 500;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+
+  .project-content {
+    line-height: 1.8;
+  }
+
+  /* Global styles for portable text content */
+  .project-content :global(h2) {
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: light-dark(var(--light-safir), var(--dark-safir));
+  }
+
+  .project-content :global(h3) {
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: light-dark(var(--light-akvamarin), var(--dark-akvamarin));
+  }
+
+  .project-content :global(p) {
+    margin-bottom: 1.25rem;
+    font-size: 1.05rem;
+  }
+
+  .project-content :global(ul),
+  .project-content :global(ol) {
+    margin-bottom: 1.5rem;
+    padding-left: 2rem;
+  }
+
+  .project-content :global(li) {
+    margin-bottom: 0.75rem;
+    font-size: 1.05rem;
+  }
+
+  .project-content :global(ul li) {
+    list-style-type: disc;
+  }
+
+  .project-content :global(ol li) {
+    list-style-type: decimal;
+  }
+
+  .project-content :global(blockquote) {
+    border-left: 4px solid light-dark(var(--light-safir), var(--dark-safir));
+    padding-left: 1.5rem;
+    margin: 2rem 0;
+    font-style: italic;
+    opacity: 0.9;
+  }
+
+  .project-content :global(code) {
+    background: light-dark(var(--light-code), var(--dark-code));
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-family: "Courier New", monospace;
+  }
+
+  .project-content :global(pre) {
+    background: light-dark(var(--light-code), var(--dark-code));
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+  }
+
+  .project-content :global(pre code) {
+    background: none;
+    padding: 0;
+  }
+
+  .project-content :global(a) {
+    color: light-dark(var(--light-safir), var(--dark-safir));
+    text-decoration: underline;
+    transition: opacity 0.2s;
+  }
+
+  .project-content :global(a:hover) {
+    opacity: 0.8;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .project-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .project-sidebar {
+      position: static;
+      max-height: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .project-detail {
+      padding: 1.5rem;
+    }
+
+    .project-title {
+      font-size: 2rem;
+    }
+
+    .project-description {
+      font-size: 1.1rem;
+    }
+
+    .project-content :global(h2) {
+      font-size: 1.5rem;
+    }
+
+    .project-content :global(h3) {
+      font-size: 1.2rem;
+    }
+
+    .project-sidebar {
+      padding: 1rem;
+    }
+
+    .sidebar-title {
+      font-size: 1.1rem;
+    }
+
+    .project-list-item {
+      grid-template-columns: 60px 1fr;
+    }
+
+    .project-thumb {
+      width: 60px;
+      height: 45px;
+    }
+
+    .project-name {
+      font-size: 0.9rem;
+    }
+  }
+</style>

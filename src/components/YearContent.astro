@@ -1,0 +1,124 @@
+---
+import ProjectCard from "./ui/ProjectCard.astro";
+import type { IYearContentProps } from "../types";
+
+const { yearData, categories, basePath = "" } = Astro.props as IYearContentProps;
+
+const hasCategories = categories && categories.length > 0;
+---
+
+<div>
+  <div class="page-header-content">
+    <a href={`${basePath}/years/`} class="breadcrumb"> ← Tilbake til års </a>
+    <h1>Fyrstikken {yearData.year}</h1>
+    {yearData.description && <p class="year-description">{yearData.description}</p>}
+  </div>
+
+  {
+    hasCategories ? (
+      <div class="year-content">
+        {categories.map((category) => {
+          const hasProjects = category.projects && category.projects.length > 0;
+
+          return (
+            <section class="category-section" id={category.slug.current}>
+              <div class="category-header">
+                <h2 class="category-title">{category.title}</h2>
+                {category.description && <p class="category-description">{category.description}</p>}
+              </div>
+
+              {hasProjects && (
+                <div class="projects-grid">
+                  {category.projects.map((project) => (
+                    <ProjectCard
+                      project={project}
+                      href={`${basePath}/years/${String(yearData.year)}/${category.slug.current}/${project.slug.current}/`}
+                    />
+                  ))}
+                </div>
+              )}
+            </section>
+          );
+        })}
+      </div>
+    ) : (
+      <p>Ingen kategorier funnet for dette året.</p>
+    )
+  }
+</div>
+
+<style>
+  .breadcrumb {
+    display: inline-block;
+    margin-bottom: 1rem;
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    font-size: 0.95rem;
+  }
+
+  .breadcrumb:hover {
+    opacity: 1;
+  }
+
+  .year-description {
+    font-size: 1.2rem;
+    opacity: 0.85;
+    margin-top: 0.75rem;
+    font-weight: 400;
+  }
+
+  .year-content {
+    margin-top: 2rem;
+  }
+
+  .category-section {
+    margin-bottom: 4rem;
+  }
+
+  .category-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid light-dark(var(--light-safir), var(--dark-safir));
+  }
+
+  .category-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+
+  .category-description {
+    font-size: 1.1rem;
+    opacity: 0.85;
+    margin: 0;
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .category-title {
+      font-size: 1.75rem;
+    }
+
+    .projects-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .category-section {
+      margin-bottom: 3rem;
+    }
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .projects-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

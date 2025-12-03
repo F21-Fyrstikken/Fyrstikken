@@ -1,18 +1,15 @@
 ---
-import type { HTMLAttributes } from "astro/types";
 import Link from "../components/Link.astro";
 import "../css/global.css";
 import "../css/typografi.css";
 import HeaderImg from "../components/HeaderImg.astro";
 import NightDay from "../components/NightDay.astro";
+import type { IBaseLayoutProps } from "../types";
 
-interface Props extends HTMLAttributes<"html"> {
-  title?: string;
-  description: string;
-}
-
-const { title = "Fyrstikken", description } = Astro.props;
+const { title = "Fyrstikken", description, image } = Astro.props as IBaseLayoutProps;
 const base = import.meta.env.BASE_URL;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? "https://f21-fyrstikken.github.io/Fyrstikken/");
+const ogImage = image ?? `${canonicalUrl.origin}${base}og-image.png`;
 ---
 
 <html lang="no">
@@ -23,9 +20,29 @@ const base = import.meta.env.BASE_URL;
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <title>{title}</title>
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl.href} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="nb_NO" />
+    <meta property="og:site_name" content="Fyrstikken" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalUrl.href} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href={canonicalUrl.href} />
   </head>
   <body>
-    <nav class="main-nav">
+    <a href="#main-content" class="skip-link">Hopp til hovedinnhold</a>
+    <nav class="main-nav" aria-label="Hovednavigasjon">
       <div class="nav-content">
         <Link href={base} class="nav-link">Hjem</Link>
         <Link href={`${base}about/`} class="nav-link">Arrangementet</Link>
@@ -38,7 +55,7 @@ const base = import.meta.env.BASE_URL;
       <header class="page-header">
         <slot name="pageTitle" />
       </header>
-      <main class="main-content">
+      <main id="main-content" class="main-content">
         <slot />
       </main>
     </div>
@@ -46,6 +63,25 @@ const base = import.meta.env.BASE_URL;
 </html>
 
 <style>
+  .skip-link {
+    position: absolute;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: light-dark(var(--light-safir), var(--dark-safir));
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0 0 8px 8px;
+    text-decoration: none;
+    font-weight: 600;
+    z-index: 1000;
+    transition: top 0.2s ease;
+  }
+
+  .skip-link:focus {
+    top: 0;
+  }
+
   body {
     background: light-dark(var(--light-bakgrunn), var(--dark-bakgrunn));
     color: light-dark(var(--light-tekst), var(--dark-tekst));
@@ -87,6 +123,11 @@ const base = import.meta.env.BASE_URL;
 
   .nav-content :global(.nav-link:hover) {
     background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
+  }
+
+  .nav-content :global(.nav-link[aria-current="page"]) {
+    background: light-dark(var(--light-safir), var(--dark-safir));
+    color: white;
   }
 
   .container {

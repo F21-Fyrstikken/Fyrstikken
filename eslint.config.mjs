@@ -9,12 +9,16 @@ const TS_JS_FILES = "**/*.{js,mjs,cjs,ts,tsx}";
 
 export default [
   {
-    ignores: ["dist", "node_modules", "**/.astro/**", "!**/*.astro", ".netlify/**"],
+    ignores: ["dist", "node_modules", "**/.astro/**", ".netlify/**", "studio/**"],
   },
   eslint.configs.recommended,
-  // Base TypeScript configs for all files
-  ...tseslint.configs.recommended,
-  // Strict type-checked rules ONLY for TS/JS files (not Astro)
+  // Astro config MUST come before TypeScript configs
+  ...eslintPluginAstro.configs["flat/recommended"],
+  // TypeScript configs ONLY for TS/JS files (not Astro)
+  ...tseslint.configs.recommended.map((config) => ({
+    ...config,
+    files: [TS_JS_FILES],
+  })),
   ...tseslint.configs.strictTypeChecked.map((config) => ({
     ...config,
     files: [TS_JS_FILES],
@@ -30,15 +34,6 @@ export default [
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
-    },
-  },
-  ...eslintPluginAstro.configs.recommended,
-  ...eslintPluginAstro.configs["flat/recommended"],
-  {
-    files: ["**/*.astro"],
-    rules: {
-      // Override to allow common patterns in Astro files
-      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
     },
   },
   {
@@ -137,5 +132,4 @@ export default [
   },
   eslintConfigPrettier,
   eslintPluginPrettier,
-  ...eslintPluginAstro.configs.recommended,
 ];

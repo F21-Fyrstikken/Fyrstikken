@@ -1,11 +1,7 @@
 ---
-interface IYouTubeProps {
-  node: {
-    url: string;
-  };
-}
+import type { IPortableTextNode, IYouTubeNode } from "../../types";
 
-const { node } = Astro.props as IYouTubeProps;
+const { node } = Astro.props as IPortableTextNode<IYouTubeNode>;
 
 // Extract video ID from various YouTube URL formats
 function getYouTubeId(url: string): string | null {

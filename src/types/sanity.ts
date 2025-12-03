@@ -57,3 +57,20 @@ export interface ICategoryWithProjects {
   order?: number;
   projects?: IProject[];
 }
+
+export interface IProjectWithSiblings {
+  _id: string;
+  title: string;
+  slug: ISlug;
+  description?: string;
+  content?: unknown;
+  image?: ISanityImage;
+  order?: number;
+  category: {
+    _id: string;
+    title: string;
+    slug: ISlug;
+    year: number;
+  };
+  siblingProjects: IProject[];
+}

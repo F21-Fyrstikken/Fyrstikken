@@ -1,22 +1,15 @@
 ---
-interface IAudioProps {
-  node: {
-    asset: {
-      _ref?: string;
-      url?: string;
-    };
-  };
-}
+import { SANITY_CONFIG } from "../../constants/config";
+import type { IPortableTextNode, IAudioNode } from "../../types";
 
-const { node } = Astro.props as IAudioProps;
+const { node } = Astro.props as IPortableTextNode<IAudioNode>;
 
 function buildFileUrl(ref: string): string {
   const refWithoutPrefix = ref.replace(/^file-/, "");
   const lastDashIndex = refWithoutPrefix.lastIndexOf("-");
   const id = refWithoutPrefix.substring(0, lastDashIndex);
   const extension = refWithoutPrefix.substring(lastDashIndex + 1);
-  const projectId = "531mn2v8";
-  return `https://cdn.sanity.io/files/${projectId}/production/${id}.${extension}`;
+  return `https://cdn.sanity.io/files/${SANITY_CONFIG.projectId}/${SANITY_CONFIG.dataset}/${id}.${extension}`;
 }
 
 const audioUrl = node.asset?.url ?? (node.asset?._ref ? buildFileUrl(node.asset._ref) : "");

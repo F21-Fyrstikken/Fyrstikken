@@ -1,15 +1,8 @@
 ---
-interface IImageProps {
-  node: {
-    asset: {
-      _ref: string;
-    };
-    alt?: string;
-    caption?: string;
-  };
-}
+import { SANITY_CONFIG } from "../../constants/config";
+import type { IPortableTextNode, IImageNode } from "../../types";
 
-const { node } = Astro.props as IImageProps;
+const { node } = Astro.props as IPortableTextNode<IImageNode>;
 
 function buildImageUrl(ref: string): string {
   const refWithoutPrefix = ref.replace(/^image-/, "");
@@ -17,8 +10,7 @@ function buildImageUrl(ref: string): string {
   const format = parts[parts.length - 1];
   const dimensions = parts[parts.length - 2];
   const id = parts.slice(0, -2).join("-");
-  const projectId = "531mn2v8";
-  return `https://cdn.sanity.io/images/${projectId}/production/${id}-${dimensions}.${format}`;
+  return `https://cdn.sanity.io/images/${SANITY_CONFIG.projectId}/${SANITY_CONFIG.dataset}/${id}-${dimensions}.${format}`;
 }
 
 const imageUrl = node.asset?._ref ? buildImageUrl(node.asset._ref) : "";

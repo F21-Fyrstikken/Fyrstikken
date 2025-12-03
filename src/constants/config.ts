@@ -3,3 +3,7 @@ export const SANITY_CONFIG = {
   dataset: "production",
   apiVersion: "2024-01-01",
 } as const;
+
+export const SITE_CONFIG = {
+  currentYear: new Date().getFullYear(),
+} as const;
