@@ -1,7 +1,11 @@
 ---
-import type { IYearsListProps } from "../types";
-
-const { years, basePath = "" } = Astro.props as IYearsListProps;
+const { years, basePath = "" } = Astro.props as {
+  years: Array<{
+    year: number;
+    description?: string;
+  }>;
+  basePath?: string;
+};
 
 const hasYears = years && years.length > 0;
 ---

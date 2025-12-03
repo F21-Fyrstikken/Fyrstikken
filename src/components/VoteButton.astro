@@ -1,0 +1,51 @@
+---
+import { colors } from "../constants/colors";
+
+interface Props {
+  categoryIndex: number;
+}
+
+const { categoryIndex } = Astro.props;
+
+const colorIndex = categoryIndex % colors.length;
+const categoryColor = colors[colorIndex];
+const buttonId = `voteButton-${categoryIndex}`;
+---
+
+<button id={buttonId} class="vote-button" data-light-color={categoryColor.light} data-dark-color={categoryColor.dark}>
+  Stem
+</button>
+
+<script>
+  document.querySelectorAll(".vote-button").forEach((button) => {
+    let voting = false;
+
+    button.addEventListener("click", () => {
+      voting = !voting;
+      console.log(`Voting state for category`, voting);
+
+      if (voting) {
+        button.classList.add("vote");
+        button.textContent = "Avbryt";
+      } else {
+        button.classList.remove("vote");
+        button.textContent = "Stem";
+      }
+    });
+  });
+</script>
+
+<style define:vars={{ "category-light-color": categoryColor.light, "category-dark-color": categoryColor.dark }}>
+  button {
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+    background-color: light-dark(var(--light-ixDBoks), var(--dark-ixDBoks));
+    padding: 1rem 3rem;
+    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    border-radius: 1rem;
+    transition: border-color 0.3s ease;
+  }
+
+  button.vote {
+    border-color: light-dark(var(--category-light-color), var(--category-dark-color));
+  }
+</style>

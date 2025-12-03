@@ -1,8 +1,28 @@
 ---
 import ProjectCard from "./ui/ProjectCard.astro";
-import type { IYearContentProps } from "../types";
+import VoteButton from "./VoteButton.astro";
 
-const { yearData, categories, basePath = "" } = Astro.props as IYearContentProps;
+const {
+  yearData,
+  categories,
+  basePath = "",
+} = Astro.props as {
+  yearData: {
+    year: number;
+    description?: string;
+  };
+  categories: Array<{
+    title: string;
+    description?: string;
+    slug: { current: string };
+    projects?: Array<{
+      title: string;
+      slug: { current: string };
+      [key: string]: any;
+    }>;
+  }>;
+  basePath?: string;
+};
 
 const hasCategories = categories && categories.length > 0;
 ---
@@ -17,7 +37,7 @@ const hasCategories = categories && categories.length > 0;
   {
     hasCategories ? (
       <div class="year-content">
-        {categories.map((category) => {
+        {categories.map((category, index) => {
           const hasProjects = category.projects && category.projects.length > 0;
 
           return (
@@ -25,11 +45,12 @@ const hasCategories = categories && categories.length > 0;
               <div class="category-header">
                 <h2 class="category-title">{category.title}</h2>
                 {category.description && <p class="category-description">{category.description}</p>}
+                <VoteButton categoryIndex={index} />
               </div>
 
               {hasProjects && (
                 <div class="projects-grid">
-                  {category.projects.map((project) => (
+                  {category.projects?.map((project) => (
                     <ProjectCard
                       project={project}
                       href={`${basePath}/years/${String(yearData.year)}/${category.slug.current}/${project.slug.current}/`}
