@@ -79,7 +79,7 @@ const sidebarProjects = allProjects?.map((proj) => {
         {
           sidebarProjects?.map((proj) => (
             <a href={proj.link} class={`project-list-item ${proj.isActive ? "active" : ""}`}>
-              {proj.imageUrl && <img src={proj.imageUrl} alt={proj.imageAlt} class="project-thumb" />}
+              {proj.imageUrl && <img src={proj.imageUrl} alt={proj.imageAlt} class="project-thumb" loading="lazy" />}
               <span class="project-name">{proj.title}</span>
             </a>
           ))
