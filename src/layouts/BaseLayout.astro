@@ -1,9 +1,9 @@
 ---
-import Link from "../components/Link.astro";
-import "../css/global.css";
-import "../css/typografi.css";
-import HeaderImg from "../components/HeaderImg.astro";
-import NightDay from "../components/NightDay.astro";
+import Link from "../components/common/Link.astro";
+import "../styles/global.css";
+import "../styles/typografi.css";
+import HeaderImg from "../components/layout/HeaderImg.astro";
+import NightDay from "../components/layout/NightDay.astro";
 import type { IBaseLayoutProps } from "../types";
 
 const { title = "Fyrstikken", description, image } = Astro.props as IBaseLayoutProps;
