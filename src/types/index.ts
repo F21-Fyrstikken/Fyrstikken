@@ -3,7 +3,7 @@
  * For Sanity-specific types, see ./sanity.ts
  */
 
-import type { IProject } from "./sanity";
+import type { IProject, IProjectDetail } from "./sanity";
 
 // Navigation types
 export interface IBreadcrumbItem {
@@ -78,4 +78,12 @@ export interface IAudioNode {
     _ref?: string;
     url?: string;
   };
+}
+
+export interface IProjectContentProps {
+  year: string;
+  category: string;
+  projectData: IProjectDetail;
+  allProjects: IProject[];
+  basePath?: string;
 }
