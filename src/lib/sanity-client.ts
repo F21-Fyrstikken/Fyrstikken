@@ -1,6 +1,6 @@
 import { createClient } from "@sanity/client";
-import { SANITY_CONFIG } from "../constants/config";
-import { GROQ_QUERIES } from "../constants/queries";
+import { SANITY_CONFIG } from "../config";
+import { GROQ_QUERIES } from "../config/queries";
 import { parseYearId } from "../utils/sanity";
 import type {
   IYear,

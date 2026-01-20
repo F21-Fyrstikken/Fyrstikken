@@ -1,4 +1,4 @@
-import { SANITY_CONFIG } from "../constants/config";
+import { SANITY_CONFIG } from "../config";
 import type { ISanityImage } from "../types/sanity";
 
 export function getImageUrl(image?: ISanityImage): string | undefined {
