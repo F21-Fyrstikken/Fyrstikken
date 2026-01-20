@@ -74,3 +74,14 @@ export interface IProjectWithSiblings {
   };
   siblingProjects: IProject[];
 }
+
+export interface ICategoryWithProjectsAndYear {
+  _id: string;
+  title: string;
+  slug: ISlug;
+  description?: string;
+  coverImage?: ISanityImage;
+  order?: number;
+  year: number;
+  projects: IProject[];
+}

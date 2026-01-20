@@ -1,15 +1,8 @@
 ---
+import { getVimeoId } from "../../utils/video";
 import type { IPortableTextNode, IVimeoNode } from "../../types";
 
 const { node } = Astro.props as IPortableTextNode<IVimeoNode>;
-
-// Extract video ID from various Vimeo URL formats
-function getVimeoId(url: string): string | null {
-  const regExp =
-    /(?:vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^/]*)\/videos\/|album\/(?:\d+)\/video\/|video\/|))(\d+)(?:[a-zA-Z0-9_-]+)?/;
-  const match = url.match(regExp);
-  return match ? match[1] : null;
-}
 
 const videoId = getVimeoId(node.url);
 ---

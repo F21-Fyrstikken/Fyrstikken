@@ -119,4 +119,28 @@ export const GROQ_QUERIES = {
       order
     }
   }`,
+
+  ALL_CATEGORIES_WITH_PROJECTS: `*[_type == "category"] | order(order asc) {
+    _id,
+    title,
+    slug,
+    description,
+    coverImage {
+      asset->{ url },
+      alt
+    },
+    order,
+    "year": year->year,
+    "projects": *[_type == "project" && category._ref == ^._id] | order(order asc) {
+      _id,
+      title,
+      slug,
+      description,
+      image {
+        asset->{ url },
+        alt
+      },
+      order
+    }
+  }`,
 } as const;
