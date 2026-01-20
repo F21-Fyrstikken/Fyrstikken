@@ -1,6 +1,7 @@
 ---
 import ProjectCard from "./ui/ProjectCard.astro";
 import VoteButton from "./VoteButton.astro";
+import { colors } from "../constants/colors";
 
 const {
   yearData,
@@ -43,9 +44,13 @@ const hasCategories = categories && categories.length > 0;
           return (
             <section class="category-section" id={category.slug.current}>
               <div class="category-header">
-                <h2 class="category-title">{category.title}</h2>
+                <div
+                  class="category-header-row"
+                  style={`--category-light-color: ${colors[index % colors.length].light}; --category-dark-color: ${colors[index % colors.length].dark};`}>
+                  <h2 class="category-title">{category.title}</h2>
+                  <VoteButton categoryIndex={index} />
+                </div>
                 {category.description && <p class="category-description">{category.description}</p>}
-                <VoteButton categoryIndex={index} />
               </div>
 
               {hasProjects && (
@@ -99,8 +104,24 @@ const hasCategories = categories && categories.length > 0;
 
   .category-header {
     margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 3px solid light-dark(var(--light-safir), var(--dark-safir));
+  }
+
+  .category-header-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .category-header-row::before {
+    content: "";
+    flex: 1;
+    height: 2px;
+    background-color: light-dark(var(--category-light-color), var(--category-dark-color));
+    order: 1;
+  }
+
+  .category-header-row :global(.vote-button) {
+    order: 2;
   }
 
   .category-title {
