@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.34.0",
+    "@portabletext/types": "^4.0.1",
     "@types/node": "^24.7.0",
     "eslint": "^9.34.0",
     "eslint-config-prettier": "^10.1.8",

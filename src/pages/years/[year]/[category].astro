@@ -1,42 +1,35 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import CategoryContent from "../../../components/features/CategoryContent.astro";
-import { getAllYears, getCategoriesForYear, getCategory, getProjectsForCategory } from "../../../lib/sanity-client";
+import { getAllCategoriesWithProjects } from "../../../lib/sanity-client";
 import { getBasePath } from "../../../utils/paths";
+import type { ICategoryWithProjectsAndYear } from "../../../lib/sanity-client";
 
-// This function fetches all the data needed to generate every category page at build time.
+/**
+ * Generate all category pages using a single batch query.
+ * This avoids the N+1 query problem by fetching all categories with their projects at once.
+ */
 export async function getStaticPaths() {
-  const years = await getAllYears();
-  const paths = [];
+  const allCategories = await getAllCategoriesWithProjects();
 
-  // Iterate through all years
-  for (const yearData of years) {
-    const yearString = yearData.year.toString();
-    // Get categories for this specific year
-    const categories = await getCategoriesForYear(yearString);
-
-    // Iterate through each category
-    for (const category of categories) {
-      const categorySlug = category.slug.current;
-
-      // Fetch detailed category data and the projects within it
-      const categoryData = await getCategory(categorySlug);
-      const projects = await getProjectsForCategory(categorySlug);
-
-      paths.push({
-        params: {
-          year: yearString,
-          category: categorySlug,
-        },
-        props: {
-          categoryData,
-          projects,
-        },
-      });
-    }
-  }
-
-  return paths;
+  return allCategories.map((category: ICategoryWithProjectsAndYear) => ({
+    params: {
+      year: category.year.toString(),
+      category: category.slug.current,
+    },
+    props: {
+      categoryData: {
+        _id: category._id,
+        title: category.title,
+        slug: category.slug,
+        description: category.description,
+        coverImage: category.coverImage,
+        order: category.order,
+        year: category.year,
+      },
+      projects: category.projects,
+    },
+  }));
 }
 
 // Get params and props

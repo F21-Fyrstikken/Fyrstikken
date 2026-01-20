@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Button from "../components/common/Button.astro";
 import { getBasePath } from "../utils/paths";
 
 const basePath = getBasePath();
@@ -11,8 +12,8 @@ const basePath = getBasePath();
     <h2>Side ikke funnet</h2>
     <p>Beklager, siden du leter etter finnes ikke eller har blitt flyttet.</p>
     <div class="actions">
-      <a href={`${basePath}/`} class="btn primary">Gå til forsiden</a>
-      <a href={`${basePath}/years/`} class="btn secondary">Se alle år</a>
+      <Button href={`${basePath}/`} variant="primary">Gå til forsiden</Button>
+      <Button href={`${basePath}/years/`} variant="secondary">Se alle år</Button>
     </div>
   </div>
 </BaseLayout>
@@ -49,36 +50,6 @@ const basePath = getBasePath();
     gap: 1rem;
     justify-content: center;
     flex-wrap: wrap;
-  }
-
-  .btn {
-    display: inline-block;
-    padding: 0.875rem 1.5rem;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.2s ease;
-  }
-
-  .btn.primary {
-    background: light-dark(var(--light-safir), var(--dark-safir));
-    color: white;
-  }
-
-  .btn.primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  }
-
-  .btn.secondary {
-    background: transparent;
-    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
-    color: light-dark(var(--light-tekst), var(--dark-tekst));
-  }
-
-  .btn.secondary:hover {
-    border-color: light-dark(var(--light-safir), var(--dark-safir));
-    color: light-dark(var(--light-safir), var(--dark-safir));
   }
 
   @media (max-width: 768px) {

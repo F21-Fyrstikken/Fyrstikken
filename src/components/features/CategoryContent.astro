@@ -1,25 +1,16 @@
 ---
 import ProjectCard from "../common/ProjectCard.astro";
-import type { ICategory, IProject } from "../../types/sanity";
+import BackLink from "../common/BackLink.astro";
+import type { ICategoryContentProps } from "../../types";
 
-const {
-  year,
-  categoryData,
-  projects,
-  basePath = "",
-} = Astro.props as {
-  year: string;
-  categoryData: ICategory;
-  projects: IProject[];
-  basePath?: string;
-};
+const { year, categoryData, projects, basePath = "" } = Astro.props as ICategoryContentProps;
 
 const hasProjects = projects && projects.length > 0;
 ---
 
 <div>
   <div class="page-header-content">
-    <a href={`${basePath}/years/${year}/`} class="breadcrumb"> ← Tilbake til {year} </a>
+    <BackLink href={`${basePath}/years/${year}/`} label={`Tilbake til ${year}`} />
     <h1>{categoryData.title}</h1>
     {categoryData.description && <p class="category-description">{categoryData.description}</p>}
   </div>
@@ -43,19 +34,6 @@ const hasProjects = projects && projects.length > 0;
 </div>
 
 <style>
-  .breadcrumb {
-    display: inline-block;
-    margin-bottom: 1rem;
-    text-decoration: none;
-    opacity: 0.7;
-    transition: opacity 0.2s;
-    font-size: 0.95rem;
-  }
-
-  .breadcrumb:hover {
-    opacity: 1;
-  }
-
   .category-description {
     font-size: 1.2rem;
     opacity: 0.85;

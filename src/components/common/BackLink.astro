@@ -1,0 +1,35 @@
+---
+/**
+ * BackLink - Simple back navigation link
+ *
+ * A consistent "← Back to X" link pattern used across pages.
+ *
+ * @example
+ * <BackLink href="/years/" label="Tilbake til års" />
+ */
+interface Props {
+  /** The destination URL */
+  href: string;
+  /** The label text (e.g., "Tilbake til 2024") */
+  label: string;
+}
+
+const { href, label } = Astro.props;
+---
+
+<a href={href} class="back-link">← {label}</a>
+
+<style>
+  .back-link {
+    display: inline-block;
+    margin-bottom: var(--space-md);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity var(--transition-fast);
+    font-size: 0.95rem;
+  }
+
+  .back-link:hover {
+    opacity: 1;
+  }
+</style>

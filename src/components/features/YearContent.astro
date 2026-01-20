@@ -1,35 +1,17 @@
 ---
 import ProjectCard from "../common/ProjectCard.astro";
+import BackLink from "../common/BackLink.astro";
 import VoteButton from "./VoteButton.astro";
+import type { IYearContentProps } from "../../types";
 
-const {
-  yearData,
-  categories,
-  basePath = "",
-} = Astro.props as {
-  yearData: {
-    year: number;
-    description?: string;
-  };
-  categories: Array<{
-    title: string;
-    description?: string;
-    slug: { current: string };
-    projects?: Array<{
-      title: string;
-      slug: { current: string };
-      [key: string]: any;
-    }>;
-  }>;
-  basePath?: string;
-};
+const { yearData, categories, basePath = "" } = Astro.props as IYearContentProps;
 
 const hasCategories = categories && categories.length > 0;
 ---
 
 <div>
   <div class="page-header-content">
-    <a href={`${basePath}/years/`} class="breadcrumb"> ← Tilbake til års </a>
+    <BackLink href={`${basePath}/years/`} label="Tilbake til års" />
     <h1>Fyrstikken {yearData.year}</h1>
     {yearData.description && <p class="year-description">{yearData.description}</p>}
   </div>
@@ -69,19 +51,6 @@ const hasCategories = categories && categories.length > 0;
 </div>
 
 <style>
-  .breadcrumb {
-    display: inline-block;
-    margin-bottom: 1rem;
-    text-decoration: none;
-    opacity: 0.7;
-    transition: opacity 0.2s;
-    font-size: 0.95rem;
-  }
-
-  .breadcrumb:hover {
-    opacity: 1;
-  }
-
   .year-description {
     font-size: 1.2rem;
     opacity: 0.85;
