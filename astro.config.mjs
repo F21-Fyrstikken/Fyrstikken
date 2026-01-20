@@ -4,7 +4,6 @@ import sanity from "@sanity/astro";
 import { SANITY_CONFIG } from "./src/constants/config";
 
 export default defineConfig({
-  base: import.meta.env.DEV ? "/" : "/Fyrstikken/",
   output: "static",
   trailingSlash: "always",
   build: {
