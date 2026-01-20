@@ -3,7 +3,7 @@
  * For Sanity-specific types, see ./sanity.ts
  */
 
-import type { IProject, IProjectDetail } from "./sanity";
+import type { ICategory, IProject, IProjectDetail, IYear, ICategoryWithProjects } from "./sanity";
 
 // Navigation types
 export interface IBreadcrumbItem {
@@ -86,4 +86,26 @@ export interface IProjectContentProps {
   projectData: IProjectDetail;
   allProjects: IProject[];
   basePath?: string;
+}
+
+export interface IYearsListProps {
+  years: IYear[];
+  basePath?: string;
+}
+
+export interface IYearContentProps {
+  yearData: IYear;
+  categories: ICategoryWithProjects[];
+  basePath?: string;
+}
+
+export interface ICategoryContentProps {
+  year: string;
+  categoryData: ICategory;
+  projects: IProject[];
+  basePath?: string;
+}
+
+export interface IVoteButtonProps {
+  categoryIndex: number;
 }
