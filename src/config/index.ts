@@ -18,6 +18,8 @@ export const SITE_CONFIG = {
   description: "Award ceremony website for F21 VGS student projects",
   currentYear: new Date().getFullYear(),
   locale: "nb-NO",
+  /** Fallback URL used when Astro.site is not configured */
+  fallbackUrl: "https://f21-fyrstikken.github.io/Fyrstikken/",
 } as const;
 
 /**

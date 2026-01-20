@@ -1,51 +1,20 @@
 ---
 import { getYouTubeId } from "../../utils/video";
 import type { IPortableTextNode, IYouTubeNode } from "../../types";
+import VideoEmbed from "../common/VideoEmbed.astro";
 
 const { node } = Astro.props as IPortableTextNode<IYouTubeNode>;
 
 const videoId = getYouTubeId(node.url);
+const embedUrl = videoId ? `https://www.youtube.com/embed/${videoId}` : null;
 ---
 
 {
-  videoId && (
-    <div class="video-container">
-      <iframe
-        src={`https://www.youtube.com/embed/${videoId}`}
-        title="YouTube video"
-        frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen
-      />
-    </div>
+  embedUrl && (
+    <VideoEmbed
+      src={embedUrl}
+      title="YouTube video"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+    />
   )
 }
-
-<style>
-  .video-container {
-    position: relative;
-    padding-bottom: 56.25%; /* 16:9 aspect ratio */
-    height: 0;
-    overflow: hidden;
-    margin: 2.5rem 0;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
-  }
-
-  .video-container iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
-    border-radius: 12px;
-  }
-
-  @media (max-width: 768px) {
-    .video-container {
-      margin: 2rem 0;
-    }
-  }
-</style>
