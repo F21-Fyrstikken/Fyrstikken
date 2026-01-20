@@ -34,7 +34,10 @@ const imageAlt = getImageAlt(project.image, project.title);
   .project-card:hover {
     transform: translateY(-6px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    border-color: light-dark(var(--light-safir), var(--dark-safir));
+    border-color: light-dark(
+      var(--category-light-color, var(--light-safir)),
+      var(--category-dark-color, var(--dark-safir))
+    );
   }
 
   .project-image {
