@@ -42,11 +42,12 @@ const hasCategories = categories && categories.length > 0;
           const hasProjects = category.projects && category.projects.length > 0;
 
           return (
-            <section class="category-section" id={category.slug.current}>
+            <section
+              class="category-section"
+              id={category.slug.current}
+              style={`--category-light-color: ${colors[index % colors.length].light}; --category-dark-color: ${colors[index % colors.length].dark};`}>
               <div class="category-header">
-                <div
-                  class="category-header-row"
-                  style={`--category-light-color: ${colors[index % colors.length].light}; --category-dark-color: ${colors[index % colors.length].dark};`}>
+                <div class="category-header-row">
                   <h2 class="category-title">{category.title}</h2>
                   <VoteButton categoryIndex={index} />
                 </div>
@@ -100,6 +101,15 @@ const hasCategories = categories && categories.length > 0;
 
   .category-section {
     margin-bottom: 4rem;
+    padding: 1.5rem;
+    border-radius: 1rem;
+  }
+
+  .category-section.voting {
+    background-color: light-dark(
+      color-mix(in srgb, var(--category-light-color) 10%, transparent),
+      color-mix(in srgb, var(--category-dark-color) 10%, transparent)
+    );
   }
 
   .category-header {

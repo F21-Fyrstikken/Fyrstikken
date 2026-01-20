@@ -17,20 +17,37 @@ const buttonId = `voteButton-${categoryIndex}`;
 </button>
 
 <script>
+  let activeButton: HTMLElement | null = null;
+  let activeSection: HTMLElement | null = null;
+
   document.querySelectorAll(".vote-button").forEach((button) => {
-    let voting = false;
-
     button.addEventListener("click", () => {
-      voting = !voting;
-      console.log(`Voting state for category`, voting);
+      const htmlButton = button as HTMLElement;
+      const section = htmlButton.closest(".category-section") as HTMLElement;
 
-      if (voting) {
-        button.classList.add("vote");
-        button.textContent = "Avbryt";
-      } else {
-        button.classList.remove("vote");
-        button.textContent = "Stem";
+      // Klikket på samme knapp som allerede er valgt - avbryt stemming
+      if (activeButton === htmlButton) {
+        htmlButton.classList.remove("vote");
+        htmlButton.textContent = "Stem";
+        section?.classList.remove("voting");
+        activeButton = null;
+        activeSection = null;
+        return;
       }
+
+      // Hvis en annen kategori var valgt fra før - fjern valget der
+      if (activeButton) {
+        activeButton.classList.remove("vote");
+        activeButton.textContent = "Stem";
+        activeSection?.classList.remove("voting");
+      }
+
+      // Velg denne kategorien for stemming
+      htmlButton.classList.add("vote");
+      htmlButton.textContent = "Avbryt";
+      section?.classList.add("voting");
+      activeButton = htmlButton;
+      activeSection = section;
     });
   });
 </script>
