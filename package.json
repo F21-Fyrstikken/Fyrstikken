@@ -11,6 +11,9 @@
     "build:studio": "sanity build studio -y",
     "build:all": "pnpm build && pnpm build:studio && node scripts/copy-studio.js",
     "preview": "astro preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
@@ -46,6 +49,7 @@
     "prettier-plugin-astro": "^0.14.1",
     "tsx": "^4.20.6",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.42.0"
+    "typescript-eslint": "^8.42.0",
+    "vitest": "^4.0.17"
   }
 }
