@@ -86,7 +86,8 @@ export function getFileUrl(asset?: { url?: string; _ref?: string }): string {
  * getFilenameFromUrl('https://cdn.sanity.io/files/proj/prod/abc123.pdf') // 'abc123.pdf'
  */
 export function getFilenameFromUrl(url: string, fallback = "File"): string {
-  return url.split("/").pop() ?? fallback;
+  const filename = url.split("/").pop();
+  return filename || fallback;
 }
 
 /**

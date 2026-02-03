@@ -130,14 +130,12 @@ describe("sanity utilities", () => {
       expect(getFilenameFromUrl("https://example.com/path/to/document.pdf")).toBe("document.pdf");
     });
 
-    it("returns empty string for URL ending with slash", () => {
-      expect(getFilenameFromUrl("https://example.com/")).toBe("");
+    it("returns fallback for URL ending with slash", () => {
+      expect(getFilenameFromUrl("https://example.com/")).toBe("File");
     });
 
-    it("returns last segment which is empty for trailing slash", () => {
-      // Note: The function returns the last path segment, which is empty string for trailing slash
-      // The fallback only applies when .pop() returns undefined (not empty string)
-      expect(getFilenameFromUrl("https://example.com/")).toBe("");
+    it("returns custom fallback for trailing slash", () => {
+      expect(getFilenameFromUrl("https://example.com/", "Download")).toBe("Download");
     });
   });
 
