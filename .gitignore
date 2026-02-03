@@ -7,7 +7,6 @@ studio/
 
 # dependencies
 node_modules/
-pnpm-lock.yaml
 
 # logs
 npm-debug.log*
