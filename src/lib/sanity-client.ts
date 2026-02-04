@@ -1,6 +1,6 @@
 import { createClient } from "@sanity/client";
-import { SANITY_CONFIG } from "../constants/config";
-import { GROQ_QUERIES } from "../constants/queries";
+import { SANITY_CONFIG } from "../config";
+import { GROQ_QUERIES } from "../config/queries";
 import { parseYearId } from "../utils/sanity";
 import type {
   IYear,
@@ -9,6 +9,7 @@ import type {
   IProjectDetail,
   ICategoryWithProjects,
   IProjectWithSiblings,
+  ICategoryWithProjectsAndYear,
 } from "../types/sanity";
 
 export const sanityClient = createClient({
@@ -16,42 +17,83 @@ export const sanityClient = createClient({
   useCdn: true,
 });
 
-export type { IYear, ICategory, IProject, IProjectDetail, ICategoryWithProjects, IProjectWithSiblings };
+export type {
+  IYear,
+  ICategory,
+  IProject,
+  IProjectDetail,
+  ICategoryWithProjects,
+  IProjectWithSiblings,
+  ICategoryWithProjectsAndYear,
+};
+
+export class SanityFetchError extends Error {
+  constructor(
+    message: string,
+    public readonly query: string,
+    public readonly cause?: unknown
+  ) {
+    super(message);
+    this.name = "SanityFetchError";
+  }
+}
+
+async function safeFetch<T>(queryName: string, fetchFn: () => Promise<T>): Promise<T> {
+  try {
+    return await fetchFn();
+  } catch (error) {
+    const message = `Failed to fetch data from Sanity: ${queryName}`;
+    console.error(message, error);
+    throw new SanityFetchError(message, queryName, error);
+  }
+}
 
 export async function getAllYears(): Promise<IYear[]> {
-  return sanityClient.fetch(GROQ_QUERIES.ALL_YEARS);
+  return safeFetch("ALL_YEARS", () => sanityClient.fetch(GROQ_QUERIES.ALL_YEARS));
 }
 
 export async function getYear(yearId: string): Promise<IYear | null> {
-  return sanityClient.fetch(GROQ_QUERIES.YEAR_BY_ID, {
-    yearId: parseYearId(yearId),
-  });
+  return safeFetch("YEAR_BY_ID", () =>
+    sanityClient.fetch(GROQ_QUERIES.YEAR_BY_ID, {
+      yearId: parseYearId(yearId),
+    })
+  );
 }
 
 export async function getCategoriesForYear(yearId: string): Promise<ICategory[]> {
-  return sanityClient.fetch(GROQ_QUERIES.CATEGORIES_FOR_YEAR, {
-    yearId: parseYearId(yearId),
-  });
+  return safeFetch("CATEGORIES_FOR_YEAR", () =>
+    sanityClient.fetch(GROQ_QUERIES.CATEGORIES_FOR_YEAR, {
+      yearId: parseYearId(yearId),
+    })
+  );
 }
 
 export async function getCategory(slug: string): Promise<ICategory | null> {
-  return sanityClient.fetch(GROQ_QUERIES.CATEGORY_BY_SLUG, { slug });
+  return safeFetch("CATEGORY_BY_SLUG", () => sanityClient.fetch(GROQ_QUERIES.CATEGORY_BY_SLUG, { slug }));
 }
 
 export async function getProjectsForCategory(categorySlug: string): Promise<IProject[]> {
-  return sanityClient.fetch(GROQ_QUERIES.PROJECTS_FOR_CATEGORY, { categorySlug });
+  return safeFetch("PROJECTS_FOR_CATEGORY", () =>
+    sanityClient.fetch(GROQ_QUERIES.PROJECTS_FOR_CATEGORY, { categorySlug })
+  );
 }
 
 export async function getProject(slug: string): Promise<IProjectDetail | null> {
-  return sanityClient.fetch(GROQ_QUERIES.PROJECT_BY_SLUG, { slug });
+  return safeFetch("PROJECT_BY_SLUG", () => sanityClient.fetch(GROQ_QUERIES.PROJECT_BY_SLUG, { slug }));
 }
 
 export async function getCategoriesWithProjectsForYear(yearId: string): Promise<ICategoryWithProjects[]> {
-  return sanityClient.fetch(GROQ_QUERIES.CATEGORIES_WITH_PROJECTS_FOR_YEAR, {
-    yearId: parseYearId(yearId),
-  });
+  return safeFetch("CATEGORIES_WITH_PROJECTS_FOR_YEAR", () =>
+    sanityClient.fetch(GROQ_QUERIES.CATEGORIES_WITH_PROJECTS_FOR_YEAR, {
+      yearId: parseYearId(yearId),
+    })
+  );
 }
 
 export async function getAllProjectsWithDetails(): Promise<IProjectWithSiblings[]> {
-  return sanityClient.fetch(GROQ_QUERIES.ALL_PROJECTS_WITH_DETAILS);
+  return safeFetch("ALL_PROJECTS_WITH_DETAILS", () => sanityClient.fetch(GROQ_QUERIES.ALL_PROJECTS_WITH_DETAILS));
+}
+
+export async function getAllCategoriesWithProjects(): Promise<ICategoryWithProjectsAndYear[]> {
+  return safeFetch("ALL_CATEGORIES_WITH_PROJECTS", () => sanityClient.fetch(GROQ_QUERIES.ALL_CATEGORIES_WITH_PROJECTS));
 }

@@ -1,21 +1,23 @@
 {
   "name": "fyrstikken",
+  "description": "Award ceremony website for F21 VGS student projects",
   "type": "module",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "packageManager": "pnpm@9.15.0",
   "scripts": {
     "dev": "astro dev",
-    "dev:sanity": "sanity dev",
+    "dev:studio": "sanity dev",
     "build": "astro build",
-    "build:sanity": "sanity build studio -y",
-    "build:all": "npm run build && npm run build:sanity && node scripts/copy-studio.js",
+    "build:studio": "sanity build studio -y",
+    "build:all": "pnpm build && pnpm build:studio && node scripts/copy-studio.js",
     "preview": "astro preview",
-    "astro": "astro",
-    "lint": "npm run eslint:check",
-    "lint:fix": "npm run eslint:fix",
-    "eslint:fix": "eslint . --fix",
-    "eslint:check": "eslint .",
-    "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit",
+    "check": "pnpm typecheck && pnpm lint",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -24,16 +26,19 @@
     ]
   },
   "dependencies": {
-    "@astrojs/netlify": "^6.5.9",
     "@sanity/astro": "^3.2.10",
     "@sanity/client": "^7.11.0",
     "astro": "^5.13.5",
     "astro-portabletext": "^0.11.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "sanity": "^4.6.1",
-    "styled-components": "^6.1.19"
+    "sharp": "^0.34.5",
+    "styled-components": "^6.1.15"
   },
   "devDependencies": {
     "@eslint/js": "^9.34.0",
+    "@portabletext/types": "^4.0.1",
     "@types/node": "^24.7.0",
     "eslint": "^9.34.0",
     "eslint-config-prettier": "^10.1.8",
@@ -47,6 +52,7 @@
     "prettier-plugin-astro": "^0.14.1",
     "tsx": "^4.20.6",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.42.0"
+    "typescript-eslint": "^8.42.0",
+    "vitest": "^4.0.17"
   }
 }

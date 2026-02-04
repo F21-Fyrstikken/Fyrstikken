@@ -1,0 +1,91 @@
+---
+/**
+ * Button - Shared button/link component
+ *
+ * Provides consistent button styling across the site.
+ * Can be used as either a link (with href) or button element.
+ *
+ * @example
+ * <Button href="/about" variant="primary">Learn More</Button>
+ * <Button variant="secondary" newTab href="https://example.com">External Link</Button>
+ */
+interface Props {
+  /** URL for link buttons (renders as <a>) */
+  href?: string;
+  /** Button style variant */
+  variant?: "primary" | "secondary";
+  /** Open link in new tab */
+  newTab?: boolean;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const { href, variant = "primary", newTab = false, class: className = "" } = Astro.props;
+
+const isLink = !!href;
+const target = newTab ? "_blank" : undefined;
+const rel = newTab ? "noopener noreferrer" : undefined;
+const classes = `btn ${variant} ${className}`.trim();
+---
+
+{
+  isLink ? (
+    <a href={href} class={classes} target={target} rel={rel}>
+      <slot />
+      {newTab && <span class="external-icon">↗</span>}
+    </a>
+  ) : (
+    <button class={classes}>
+      <slot />
+    </button>
+  )
+}
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-lg);
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: var(--transition-normal);
+  }
+
+  .btn.primary {
+    background: light-dark(var(--light-safir), var(--dark-safir));
+    color: white;
+    border-color: light-dark(var(--light-safir), var(--dark-safir));
+  }
+
+  .btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .btn.secondary {
+    background: transparent;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+    border-color: light-dark(var(--light-ramme), var(--dark-ramme));
+  }
+
+  .btn.secondary:hover {
+    border-color: light-dark(var(--light-safir), var(--dark-safir));
+    color: light-dark(var(--light-safir), var(--dark-safir));
+  }
+
+  .external-icon {
+    font-size: 0.9em;
+    opacity: 0.8;
+  }
+
+  @media (max-width: 768px) {
+    .btn {
+      padding: var(--space-sm) var(--space-md);
+    }
+  }
+</style>
