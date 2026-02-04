@@ -12,7 +12,9 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+
+    "types": ["vitest/globals"]
   },
   "include": [".astro/types.d.ts", "**/*"],
   "exclude": ["dist", "node_modules", ".netlify", "studio"]
