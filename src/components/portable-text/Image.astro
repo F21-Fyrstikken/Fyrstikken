@@ -1,17 +1,8 @@
 ---
-import { SANITY_CONFIG } from "../../constants/config";
+import { buildImageUrl } from "../../utils/sanity";
 import type { IPortableTextNode, IImageNode } from "../../types";
 
 const { node } = Astro.props as IPortableTextNode<IImageNode>;
-
-function buildImageUrl(ref: string): string {
-  const refWithoutPrefix = ref.replace(/^image-/, "");
-  const parts = refWithoutPrefix.split("-");
-  const format = parts[parts.length - 1];
-  const dimensions = parts[parts.length - 2];
-  const id = parts.slice(0, -2).join("-");
-  return `https://cdn.sanity.io/images/${SANITY_CONFIG.projectId}/${SANITY_CONFIG.dataset}/${id}-${dimensions}.${format}`;
-}
 
 const imageUrl = node.asset?._ref ? buildImageUrl(node.asset._ref) : "";
 ---

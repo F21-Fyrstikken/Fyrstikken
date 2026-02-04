@@ -1,0 +1,165 @@
+/**
+ * Design Tokens for Fyrstikken
+ * =============================
+ *
+ * This file defines all design tokens (CSS custom properties) used throughout the site.
+ * Design tokens are the single source of truth for colors, spacing, typography, and layout.
+ *
+ * USAGE:
+ *   color: light-dark(var(--light-tekst), var(--dark-tekst));
+ *   padding: var(--space-md);
+ *   max-width: var(--container-max);
+ *
+ * NOTE: The light-dark() CSS function automatically switches between values based on color-scheme.
+ */
+
+:root {
+  /* ============================================
+   * Color Scheme
+   * ============================================ */
+  color-scheme: light dark;
+
+  /* ============================================
+   * Light Theme Colors
+   * ============================================ */
+
+  /* Base colors */
+  --light-bakgrunn: #b6b6b6; /* Page background */
+  --light-main: #d3d3d3; /* Card/section background */
+  --light-tekst: #3e4247; /* Primary text */
+  --light-ramme: #b9bec2; /* Borders */
+  --light-ixDBoks: #f5f6f5; /* Input/button background */
+  --light-tabellBoks: #d4d4d8; /* Table rows */
+  --light-tekstBoks: #dfdfdf; /* Text box background */
+  --light-code: #dedede; /* Code block background */
+
+  /* Accent colors (named after gemstones in Norwegian) */
+  --light-safir: #367fff; /* Blue - Primary accent */
+  --light-akvamarin: #1892ba; /* Teal */
+  --light-amazonitt: #228468; /* Green-teal */
+  --light-smaragd: #518238; /* Green */
+  --light-citrin: #a18603; /* Yellow/gold */
+  --light-spessartin: #d1690f; /* Orange */
+  --light-rubin: #d24040; /* Red */
+  --light-thulitt: #b44f99; /* Pink */
+  --light-kunzitt: #9a5daf; /* Purple */
+  --light-ametyst: #7258bb; /* Violet */
+
+  /* ============================================
+   * Dark Theme Colors
+   * ============================================ */
+
+  /* Base colors */
+  --dark-bakgrunn: #07070b; /* Page background */
+  --dark-main: #14151f; /* Card/section background */
+  --dark-tekst: #a8a8a8; /* Primary text */
+  --dark-ramme: #57637a; /* Borders */
+  --dark-ixDBoks: #0b0c13; /* Input/button background */
+  --dark-tabellBoks: #1a1c29; /* Table rows */
+  --dark-tekstBoks: #262738; /* Text box background */
+  --dark-code: #1f1f1f; /* Code block background */
+
+  /* Accent colors */
+  --dark-safir: #1fa6e2; /* Blue - Primary accent */
+  --dark-akvamarin: #33c9c4; /* Teal */
+  --dark-amazonitt: #35b06f; /* Green-teal */
+  --dark-smaragd: #839e53; /* Green */
+  --dark-citrin: #e6ce2f; /* Yellow/gold */
+  --dark-spessartin: #e68d2f; /* Orange */
+  --dark-rubin: #ec4f28; /* Red */
+  --dark-thulitt: #c973af; /* Pink */
+  --dark-kunzitt: #b18bf4; /* Purple */
+  --dark-ametyst: #7b77ff; /* Violet */
+
+  /* ============================================
+   * Spacing Scale
+   * ============================================
+   * Based on a 4px base unit (0.25rem)
+   */
+  --space-xs: 0.25rem; /* 4px */
+  --space-sm: 0.5rem; /* 8px */
+  --space-md: 1rem; /* 16px */
+  --space-lg: 1.5rem; /* 24px */
+  --space-xl: 2rem; /* 32px */
+  --space-2xl: 2.5rem; /* 40px */
+  --space-3xl: 4rem; /* 64px */
+
+  /* ============================================
+   * Layout
+   * ============================================ */
+  --container-max: 1200px; /* Max width for main content */
+  --sidebar-width: 320px; /* Sidebar width on project pages */
+  --nav-height: 60px; /* Approximate nav height */
+
+  /* ============================================
+   * Aspect Ratios
+   * ============================================ */
+  --ratio-16-9: 56.25%; /* 16:9 aspect ratio (9/16 * 100) */
+  --ratio-4-3: 75%; /* 4:3 aspect ratio */
+  --ratio-1-1: 100%; /* Square */
+
+  /* ============================================
+   * Border Radius
+   * ============================================ */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* ============================================
+   * Transitions
+   * ============================================ */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+
+  /* ============================================
+   * Shadows
+   * ============================================ */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 20px rgba(0, 0, 0, 0.15);
+
+  /* ============================================
+   * Z-Index Scale
+   * ============================================ */
+  --z-base: 0;
+  --z-dropdown: 10;
+  --z-sticky: 50;
+  --z-nav: 100;
+  --z-modal: 200;
+  --z-tooltip: 300;
+
+  /* ============================================
+   * Typography
+   * ============================================ */
+  --font-heading: "Roboto Slab", Georgia, serif;
+  --font-body: "Roboto", system-ui, -apple-system, sans-serif;
+  --font-mono: "Roboto Mono", "Courier New", monospace;
+
+  /* Font sizes (using rem for accessibility) */
+  --text-xs: 1.2rem; /* 12px at base 62.5% */
+  --text-sm: 1.4rem; /* 14px */
+  --text-base: 1.6rem; /* 16px */
+  --text-lg: 1.8rem; /* 18px */
+  --text-xl: 2.2rem; /* 22px */
+  --text-2xl: 2.6rem; /* 26px */
+  --text-3xl: 3rem; /* 30px */
+
+  /* Line heights */
+  --leading-tight: 1.3;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.7;
+}
+
+/* ============================================
+ * Theme Override Classes
+ * ============================================
+ * Apply these to <body> to force a specific theme
+ */
+.lightmode {
+  color-scheme: light;
+}
+
+.darkmode {
+  color-scheme: dark;
+}
