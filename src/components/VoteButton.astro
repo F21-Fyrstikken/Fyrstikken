@@ -19,6 +19,39 @@ const buttonId = `voteButton-${categoryIndex}`;
 <script>
   let activeButton: HTMLElement | null = null;
   let activeSection: HTMLElement | null = null;
+  let selectedProject: HTMLElement | null = null;
+
+  // Håndter klikk på prosjektkort
+  document.querySelectorAll(".project-card").forEach((card) => {
+    card.addEventListener("click", (e) => {
+      const htmlCard = card as HTMLElement;
+      const section = htmlCard.closest(".category-section") as HTMLElement;
+
+      // Bare håndter stemming hvis kategorien er i stemmemodus
+      if (!section?.classList.contains("voting")) {
+        return; // La lenken fungere som normalt
+      }
+
+      // Forhindre navigasjon når man stemmer
+      e.preventDefault();
+
+      // Klikket på samme prosjekt = fjern valget
+      if (selectedProject === htmlCard) {
+        htmlCard.classList.remove("selected");
+        selectedProject = null;
+        return;
+      }
+
+      // Fjern valg fra forrige prosjekt
+      if (selectedProject) {
+        selectedProject.classList.remove("selected");
+      }
+
+      // Velg dette prosjektet
+      htmlCard.classList.add("selected");
+      selectedProject = htmlCard;
+    });
+  });
 
   document.querySelectorAll(".vote-button").forEach((button) => {
     button.addEventListener("click", () => {
@@ -30,6 +63,11 @@ const buttonId = `voteButton-${categoryIndex}`;
         htmlButton.classList.remove("vote");
         htmlButton.textContent = "Stem";
         section?.classList.remove("voting");
+        // Fjern valgt prosjekt når man avbryter
+        if (selectedProject) {
+          selectedProject.classList.remove("selected");
+          selectedProject = null;
+        }
         activeButton = null;
         activeSection = null;
         return;
@@ -40,6 +78,11 @@ const buttonId = `voteButton-${categoryIndex}`;
         activeButton.classList.remove("vote");
         activeButton.textContent = "Stem";
         activeSection?.classList.remove("voting");
+        // Fjern valgt prosjekt fra forrige kategori
+        if (selectedProject) {
+          selectedProject.classList.remove("selected");
+          selectedProject = null;
+        }
       }
 
       // Velg denne kategorien for stemming
