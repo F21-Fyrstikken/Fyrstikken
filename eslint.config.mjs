@@ -1,5 +1,4 @@
 import eslint from "@eslint/js";
-import eslintConfigPrettier from "eslint-config-prettier";
 import eslintPluginPrettier from "eslint-plugin-prettier/recommended";
 import sonarjsPlugin from "eslint-plugin-sonarjs";
 import tseslint from "typescript-eslint";
