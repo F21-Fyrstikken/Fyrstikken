@@ -1,37 +1,34 @@
 ---
-import ProjectCard from "./ui/ProjectCard.astro";
-import Breadcrumb from "./ui/Breadcrumb.astro";
-import type { ICategoryContentProps } from "../types";
+import ProjectCard from "../common/ProjectCard.astro";
+import BackLink from "../common/BackLink.astro";
+import type { ICategoryContentProps } from "../../types";
 
 const { year, categoryData, projects, basePath = "" } = Astro.props as ICategoryContentProps;
-
-const breadcrumbItems = [
-  { label: "Års", href: "/years" },
-  { label: year, href: `/years/${year}` },
-];
 
 const hasProjects = projects && projects.length > 0;
 ---
 
 <div>
   <div class="page-header-content">
-    <Breadcrumb items={breadcrumbItems} basePath={basePath} />
+    <BackLink href={`${basePath}/years/${year}/`} label={`Tilbake til ${year}`} />
     <h1>{categoryData.title}</h1>
     {categoryData.description && <p class="category-description">{categoryData.description}</p>}
   </div>
 
   {
     hasProjects ? (
-      <div class="projects-grid">
-        {projects.map((project) => (
-          <ProjectCard
-            project={project}
-            href={`${basePath}/years/${year}/${categoryData.slug.current}/${project.slug.current}/`}
-          />
-        ))}
+      <div class="category-content">
+        <div class="projects-grid">
+          {projects.map((project) => (
+            <ProjectCard
+              project={project}
+              href={`${basePath}/years/${year}/${categoryData.slug.current}/${project.slug.current}/`}
+            />
+          ))}
+        </div>
       </div>
     ) : (
-      <p>Ingen prosjekter funnet i denne kategorien.</p>
+      <p class="no-projects">Ingen prosjekter funnet i denne kategorien.</p>
     )
   }
 </div>
@@ -44,10 +41,18 @@ const hasProjects = projects && projects.length > 0;
     font-weight: 400;
   }
 
+  .category-content {
+    margin-top: 2rem;
+  }
+
   .projects-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 2rem;
+  }
+
+  .no-projects {
+    opacity: 0.7;
     margin-top: 2rem;
   }
 
@@ -55,12 +60,6 @@ const hasProjects = projects && projects.length > 0;
     .projects-grid {
       grid-template-columns: 1fr;
       gap: 1.5rem;
-    }
-  }
-
-  @media (min-width: 769px) and (max-width: 1024px) {
-    .projects-grid {
-      grid-template-columns: repeat(2, 1fr);
     }
   }
 </style>

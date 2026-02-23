@@ -1,3 +1,8 @@
+import type { PortableTextBlock, ArbitraryTypedObject } from "@portabletext/types";
+
+/** Portable Text content - array of blocks and custom types */
+export type IPortableTextContent = Array<PortableTextBlock | ArbitraryTypedObject>;
+
 export interface ISanityImage {
   asset?: { url: string };
   alt?: string;
@@ -39,7 +44,7 @@ export interface IProjectDetail {
   title: string;
   slug: ISlug;
   description?: string;
-  content?: unknown;
+  content?: IPortableTextContent;
   image?: ISanityImage;
   order?: number;
   category: {
@@ -63,7 +68,7 @@ export interface IProjectWithSiblings {
   title: string;
   slug: ISlug;
   description?: string;
-  content?: unknown;
+  content?: IPortableTextContent;
   image?: ISanityImage;
   order?: number;
   category: {
@@ -73,4 +78,15 @@ export interface IProjectWithSiblings {
     year: number;
   };
   siblingProjects: IProject[];
+}
+
+export interface ICategoryWithProjectsAndYear {
+  _id: string;
+  title: string;
+  slug: ISlug;
+  description?: string;
+  coverImage?: ISanityImage;
+  order?: number;
+  year: number;
+  projects: IProject[];
 }

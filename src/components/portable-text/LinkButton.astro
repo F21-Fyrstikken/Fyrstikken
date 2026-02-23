@@ -1,0 +1,20 @@
+---
+import type { IPortableTextNode, ILinkButtonNode } from "../../types";
+import Button from "../common/Button.astro";
+
+const { node } = Astro.props as IPortableTextNode<ILinkButtonNode>;
+const variant = node.style || "primary";
+---
+
+<div class="link-button-container">
+  <Button href={node.url} variant={variant} newTab={node.newTab}>
+    {node.text}
+  </Button>
+</div>
+
+<style>
+  .link-button-container {
+    margin: var(--space-xl) 0;
+    text-align: center;
+  }
+</style>

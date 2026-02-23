@@ -1,6 +1,8 @@
 ---
-import ProjectCard from "./ui/ProjectCard.astro";
-import type { IYearContentProps } from "../types";
+import ProjectCard from "../common/ProjectCard.astro";
+import BackLink from "../common/BackLink.astro";
+import VoteButton from "./VoteButton.astro";
+import type { IYearContentProps } from "../../types";
 
 const { yearData, categories, basePath = "" } = Astro.props as IYearContentProps;
 
@@ -9,7 +11,7 @@ const hasCategories = categories && categories.length > 0;
 
 <div>
   <div class="page-header-content">
-    <a href={`${basePath}/years/`} class="breadcrumb"> ← Tilbake til års </a>
+    <BackLink href={`${basePath}/years/`} label="Tilbake til års" />
     <h1>Fyrstikken {yearData.year}</h1>
     {yearData.description && <p class="year-description">{yearData.description}</p>}
   </div>
@@ -17,7 +19,7 @@ const hasCategories = categories && categories.length > 0;
   {
     hasCategories ? (
       <div class="year-content">
-        {categories.map((category) => {
+        {categories.map((category, index) => {
           const hasProjects = category.projects && category.projects.length > 0;
 
           return (
@@ -25,11 +27,12 @@ const hasCategories = categories && categories.length > 0;
               <div class="category-header">
                 <h2 class="category-title">{category.title}</h2>
                 {category.description && <p class="category-description">{category.description}</p>}
+                <VoteButton categoryIndex={index} />
               </div>
 
               {hasProjects && (
                 <div class="projects-grid">
-                  {category.projects.map((project) => (
+                  {category.projects?.map((project) => (
                     <ProjectCard
                       project={project}
                       href={`${basePath}/years/${String(yearData.year)}/${category.slug.current}/${project.slug.current}/`}
@@ -48,19 +51,6 @@ const hasCategories = categories && categories.length > 0;
 </div>
 
 <style>
-  .breadcrumb {
-    display: inline-block;
-    margin-bottom: 1rem;
-    text-decoration: none;
-    opacity: 0.7;
-    transition: opacity 0.2s;
-    font-size: 0.95rem;
-  }
-
-  .breadcrumb:hover {
-    opacity: 1;
-  }
-
   .year-description {
     font-size: 1.2rem;
     opacity: 0.85;

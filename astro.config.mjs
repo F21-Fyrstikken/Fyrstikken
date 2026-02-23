@@ -1,10 +1,9 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import sanity from "@sanity/astro";
-import { SANITY_CONFIG } from "./src/constants/config";
+import { SANITY_CONFIG } from "./src/config/index";
 
 export default defineConfig({
-  base: import.meta.env.DEV ? "/" : "/Fyrstikken/",
   output: "static",
   trailingSlash: "always",
   build: {

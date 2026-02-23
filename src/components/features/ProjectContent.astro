@@ -1,17 +1,17 @@
 ---
 import { PortableText } from "astro-portabletext";
-import Breadcrumb from "./ui/Breadcrumb.astro";
-import { getImageUrl, getImageAlt } from "../utils/sanity";
-import type { IProjectContentProps } from "../types";
+import Breadcrumb from "../common/Breadcrumb.astro";
+import { getImageUrl, getImageAlt } from "../../utils/sanity";
+import type { IProjectContentProps } from "../../types";
 
 // Portable Text components handles rendering of rich text from Sanity
-import Image from "./portabletext/Image.astro";
-import LinkButton from "./portabletext/LinkButton.astro";
-import YouTube from "./portabletext/YouTube.astro";
-import Vimeo from "./portabletext/Vimeo.astro";
-import Audio from "./portabletext/Audio.astro";
-import File from "./portabletext/File.astro";
-import Embed from "./portabletext/Embed.astro";
+import Image from "../portable-text/Image.astro";
+import LinkButton from "../portable-text/LinkButton.astro";
+import YouTube from "../portable-text/YouTube.astro";
+import Vimeo from "../portable-text/Vimeo.astro";
+import Audio from "../portable-text/Audio.astro";
+import File from "../portable-text/File.astro";
+import Embed from "../portable-text/Embed.astro";
 
 const { year, category, projectData, allProjects, basePath = "" } = Astro.props as IProjectContentProps;
 
