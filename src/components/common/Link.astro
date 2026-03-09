@@ -9,3 +9,16 @@ const isActive = currentPath === href || currentPath === `${href}/` || (href !==
 <a href={href} class={className} aria-current={isActive ? "page" : undefined}>
   <slot />
 </a>
+
+<style>
+  a {
+    display: inline-block;
+    padding: var(--space-md) var(--space-lg);
+    background: light-dark(var(--light-main), var(--dark-main));
+    border-bottom-left-radius: var(--radius-sm);
+    border-bottom-right-radius: var(--radius-md);
+    border-top-left-radius: var(--radius-lg);
+    border-top-right-radius: var(--radius-sm);
+    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+  }
+</style>

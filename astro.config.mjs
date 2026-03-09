@@ -5,7 +5,6 @@ import { SANITY_CONFIG } from "./src/config/index";
 
 export default defineConfig({
   output: "static",
-  trailingSlash: "always",
   build: {
     format: "directory",
   },

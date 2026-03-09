@@ -17,7 +17,7 @@
   /* ============================================
    * Color Scheme
    * ============================================ */
-  color-scheme: light dark;
+  color-scheme: light-dark;
 
   /* ============================================
    * Light Theme Colors
@@ -128,27 +128,6 @@
   --z-nav: 100;
   --z-modal: 200;
   --z-tooltip: 300;
-
-  /* ============================================
-   * Typography
-   * ============================================ */
-  --font-heading: "Roboto Slab", Georgia, serif;
-  --font-body: "Roboto", system-ui, -apple-system, sans-serif;
-  --font-mono: "Roboto Mono", "Courier New", monospace;
-
-  /* Font sizes (using rem for accessibility) */
-  --text-xs: 1.2rem; /* 12px at base 62.5% */
-  --text-sm: 1.4rem; /* 14px */
-  --text-base: 1.6rem; /* 16px */
-  --text-lg: 1.8rem; /* 18px */
-  --text-xl: 2.2rem; /* 22px */
-  --text-2xl: 2.6rem; /* 26px */
-  --text-3xl: 3rem; /* 30px */
-
-  /* Line heights */
-  --leading-tight: 1.3;
-  --leading-normal: 1.5;
-  --leading-relaxed: 1.7;
 }
 
 /* ============================================

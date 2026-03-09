@@ -1,20 +1,30 @@
 ---
 import { Image } from "astro:assets";
-import Header1200 from "../../images/img/banner/banner_00-stor_1600px.webp";
+import Header1600Stor from "../../images/img/banner/banner_00-stor_1600px.webp";
+import Header1600Smal from "../../images/img/banner/banner_00-smal_1600px.webp";
 import { SITE_CONFIG } from "../../config";
+import NightDay from "../layout/NightDay.astro";
 
 const year = SITE_CONFIG.currentYear;
+
+const { variant = "stor" } = Astro.props;
+
+const headerImg = variant === "stor" ? Header1600Stor : Header1600Smal;
+const headerHeight = variant === "stor" ? 500 : 250;
 ---
 
 <header>
   <Image
-    src={Header1200}
-    height={500}
+    src={headerImg}
+    height={headerHeight}
     quality={"max"}
     loading="eager"
     alt="Regnbuefarget abstrakt kunst som symboliserer de ulike fagområdene i oppdragsbanken"
     class="header-img"
   />
+  <div id="nightDay">
+    <NightDay />
+  </div>
   <div id="headerText">
     <h1>Fyrstikken {year}</h1>
     <p>Her kan du stemme på publikumsprisen, se på forskjellige elevprosjekter og lære mer om dem.</p>
@@ -29,14 +39,18 @@ const year = SITE_CONFIG.currentYear;
     position: relative;
     width: fit-content;
     margin-inline: auto;
-    margin-block-start: -60px;
   }
   #headerText {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -75%);
     text-align: center;
+  }
+  #nightDay {
+    position: absolute;
+    top: 1rem;
+    right: 0;
   }
   h1,
   p {

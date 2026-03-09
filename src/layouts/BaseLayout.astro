@@ -1,9 +1,6 @@
 ---
-import Link from "../components/common/Link.astro";
 import "../styles/global.css";
 import "../styles/typografi.css";
-import HeaderImg from "../components/layout/HeaderImg.astro";
-import NightDay from "../components/layout/NightDay.astro";
 import type { IBaseLayoutProps } from "../types";
 import { SITE_CONFIG } from "../config";
 
@@ -43,20 +40,23 @@ const ogImage = image ?? `${canonicalUrl.origin}${base}og-image.png`;
   </head>
   <body>
     <a href="#main-content" class="skiplink">Hopp til hovedinnhold</a>
-    <nav class="main-nav" aria-label="Hovednavigasjon">
+    <!-- <nav class="main-nav" aria-label="Hovednavigasjon">
       <div class="nav-content">
         <Link href={base} class="nav-link">Hjem</Link>
         <Link href={`${base}about/`} class="nav-link">Arrangementet</Link>
         <Link href={`${base}years/`} class="nav-link">År</Link>
       </div>
-      <NightDay />
-    </nav>
-    <HeaderImg />
+    </nav> -->
     <main class="main-content">
-      <slot />
+      <section>
+        <slot />
+      </section>
     </main>
     <footer>
-        <p>Opphavsrett © <span id="copyright">{new Date().getFullYear().toString()}</span> Fyrstikk-komitèen. Alle rettigheter hevdet</p>
+      <p
+        >Opphavsrett © <span id="copyright">{new Date().getFullYear().toString()}</span> Fyrstikk-komitèen. Alle rettigheter
+        hevdet</p
+      >
     </footer>
   </body>
 </html>
@@ -82,9 +82,13 @@ const ogImage = image ?? `${canonicalUrl.origin}${base}og-image.png`;
   }
 
   body {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
     background: light-dark(var(--light-bakgrunn), var(--dark-bakgrunn));
     color: light-dark(var(--light-tekst), var(--dark-tekst));
     min-height: 100vh;
+    max-width: 1600px;
+    margin-inline: auto;
     font-family:
       system-ui,
       -apple-system,
@@ -92,36 +96,11 @@ const ogImage = image ?? `${canonicalUrl.origin}${base}og-image.png`;
     line-height: 1.6;
   }
 
-  .main-nav {
-    display: flex;
-    justify-content: space-between;
+  main {
     background: light-dark(var(--light-main), var(--dark-main));
-    border-bottom: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
-    padding: 1rem 0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-
-  .nav-content {
-    max-width: 1200px;
-    padding: 0 2rem;
-    display: flex;
-    justify-content: start;
-    gap: 2rem;
-  }
-
-  .nav-content :global(.nav-link) {
-    text-decoration: none;
-    color: inherit;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    transition: background 0.2s;
-  }
-
-  .nav-content :global(.nav-link:hover) {
-    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+    padding-inline: var(--space-xl);
+    padding-block: var(--space-md);
   }
 
   .main-content {
@@ -143,13 +122,12 @@ const ogImage = image ?? `${canonicalUrl.origin}${base}og-image.png`;
     box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.2);
   }
 
-  @media (max-width: 768px) {
+  /* @media (max-width: 768px) {
     .nav-content {
       padding: 0 1rem;
       gap: 1rem;
     }
-  }
-
+  } */
 </style>
 <script>
   import { getCopyRightYear } from "../lib/utils"; // import i script for å være client-side

@@ -1,5 +1,4 @@
 import eslint from "@eslint/js";
-import eslintPluginPrettier from "eslint-plugin-prettier/recommended";
 import sonarjsPlugin from "eslint-plugin-sonarjs";
 import tseslint from "typescript-eslint";
 import eslintPluginAstro from "eslint-plugin-astro";
@@ -129,6 +128,5 @@ export default [
       "sonarjs/cognitive-complexity": ["error", 15],
     },
   },
-  eslintConfigPrettier,
   eslintPluginPrettier,
 ];

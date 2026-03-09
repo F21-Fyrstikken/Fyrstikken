@@ -1,7 +1,17 @@
 ---
+import Link from "../components/common/Link.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import HeaderImg from "../components/layout/HeaderImg.astro";
+
+const base = import.meta.env.BASE_URL;
 ---
 
+<HeaderImg variant="stor" />
 <BaseLayout title="Home" description="Fyrstikken er F21 VGS sin lokale prisutdelingsarrangement">
   <h1 slot="pageTitle">Fyrstikken</h1>
+  <section>
+    <h2>Info</h2>
+    <p>Fyrstikken er F21s årlige kåring av de beste IT og medieproduktene laget av våre elever.</p>
+    <Link href={`${base}years/`}>Utforsk tidligere år</Link>
+  </section>
 </BaseLayout>

@@ -23,8 +23,8 @@ const breadcrumbItems = [
 ];
 
 // Helper variables for the main project image
-const projectImageUrl = getImageUrl(projectData.image);
-const projectImageAlt = getImageAlt(projectData.image, projectData.title);
+// const projectImageUrl = getImageUrl(projectData.image);
+// const projectImageAlt = getImageAlt(projectData.image, projectData.title);
 
 // Configuration for how to render different types of content blocks from Sanity
 const portableTextComponents = {
@@ -83,7 +83,7 @@ const sidebarProjects = allProjects?.map((proj) => {
     <article class="project-detail">
       <h1 class="project-title">{projectData.title}</h1>
 
-      {projectImageUrl && <img src={projectImageUrl} alt={projectImageAlt} class="project-hero-image" />}
+      <!-- {projectImageUrl && <img src={projectImageUrl} alt={projectImageAlt} class="project-hero-image" />} -->
 
       {projectData.description && <p class="project-description">{projectData.description}</p>}
 
