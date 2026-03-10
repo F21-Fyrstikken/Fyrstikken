@@ -78,22 +78,22 @@ export interface Vote {
 
 <script>
   // Sett til `false` for å teste uten å sende til backend
-  const BACKEND_ENABLED = false;
+  const BACKEND_ENABLED = true;
 
   // Maps category slug from URL to backend field name
   // TODO: Update when 2026 categories are finalized
   // Maps category slug from URL to backend field name
   const CATEGORY_SLUG_TO_FIELD: Record<string, keyof Omit<Vote, "email">> = {
     fotografi: "category_100",
-    video: "category_200",
-    animasjon: "category_300",
-    illustrasjon: "category_400",
-    spill: "category_500",
-    musikk: "category_600",
-    podcast: "category_700",
-    webdesign: "category_800",
-    ux: "category_900",
-    annet: "category_1000",
+    animasjon: "category_200",
+    film: "category_300",
+    grafiskdesign: "category_400",
+    weboginteraktivitet: "category_500",
+    reklame: "category_600",
+    journalistikk: "category_700",
+    kunst: "category_800",
+    spillutvikling: "category_900",
+    lyddesign: "category_1000",
   };
 
   interface Vote {
