@@ -1,21 +1,23 @@
 ---
-
+export interface Vote {
+  email: string;
+  category_100?: number;
+  category_200?: number;
+  category_300?: number;
+}
 ---
 
 <div class="vote-modal-overlay" id="voteModalOverlay">
   <div class="vote-modal">
     <h2>Er du sikker på at du vil stemme på dette prosjektet?</h2>
     <h4 id="selectedProjectTitle">Du har valgt: </h4>
-
     <p class="mail-label">Mail:</p>
     <input type="email" placeholder="bruker000@osloskolen.no" class="mail-input" id="voteEmail" />
     <p class="error">* Du må skrive inn en gyldig osloskolen e-postadresse</p>
-
     <div class="vote-options">
       <button id="confirmVoteBtn">Ja</button>
       <button id="cancelVoteBtn">Nei</button>
     </div>
-
     <p><b>Du har bare én stemme per kategori, og den kan ikke endres</b></p>
   </div>
 </div>
@@ -33,11 +35,9 @@
     justify-content: center;
     align-items: center;
   }
-
   .vote-modal-overlay.active {
     display: flex;
   }
-
   .vote-modal {
     background-color: light-dark(var(--light-main), var(--dark-main));
     border: light-dark(var(--light-ramme), var(--dark-ramme)) 2px solid;
@@ -45,7 +45,6 @@
     padding: 42px;
     max-width: 600px;
   }
-
   .mail-label {
     display: block;
     font-style: bold;
@@ -55,7 +54,6 @@
     padding: 8px 16px;
     font-size: 14px;
   }
-
   .vote-options {
     display: flex;
     gap: 16px;
@@ -71,7 +69,6 @@
     cursor: pointer;
     border-color: light-dark(var(--light-tekst), var(--dark-tekst));
   }
-
   .error {
     color: light-dark(var(--light-rubin), var(--dark-rubin));
     font-weight: bold;
@@ -80,54 +77,108 @@
 </style>
 
 <script>
+  // Sett til `false` for å teste uten å sende til backend
+  const BACKEND_ENABLED = false;
+
+  // Maps category slug from URL to backend field name
+  // TODO: Update when 2026 categories are finalized
+  const CATEGORY_SLUG_TO_FIELD: Record<string, keyof Omit<Vote, "email">> = {
+    fotografi: "category_100",
+    // legg til flere her: "video": "category_200", osv.
+  };
+
+  interface Vote {
+    email: string;
+    category_100?: number;
+    category_200?: number;
+    category_300?: number;
+  }
+
   const overlay = document.getElementById("voteModalOverlay");
   const cancelBtn = document.getElementById("cancelVoteBtn");
   const confirmBtn = document.getElementById("confirmVoteBtn");
 
-  // Funksjon for å lukke modalen
   function closeModal() {
     overlay?.classList.remove("active");
     document.body.style.overflow = "";
     document.querySelector(".project-card.selected")?.classList.remove("selected");
   }
 
-  // Lukk modal ved klikk på "Nei"
   cancelBtn?.addEventListener("click", closeModal);
 
-  // Lukk modal ved klikk utenfor
   overlay?.addEventListener("click", (e) => {
-    if (e.target === overlay) {
-      closeModal();
-    }
+    if (e.target === overlay) closeModal();
   });
 
-  // Bekreft stemme
-  confirmBtn?.addEventListener("click", () => {
-    const email = (document.getElementById("voteEmail") as HTMLInputElement)?.value;
+  confirmBtn?.addEventListener("click", async () => {
+    const emailInput = document.getElementById("voteEmail") as HTMLInputElement;
     const errorElement = document.querySelector(".error") as HTMLElement;
-    if (!email || !email.endsWith("@osloskolen.no")) {
-      // TODO: Bedre validering
-      if (errorElement) {
-        errorElement.style.display = "block";
-      }
-      return;
-    } else {
-      if (errorElement) {
-        errorElement.style.display = "none";
-      }
-    }
+    const email = emailInput?.value;
 
-    // Legg til voted-klasse på det valgte prosjektet
+    if (!email || !email.endsWith("@osloskolen.no")) {
+      if (errorElement) errorElement.style.display = "block";
+      return;
+    }
+    if (errorElement) errorElement.style.display = "none";
+
     const selectedCard = document.querySelector(".project-card.selected") as HTMLAnchorElement;
     const sectionId = selectedCard?.closest(".category-section")?.id;
     const projectHref = selectedCard?.getAttribute("href");
 
+    // Parse category slug and project ID from URL
+    // Expected format: /<year>/<category>/<category>-<id>/
+    let categoryField: keyof Omit<Vote, "email"> | undefined;
+    let projectId: number | undefined;
+
+    if (projectHref) {
+      const parts = projectHref.split("/").filter(Boolean);
+      // parts: ["years", "2025", "fotografi", "fotografi-101"]
+      const categorySlug = parts[parts.length - 2];
+      const projectSlug = parts[parts.length - 1];
+      const idMatch = projectSlug.match(/-(\d+)$/);
+
+      if (idMatch) projectId = parseInt(idMatch[1]);
+      if (categorySlug) categoryField = CATEGORY_SLUG_TO_FIELD[categorySlug];
+    }
+
+    if (!categoryField || projectId === undefined) {
+      console.error("Kunne ikke parse kategori eller prosjekt-ID fra:", projectHref);
+      return;
+    }
+
+    // Build vote payload
+    const vote: Vote = {
+      email,
+      [categoryField]: projectId,
+    };
+
+    if (BACKEND_ENABLED) {
+      try {
+        const response = await fetch("https://fyrstikken-backend.infinitiwarrior.com/votes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(vote),
+        });
+
+        if (!response.ok) {
+          console.error("Feil ved innsending av stemme:", response.statusText);
+          return;
+        }
+      } catch (error) {
+        console.error("Nettverksfeil:", error);
+        return;
+      }
+    } else {
+      console.log("Backend deaktivert — stemme ikke sendt:", vote);
+    }
+
+    // Update UI
     if (selectedCard) {
       selectedCard.classList.add("voted");
       selectedCard.classList.remove("selected");
     }
 
-    // Lagre stemmen i localStorage
+    // Persist to localStorage for UI state
     if (sectionId && projectHref) {
       const votes = JSON.parse(localStorage.getItem("fyrstikken-votes") || "{}");
       votes[sectionId] = projectHref;
@@ -136,8 +187,6 @@
 
     overlay?.classList.remove("active");
     document.body.style.overflow = "";
-
-    // Send event for å avslutte stemmemodus
     document.dispatchEvent(new CustomEvent("voteConfirmed"));
   });
 </script>
