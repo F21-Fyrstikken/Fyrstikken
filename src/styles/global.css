@@ -26,6 +26,7 @@
 html {
   /* 62.5% makes rem calculations easier: 1rem = 10px */
   font-size: 62.5%;
+  scroll-behavior: smooth;
 }
 
 html,

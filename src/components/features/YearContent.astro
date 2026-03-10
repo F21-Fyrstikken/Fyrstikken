@@ -18,6 +18,19 @@ const hasCategories = categories && categories.length > 0;
     {yearData.description && <p class="year-description">{yearData.description}</p>}
   </div>
 
+  <div class="kategorier">
+    {
+      categories.map((category, index) => (
+        <a
+          class="kategori-knapp"
+          href={"#" + category.slug.current}
+          style={`--btn-light-color: ${THEME_COLORS[index % THEME_COLORS.length].light}; --btn-dark-color: ${THEME_COLORS[index % THEME_COLORS.length].dark};`}>
+          {category.title}
+        </a>
+      ))
+    }
+  </div>
+
   {
     hasCategories ? (
       <div class="year-content">
@@ -68,6 +81,23 @@ const hasCategories = categories && categories.length > 0;
 
   .year-content {
     margin-top: 2rem;
+  }
+
+  .kategorier {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .kategori-knapp {
+    background-color: light-dark(var(--light-ixDBoks), var(--dark-ixDBoks));
+    padding: 0.5rem 1.5rem;
+    border: 2px solid light-dark(var(--btn-light-color), var(--btn-dark-color));
+    border-radius: 6px;
+    font-weight: normal;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
   }
 
   .category-section {
