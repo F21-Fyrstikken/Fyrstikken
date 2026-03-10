@@ -82,9 +82,18 @@ export interface Vote {
 
   // Maps category slug from URL to backend field name
   // TODO: Update when 2026 categories are finalized
+  // Maps category slug from URL to backend field name
   const CATEGORY_SLUG_TO_FIELD: Record<string, keyof Omit<Vote, "email">> = {
     fotografi: "category_100",
-    // legg til flere her: "video": "category_200", osv.
+    video: "category_200",
+    animasjon: "category_300",
+    illustrasjon: "category_400",
+    spill: "category_500",
+    musikk: "category_600",
+    podcast: "category_700",
+    webdesign: "category_800",
+    ux: "category_900",
+    annet: "category_1000",
   };
 
   interface Vote {
@@ -92,6 +101,13 @@ export interface Vote {
     category_100?: number;
     category_200?: number;
     category_300?: number;
+    category_400?: number;
+    category_500?: number;
+    category_600?: number;
+    category_700?: number;
+    category_800?: number;
+    category_900?: number;
+    category_1000?: number;
   }
 
   const overlay = document.getElementById("voteModalOverlay");
