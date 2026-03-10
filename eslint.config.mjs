@@ -128,5 +128,4 @@ export default [
       "sonarjs/cognitive-complexity": ["error", 15],
     },
   },
-  eslintPluginPrettier,
 ];
