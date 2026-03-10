@@ -1,0 +1,35 @@
+---
+import Card from '../../components/Card.astro';
+import WBG from '../../components/WBG.astro';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const numbers = ['100','200','300','400','500','600','700','800','900'];
+  return numbers.map(num => ({
+    params: { number: num }
+  }));
+}
+
+const { number } = Astro.params;
+const cardData = Array.from({ length: 9 }, (_, i) => ({
+  label: `${i + 1}`,
+  path: `/${number}/${i + 1}/`
+}));
+---
+<Layout>
+  <WBG />
+  <h1 class="text-3xl font-bold mb-4">Section {number}</h1>
+  <div class="cards">
+    {cardData.map(card => (
+      <Card {...card} />
+    ))}
+  </div>
+  <style>
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 1rem;
+      padding: 2rem;
+    }
+  </style>
+</Layout>
