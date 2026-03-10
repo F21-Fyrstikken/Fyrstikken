@@ -71,6 +71,24 @@ const hasCategories = categories && categories.length > 0;
   }
 </div>
 
+<a href="#" class="scroll-to-top" id="scrollToTop" aria-label="Scroll til toppen">↑</a>
+<!-- TODO: Bytt ut med et ikon -->
+
+<script>
+  const btn = document.getElementById("scrollToTop");
+  const kategorier = document.querySelector(".kategorier");
+
+  if (btn && kategorier) {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        btn.classList.toggle("visible", !entry.isIntersecting);
+      },
+      { threshold: 0 }
+    );
+    observer.observe(kategorier);
+  }
+</script>
+
 <style>
   .year-description {
     font-size: 1.2rem;
@@ -173,5 +191,26 @@ const hasCategories = categories && categories.length > 0;
     .projects-grid {
       grid-template-columns: repeat(2, 1fr);
     }
+  }
+
+  .scroll-to-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    color: inherit;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 100;
+    text-decoration: none;
+  }
+
+  .scroll-to-top.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .scroll-to-top:hover {
+    opacity: 0.8;
   }
 </style>
