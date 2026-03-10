@@ -2,6 +2,7 @@
 import ProjectCard from "./ui/ProjectCard.astro";
 import VoteButton from "./VoteButton.astro";
 import { colors } from "../constants/colors";
+import VoteModal from "./VoteModal.astro";
 
 const {
   yearData,
@@ -67,6 +68,7 @@ const hasCategories = categories && categories.length > 0;
             </section>
           );
         })}
+        <VoteModal />
       </div>
     ) : (
       <p>Ingen kategorier funnet for dette året.</p>

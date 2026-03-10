@@ -21,6 +21,32 @@ const buttonId = `voteButton-${categoryIndex}`;
   let activeSection: HTMLElement | null = null;
   let selectedProject: HTMLElement | null = null;
 
+  // Last inn stemmer fra localStorage ved sideinnlasting
+  function loadVotesFromStorage() {
+    const votes = JSON.parse(localStorage.getItem("fyrstikken-votes") || "{}");
+
+    Object.entries(votes).forEach(([sectionId, projectHref]) => {
+      const section = document.getElementById(sectionId);
+      if (!section) return;
+
+      // Deaktiver stemmeknappen for denne kategorien
+      const voteButton = section.querySelector(".vote-button") as HTMLButtonElement;
+      if (voteButton) {
+        voteButton.textContent = "Stemt";
+        voteButton.setAttribute("disabled", "true");
+      }
+
+      // Merk det stemte prosjektet
+      const votedCard = section.querySelector(`a[href="${projectHref}"]`);
+      if (votedCard) {
+        votedCard.classList.add("voted");
+      }
+    });
+  }
+
+  // Kjør ved sideinnlasting
+  loadVotesFromStorage();
+
   // Håndter klikk på prosjektkort
   document.querySelectorAll(".project-card").forEach((card) => {
     card.addEventListener("click", (e) => {
@@ -50,6 +76,18 @@ const buttonId = `voteButton-${categoryIndex}`;
       // Velg dette prosjektet
       htmlCard.classList.add("selected");
       selectedProject = htmlCard;
+
+      // Vis modalen med prosjektinfo
+      const modal = document.getElementById("voteModalOverlay");
+      const titleElement = document.getElementById("selectedProjectTitle");
+      const projectTitle = htmlCard.querySelector("h2")?.textContent || "Ukjent prosjekt";
+      const categoryTitle = section.querySelector(".category-title")?.textContent || "Ukjent kategori";
+
+      if (titleElement) {
+        titleElement.textContent = `Du har valgt: ${projectTitle} i kategorien ${categoryTitle}`;
+      }
+      modal?.classList.add("active");
+      document.body.style.overflow = "hidden";
     });
   });
 
@@ -93,6 +131,24 @@ const buttonId = `voteButton-${categoryIndex}`;
       activeSection = section;
     });
   });
+
+  // Lytt etter bekreftelse på stemme og avslutt stemmemodus
+  document.addEventListener("voteConfirmed", (() => {
+    if (activeButton) {
+      activeButton.classList.remove("vote");
+      activeButton.textContent = "Stemt";
+      activeButton.setAttribute("disabled", "true");
+    }
+    if (activeSection) {
+      activeSection.classList.remove("voting");
+    }
+    if (selectedProject) {
+      selectedProject.classList.remove("selected");
+      selectedProject = null;
+    }
+    activeButton = null;
+    activeSection = null;
+  }) as EventListener);
 </script>
 
 <style define:vars={{ "category-light-color": categoryColor.light, "category-dark-color": categoryColor.dark }}>
@@ -107,5 +163,10 @@ const buttonId = `voteButton-${categoryIndex}`;
 
   button.vote {
     border-color: light-dark(var(--category-light-color), var(--category-dark-color));
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 </style>

@@ -50,6 +50,14 @@ const imageAlt = getImageAlt(project.image, project.title);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
   }
 
+  .project-card.voted {
+    border-width: 3px;
+    border-color: light-dark(
+      var(--category-light-color, var(--light-safir)),
+      var(--category-dark-color, var(--dark-safir))
+    );
+  }
+
   .project-image {
     width: 100%;
     height: 220px;
