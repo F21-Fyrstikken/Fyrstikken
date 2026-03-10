@@ -71,9 +71,15 @@ export function buildImageUrl(ref: string): string {
  * @returns The file URL, or empty string if not available
  */
 export function getFileUrl(asset?: { url?: string; _ref?: string }): string {
-  if (asset === undefined) return "";
-  if (asset.url !== undefined && asset.url !== "") return asset.url;
-  if (asset._ref !== undefined && asset._ref !== "") return buildFileUrl(asset._ref);
+  if (asset === undefined) {
+    return "";
+  }
+  if (asset.url !== undefined && asset.url !== "") {
+    return asset.url;
+  }
+  if (asset._ref !== undefined && asset._ref !== "") {
+    return buildFileUrl(asset._ref);
+  }
   return "";
 }
 
@@ -87,7 +93,7 @@ export function getFileUrl(asset?: { url?: string; _ref?: string }): string {
  */
 export function getFilenameFromUrl(url: string, fallback = "File"): string {
   const filename = url.split("/").pop();
-  return filename || fallback;
+  return filename !== undefined && filename !== "" ? filename : fallback;
 }
 
 /**
