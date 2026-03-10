@@ -2,10 +2,12 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Button from "../components/common/Button.astro";
 import { getBasePath } from "../utils/paths";
+import HeaderImg from "../components/layout/HeaderImg.astro";
 
 const basePath = getBasePath();
 ---
 
+<HeaderImg variant="smal" />
 <BaseLayout title="404 - Side ikke funnet" description="Siden du leter etter finnes ikke">
   <div class="not-found">
     <h1>404</h1>

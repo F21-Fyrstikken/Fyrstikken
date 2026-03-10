@@ -1,9 +1,6 @@
 ---
-import Link from "../components/common/Link.astro";
 import "../styles/global.css";
 import "../styles/typografi.css";
-import HeaderImg from "../components/layout/HeaderImg.astro";
-import NightDay from "../components/layout/NightDay.astro";
 import type { IBaseLayoutProps } from "../types";
 import { SITE_CONFIG } from "../config";
 
@@ -15,11 +12,12 @@ const ogImage = image ?? `${canonicalUrl.origin}${base}og-image.png`;
 
 <html lang="no">
   <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
-    <meta name="viewport" content="width=device-width" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
+
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
     <title>{title}</title>
 
     <!-- Open Graph / Facebook -->
@@ -40,31 +38,36 @@ const ogImage = image ?? `${canonicalUrl.origin}${base}og-image.png`;
 
     <!-- Canonical URL -->
     <link rel="canonical" href={canonicalUrl.href} />
+
+    
+
+
   </head>
   <body>
-    <a href="#main-content" class="skip-link">Hopp til hovedinnhold</a>
-    <nav class="main-nav" aria-label="Hovednavigasjon">
+    <a href="#main-content" class="skiplink">Hopp til hovedinnhold</a>
+    <!-- <nav class="main-nav" aria-label="Hovednavigasjon">
       <div class="nav-content">
         <Link href={base} class="nav-link">Hjem</Link>
         <Link href={`${base}about/`} class="nav-link">Arrangementet</Link>
         <Link href={`${base}years/`} class="nav-link">År</Link>
       </div>
-      <NightDay />
-    </nav>
-    <HeaderImg />
-    <div class="container">
-      <header class="page-header">
-        <slot name="pageTitle" />
-      </header>
-      <main id="main-content" class="main-content">
+    </nav> -->
+    <main class="main-content">
+      <section>
         <slot />
-      </main>
-    </div>
+      </section>
+    </main>
+    <footer>
+      <p
+        >Opphavsrett © <span id="copyright">{new Date().getFullYear().toString()}</span> Fyrstikk-komitèen. Alle rettigheter
+        hevdet</p
+      >
+    </footer>
   </body>
 </html>
 
 <style>
-  .skip-link {
+  .skiplink {
     position: absolute;
     top: -100%;
     left: 50%;
@@ -79,14 +82,18 @@ const ogImage = image ?? `${canonicalUrl.origin}${base}og-image.png`;
     transition: top 0.2s ease;
   }
 
-  .skip-link:focus {
+  .skiplink:focus {
     top: 0;
   }
 
   body {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
     background: light-dark(var(--light-bakgrunn), var(--dark-bakgrunn));
     color: light-dark(var(--light-tekst), var(--dark-tekst));
     min-height: 100vh;
+    max-width: 1600px;
+    margin-inline: auto;
     font-family:
       system-ui,
       -apple-system,
@@ -94,76 +101,42 @@ const ogImage = image ?? `${canonicalUrl.origin}${base}og-image.png`;
     line-height: 1.6;
   }
 
-  .main-nav {
-    display: flex;
-    justify-content: space-between;
+  main {
     background: light-dark(var(--light-main), var(--dark-main));
-    border-bottom: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
-    padding: 1rem 0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-
-  .nav-content {
-    max-width: 1200px;
-    padding: 0 2rem;
-    display: flex;
-    justify-content: start;
-    gap: 2rem;
-  }
-
-  .nav-content :global(.nav-link) {
-    text-decoration: none;
-    color: inherit;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    transition: background 0.2s;
-  }
-
-  .nav-content :global(.nav-link:hover) {
-    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
-  }
-
-  .nav-content :global(.nav-link[aria-current="page"]) {
-    background: light-dark(var(--light-safir), var(--dark-safir));
-    color: white;
-  }
-
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-
-  .page-header {
-    margin-bottom: 2rem;
-  }
-
-  .page-header :global(h1) {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
     color: light-dark(var(--light-tekst), var(--dark-tekst));
+    padding-inline: var(--space-xl);
+    padding-block: var(--space-md);
   }
 
   .main-content {
     min-height: 60vh;
   }
 
-  @media (max-width: 768px) {
-    .container {
-      padding: 1rem;
-    }
+  footer {
+    position: fixed;
+    bottom: 0;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
+    border-top: 3px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    height: 3rem;
+    width: 100%;
+    box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.2);
+  }
 
+  /* @media (max-width: 768px) {
     .nav-content {
       padding: 0 1rem;
       gap: 1rem;
     }
-
-    .page-header :global(h1) {
-      font-size: 2rem;
-    }
-  }
+  } */
 </style>
+<script>
+  import { getCopyRightYear } from "../lib/utils"; // import i script for å være client-side
+  const year = getCopyRightYear();
+  const copyright = document.getElementById("copyright") as unknown as HTMLParagraphElement;
+  copyright.textContent = year.toString();
+</script>

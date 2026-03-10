@@ -3,11 +3,13 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import YearsList from "../components/features/YearsList.astro";
 import { getBasePath } from "../utils/paths";
 import { getAllYears } from "../lib/sanity-client";
+import HeaderImg from "../components/layout/HeaderImg.astro";
 
 const basePath = getBasePath();
 const years = await getAllYears();
 ---
 
+<HeaderImg variant="smal" />
 <BaseLayout title="Fyrstikken - Års" description="Utforsk Fyrstikken priser gjennom årene">
   <h1 slot="pageTitle">Fyrstikken gjennom årene</h1>
 

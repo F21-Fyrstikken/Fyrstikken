@@ -3,6 +3,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import YearContent from "../../components/features/YearContent.astro";
 import { getAllYears, getCategoriesWithProjectsForYear } from "../../lib/sanity-client";
 import { getBasePath } from "../../utils/paths";
+import HeaderImg from "../../components/layout/HeaderImg.astro";
 
 export async function getStaticPaths() {
   // 1. Fetch all available years
@@ -35,6 +36,7 @@ if (!year) {
 }
 ---
 
+<HeaderImg variant="smal" />
 <BaseLayout title={`Fyrstikken ${year}`} description={`Kategorier for Fyrstikken ${year}`}>
   <YearContent yearData={yearData} categories={categories} basePath={basePath} />
 </BaseLayout>

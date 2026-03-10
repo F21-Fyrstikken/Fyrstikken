@@ -4,6 +4,7 @@ import CategoryContent from "../../../components/features/CategoryContent.astro"
 import { getAllCategoriesWithProjects } from "../../../lib/sanity-client";
 import { getBasePath } from "../../../utils/paths";
 import type { ICategoryWithProjectsAndYear } from "../../../lib/sanity-client";
+import HeaderImg from "../../../components/layout/HeaderImg.astro";
 
 /**
  * Generate all category pages using a single batch query.
@@ -44,6 +45,7 @@ if (!year || !category || !categoryData) {
 }
 ---
 
+<HeaderImg variant="smal" />
 <BaseLayout title={`${category} - Fyrstikken ${year}`} description={`Prosjekter i kategorien ${category}`}>
   <CategoryContent year={year} categoryData={categoryData} projects={projects} basePath={basePath} />
 </BaseLayout>
