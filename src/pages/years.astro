@@ -1,0 +1,15 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import YearsList from "../components/features/YearsList.astro";
+import { getBasePath } from "../utils/paths";
+import { getAllYears } from "../lib/sanity-client";
+
+const basePath = getBasePath();
+const years = await getAllYears();
+---
+
+<BaseLayout title="Fyrstikken - Års" description="Utforsk Fyrstikken priser gjennom årene">
+  <h1 slot="pageTitle">Fyrstikken gjennom årene</h1>
+
+  <YearsList years={years} basePath={basePath} />
+</BaseLayout>

@@ -1,0 +1,20 @@
+---
+import { getYouTubeId } from "../../utils/video";
+import type { IPortableTextNode, IYouTubeNode } from "../../types";
+import VideoEmbed from "../common/VideoEmbed.astro";
+
+const { node } = Astro.props as IPortableTextNode<IYouTubeNode>;
+
+const videoId = getYouTubeId(node.url);
+const embedUrl = videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+---
+
+{
+  embedUrl && (
+    <VideoEmbed
+      src={embedUrl}
+      title="YouTube video"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+    />
+  )
+}

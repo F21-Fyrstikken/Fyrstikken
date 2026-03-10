@@ -1,0 +1,110 @@
+/**
+ * Global Styles Reset
+ * ====================
+ *
+ * A minimal CSS reset for consistent styling across browsers.
+ * Design tokens are defined in tokens.css.
+ */
+
+/* Import design tokens first */
+@import "./tokens.css";
+
+/* ============================================
+ * Box Sizing Reset
+ * ============================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ============================================
+ * HTML & Body Setup
+ * ============================================ */
+html {
+  /* 62.5% makes rem calculations easier: 1rem = 10px */
+  font-size: 62.5%;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  position: relative;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  background: light-dark(var(--light-bakgrunn), var(--dark-bakgrunn));
+  color: light-dark(var(--light-tekst), var(--dark-tekst));
+}
+
+/* ============================================
+ * Typography Inheritance
+ * ============================================ */
+/* Inherit fonts for inputs and buttons */
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+/* ============================================
+ * Links & Interactive Elements
+ * ============================================ */
+button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+}
+
+/* ============================================
+ * Lists
+ * ============================================ */
+ul,
+ol {
+  list-style: none;
+}
+
+/* ============================================
+ * Media Elements
+ * ============================================ */
+img,
+video,
+iframe,
+picture,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* ============================================
+ * Reduced Motion
+ * ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================
+ * Focus Styles
+ * ============================================ */
+:focus-visible {
+  outline: 2px solid light-dark(var(--light-safir), var(--dark-safir));
+  outline-offset: 2px;
+}

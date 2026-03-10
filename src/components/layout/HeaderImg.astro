@@ -1,0 +1,46 @@
+---
+import { Image } from "astro:assets";
+import Header1200 from "../../images/img/banner/banner_00-stor_1600px.webp";
+import { SITE_CONFIG } from "../../config";
+
+const year = SITE_CONFIG.currentYear;
+---
+
+<header>
+  <Image
+    src={Header1200}
+    height={500}
+    quality={"max"}
+    loading="eager"
+    alt="Regnbuefarget abstrakt kunst som symboliserer de ulike fagområdene i oppdragsbanken"
+    class="header-img"
+  />
+  <div id="headerText">
+    <h1>Fyrstikken {year}</h1>
+    <p>Her kan du stemme på publikumsprisen, se på forskjellige elevprosjekter og lære mer om dem.</p>
+  </div>
+</header>
+
+<style>
+  .header-img {
+    width: 100vw;
+  }
+  header {
+    position: relative;
+    width: fit-content;
+    margin-inline: auto;
+    margin-block-start: -60px;
+  }
+  #headerText {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  h1,
+  p {
+    color: var(--dark-tekst);
+    max-width: 50ch;
+  }
+</style>

@@ -1,0 +1,69 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Button from "../components/common/Button.astro";
+import { getBasePath } from "../utils/paths";
+
+const basePath = getBasePath();
+---
+
+<BaseLayout title="404 - Side ikke funnet" description="Siden du leter etter finnes ikke">
+  <div class="not-found">
+    <h1>404</h1>
+    <h2>Side ikke funnet</h2>
+    <p>Beklager, siden du leter etter finnes ikke eller har blitt flyttet.</p>
+    <div class="actions">
+      <Button href={`${basePath}/`} variant="primary">Gå til forsiden</Button>
+      <Button href={`${basePath}/years/`} variant="secondary">Se alle år</Button>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .not-found {
+    text-align: center;
+    padding: 4rem 2rem;
+  }
+
+  .not-found h1 {
+    font-size: 8rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1;
+    color: light-dark(var(--light-safir), var(--dark-safir));
+  }
+
+  .not-found h2 {
+    font-size: 2rem;
+    margin: 1rem 0;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+
+  .not-found p {
+    font-size: 1.2rem;
+    opacity: 0.8;
+    max-width: 400px;
+    margin: 0 auto 2rem;
+  }
+
+  .actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 768px) {
+    .not-found h1 {
+      font-size: 5rem;
+    }
+
+    .not-found h2 {
+      font-size: 1.5rem;
+    }
+
+    .actions {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+</style>

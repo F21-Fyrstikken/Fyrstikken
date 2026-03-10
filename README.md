@@ -1,52 +1,182 @@
-# Astro Starter Kit: Basics
+# Fyrstikken
 
-```sh
-npm create astro@latest -- --template basics
+Fyrstikken er F21 VGS sin nettside for den årlige prisutdelingen, hvor elevprosjekter blir utstilt og publikum kan stemme på sine favoritter.
+
+**Produksjon:** [fyrstikken.f21.no](https://fyrstikken.f21.no)
+
+## Teknologi
+
+- **[Astro v5](https://astro.build/)** - Statisk nettstedsgenerator
+- **[Sanity CMS](https://www.sanity.io/)** - Headless CMS for innhold
+- **[TypeScript](https://www.typescriptlang.org/)** - Typesikkerhet
+- **[Cloudflare Pages](https://pages.cloudflare.com/)** - Hosting og deployment
+
+## Kom i gang
+
+### Forutsetninger
+
+- [Node.js](https://nodejs.org/) v18+
+- [pnpm](https://pnpm.io/) v8+
+
+### Installasjon
+
+```bash
+# Klon repoet
+git clone https://github.com/f21-fyrstikken/Fyrstikken.git
+cd Fyrstikken
+
+# Installer avhengigheter
+pnpm install
+
+# Kopier miljøvariabler
+cp .env.example .env
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+Fyll inn Sanity-konfigurasjon i `.env`:
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+```env
+PUBLIC_SANITY_PROJECT_ID=ditt-prosjekt-id
+PUBLIC_SANITY_DATASET=production
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+### Utvikling
 
-## 🧞 Commands
+```bash
+pnpm dev          # Start utviklingsserver (localhost:4321)
+pnpm dev:studio   # Start Sanity Studio (localhost:3333)
+```
 
-All commands are run from the root of the project, from a terminal:
+### Bygging og testing
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+```bash
+pnpm build        # Bygg nettsiden
+pnpm preview      # Forhåndsvis bygget
+pnpm test         # Kjør tester
+pnpm test:watch   # Kjør tester i watch-modus
+pnpm check        # Kjør typecheck + lint
+```
 
-## 👀 Want to learn more?
+## Prosjektstruktur
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+```
+src/
+├── components/
+│   ├── common/          # Gjenbrukbare UI-komponenter
+│   │   ├── BackLink.astro
+│   │   ├── Breadcrumb.astro
+│   │   ├── Button.astro
+│   │   ├── Link.astro
+│   │   ├── ProjectCard.astro
+│   │   └── VideoEmbed.astro
+│   ├── features/        # Funksjonskomponenter
+│   │   ├── CategoryContent.astro
+│   │   ├── ProjectContent.astro
+│   │   ├── VoteButton.astro
+│   │   ├── YearContent.astro
+│   │   └── YearsList.astro
+│   ├── layout/          # Layout-komponenter
+│   │   ├── HeaderImg.astro
+│   │   └── NightDay.astro
+│   └── portable-text/   # Sanity PortableText-komponenter
+│       ├── Audio.astro
+│       ├── Embed.astro
+│       ├── File.astro
+│       ├── Image.astro
+│       ├── LinkButton.astro
+│       ├── Vimeo.astro
+│       └── YouTube.astro
+├── config/              # Sentralisert konfigurasjon
+│   ├── index.ts         # SANITY_CONFIG, SITE_CONFIG, THEME_COLORS
+│   └── queries.ts       # Alle GROQ-spørringer
+├── layouts/
+│   └── BaseLayout.astro
+├── lib/
+│   └── sanity-client.ts # Sanity-klient
+├── pages/               # Ruter
+│   ├── index.astro
+│   ├── 404.astro
+│   └── years/
+│       └── [year]/
+│           ├── index.astro
+│           ├── [category].astro
+│           └── [category]/
+│               └── [project].astro
+├── styles/
+│   ├── tokens.css       # CSS design tokens
+│   ├── global.css       # Globale stiler
+│   └── typografi.css    # Typografi
+├── types/
+│   ├── index.ts         # Komponent-typer
+│   └── sanity.ts        # Sanity-dokumenttyper
+└── utils/
+    ├── paths.ts         # URL-bygger
+    ├── sanity.ts        # Bilde/fil-hjelpefunksjoner
+    └── video.ts         # Video ID-ekstraksjon
+```
+
+## Arkitektur
+
+### Dataflyt
+
+```
+Sanity CMS → GROQ-spørringer → Astro-sider → Statisk HTML
+```
+
+1. **Sanity CMS** lagrer alt innhold (år, kategorier, prosjekter)
+2. **GROQ-spørringer** (`src/config/queries.ts`) henter data
+3. **Astro-sider** renderer til statisk HTML ved bygging
+4. **Cloudflare Pages** serverer det statiske innholdet
+
+### Nøkkelkonsepter
+
+- **Statisk generering**: Alle sider bygges på forhånd
+- **Komponentbasert**: Gjenbrukbare Astro-komponenter
+- **Typesikker**: Full TypeScript-dekning
+- **CSS Tokens**: Sentraliserte designvariabler i `tokens.css`
+
+## Konfigurasjon
+
+All konfigurasjon er sentralisert i `src/config/index.ts`:
+
+```typescript
+// Sanity-tilkobling
+SANITY_CONFIG.projectId;
+SANITY_CONFIG.dataset;
+
+// Nettstedsinnstillinger
+SITE_CONFIG.title;
+SITE_CONFIG.fallbackUrl;
+
+// Tema
+THEME_COLORS.primary;
+THEME_COLORS.secondary;
+```
+
+## Testing
+
+Prosjektet bruker [Vitest](https://vitest.dev/) for testing:
+
+```bash
+pnpm test              # Kjør alle tester
+pnpm test:watch        # Watch-modus
+pnpm test:coverage     # Med dekningsrapport
+```
+
+Testfiler ligger ved siden av kildekoden med `.test.ts`-suffiks.
+
+## Deployment
+
+Nettsiden deployes automatisk til Cloudflare Pages via GitHub Actions:
+
+- **Push til `main`** → Produksjon
+- **Pull requests** → Preview-deployment
+
+Se `.github/workflows/deploy.yml` for konfigurasjon.
+
+## Bidra
+
+Se [CONTRIBUTING.md](./CONTRIBUTING.md) for retningslinjer.
+
+## Lisens
+
+Dette prosjektet er utviklet av og for F21 VGS.

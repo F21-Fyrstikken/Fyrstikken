@@ -1,0 +1,67 @@
+---
+import type { IProjectCardProps } from "../../types";
+import { getImageUrl, getImageAlt } from "../../utils/sanity";
+
+const { project, href } = Astro.props as IProjectCardProps;
+const imageUrl = getImageUrl(project.image);
+const imageAlt = getImageAlt(project.image, project.title);
+---
+
+<a href={href} class="project-card">
+  {imageUrl && <img src={imageUrl} alt={imageAlt} class="project-image" loading="lazy" />}
+  <div class="project-content">
+    <h2>{project.title}</h2>
+    {project.description && <p>{project.description}</p>}
+  </div>
+</a>
+
+<style>
+  .project-card {
+    background: light-dark(var(--light-main), var(--dark-main));
+    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    border-radius: 12px;
+    text-decoration: none;
+    overflow: hidden;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .project-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    border-color: light-dark(var(--light-safir), var(--dark-safir));
+  }
+
+  .project-image {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
+  }
+
+  .project-content {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .project-content h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 0.75rem 0;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+
+  .project-content p {
+    margin: 0;
+    opacity: 0.85;
+    line-height: 1.6;
+    font-size: 1rem;
+  }
+</style>

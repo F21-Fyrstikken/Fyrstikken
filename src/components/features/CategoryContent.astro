@@ -1,0 +1,65 @@
+---
+import ProjectCard from "../common/ProjectCard.astro";
+import BackLink from "../common/BackLink.astro";
+import type { ICategoryContentProps } from "../../types";
+
+const { year, categoryData, projects, basePath = "" } = Astro.props as ICategoryContentProps;
+
+const hasProjects = projects && projects.length > 0;
+---
+
+<div>
+  <div class="page-header-content">
+    <BackLink href={`${basePath}/years/${year}/`} label={`Tilbake til ${year}`} />
+    <h1>{categoryData.title}</h1>
+    {categoryData.description && <p class="category-description">{categoryData.description}</p>}
+  </div>
+
+  {
+    hasProjects ? (
+      <div class="category-content">
+        <div class="projects-grid">
+          {projects.map((project) => (
+            <ProjectCard
+              project={project}
+              href={`${basePath}/years/${year}/${categoryData.slug.current}/${project.slug.current}/`}
+            />
+          ))}
+        </div>
+      </div>
+    ) : (
+      <p class="no-projects">Ingen prosjekter funnet i denne kategorien.</p>
+    )
+  }
+</div>
+
+<style>
+  .category-description {
+    font-size: 1.2rem;
+    opacity: 0.85;
+    margin-top: 0.75rem;
+    font-weight: 400;
+  }
+
+  .category-content {
+    margin-top: 2rem;
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .no-projects {
+    opacity: 0.7;
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .projects-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+</style>

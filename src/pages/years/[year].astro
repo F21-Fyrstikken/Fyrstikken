@@ -1,0 +1,40 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import YearContent from "../../components/features/YearContent.astro";
+import { getAllYears, getCategoriesWithProjectsForYear } from "../../lib/sanity-client";
+import { getBasePath } from "../../utils/paths";
+
+export async function getStaticPaths() {
+  // 1. Fetch all available years
+  const years = await getAllYears();
+
+  // 2. For each year, fetch all categories and their projects
+  // Promise.all lets us fetch data for all years in parallel, which is faster
+  return await Promise.all(
+    years.map(async (yearData) => {
+      const yearString = yearData.year.toString();
+      const categories = await getCategoriesWithProjectsForYear(yearString);
+
+      return {
+        params: { year: yearString },
+        props: {
+          yearData,
+          categories,
+        },
+      };
+    })
+  );
+}
+
+const { year } = Astro.params;
+const { yearData, categories } = Astro.props;
+const basePath = getBasePath();
+
+if (!year) {
+  return Astro.redirect("/years/");
+}
+---
+
+<BaseLayout title={`Fyrstikken ${year}`} description={`Kategorier for Fyrstikken ${year}`}>
+  <YearContent yearData={yearData} categories={categories} basePath={basePath} />
+</BaseLayout>

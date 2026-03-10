@@ -1,0 +1,57 @@
+---
+import { getFileUrl, getFilenameFromUrl, getAudioMimeType } from "../../utils/sanity";
+import type { IPortableTextNode, IAudioNode } from "../../types";
+
+const { node } = Astro.props as IPortableTextNode<IAudioNode>;
+
+const audioUrl = getFileUrl(node.asset);
+const fileName = getFilenameFromUrl(audioUrl, "Audio file");
+const mimeType = getAudioMimeType(fileName);
+---
+
+{
+  audioUrl && (
+    <div class="audio-player">
+      <p class="audio-label">🎵 {fileName}</p>
+      <audio controls>
+        <source src={audioUrl} type={mimeType} />
+        Your browser does not support the audio element.
+      </audio>
+    </div>
+  )
+}
+
+<style>
+  .audio-player {
+    margin: 2.5rem 0;
+    padding: 1.75rem;
+    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
+    border-radius: 12px;
+    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .audio-label {
+    margin: 0 0 1rem 0;
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+
+  audio {
+    width: 100%;
+    outline: none;
+    border-radius: 8px;
+  }
+
+  audio::-webkit-media-controls-panel {
+    background-color: light-dark(var(--light-main), var(--dark-main));
+  }
+
+  @media (max-width: 768px) {
+    .audio-player {
+      margin: 2rem 0;
+      padding: 1.5rem;
+    }
+  }
+</style>

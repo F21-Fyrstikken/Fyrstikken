@@ -1,0 +1,12 @@
+---
+import { getVimeoId } from "../../utils/video";
+import type { IPortableTextNode, IVimeoNode } from "../../types";
+import VideoEmbed from "../common/VideoEmbed.astro";
+
+const { node } = Astro.props as IPortableTextNode<IVimeoNode>;
+
+const videoId = getVimeoId(node.url);
+const embedUrl = videoId ? `https://player.vimeo.com/video/${videoId}` : null;
+---
+
+{embedUrl && <VideoEmbed src={embedUrl} title="Vimeo video" allow="autoplay; fullscreen; picture-in-picture" />}

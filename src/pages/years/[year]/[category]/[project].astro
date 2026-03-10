@@ -1,0 +1,58 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import ProjectContent from "../../../../components/features/ProjectContent.astro";
+import { getAllProjectsWithDetails } from "../../../../lib/sanity-client";
+import { getBasePath } from "../../../../utils/paths";
+
+// This function is required for Static Site Generation (SSG).
+// It tells Astro exactly which pages to build by returning an array of route params.
+export async function getStaticPaths() {
+  // Single query to fetch all projects with their details and siblings
+  const allProjects = await getAllProjectsWithDetails();
+
+  return allProjects.map((project) => ({
+    params: {
+      year: project.category.year.toString(),
+      category: project.category.slug.current,
+      project: project.slug.current,
+    },
+    props: {
+      projectData: {
+        _id: project._id,
+        title: project.title,
+        slug: project.slug,
+        description: project.description,
+        content: project.content,
+        image: project.image,
+        order: project.order,
+        category: project.category,
+      },
+      allProjects: project.siblingProjects,
+    },
+  }));
+}
+
+// Get params from the URL (e.g. /years/2024/film/my-movie)
+const { year, category, project } = Astro.params;
+
+// Get data passed from getStaticPaths
+const { projectData, allProjects } = Astro.props;
+
+// Get the base path for links (useful if site is hosted in a subdirectory)
+const basePath = getBasePath();
+
+// Safety check: if any required data is missing, redirect to the main years page
+if (!year || !category || !project || !projectData) {
+  return Astro.redirect("/years/");
+}
+---
+
+<BaseLayout title={`${projectData.title} - Fyrstikken`} description={projectData.description || "Fyrstikken project"}>
+  <ProjectContent
+    year={year}
+    category={category}
+    projectData={projectData}
+    allProjects={allProjects}
+    basePath={basePath}
+  />
+</BaseLayout>

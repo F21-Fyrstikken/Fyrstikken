@@ -1,0 +1,37 @@
+---
+import type { IBreadcrumbProps } from "../../types";
+
+const { items, basePath = "" } = Astro.props as IBreadcrumbProps;
+---
+
+<nav class="breadcrumb-nav">
+  {
+    items.map((item, index) => (
+      <span>
+        <a href={`${basePath}${item.href}`} class="breadcrumb">
+          {item.label}
+        </a>
+        {index < items.length - 1 && <span class="breadcrumb-separator">/</span>}
+      </span>
+    ))
+  }
+</nav>
+
+<style>
+  .breadcrumb {
+    display: inline;
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    font-size: 0.95rem;
+  }
+
+  .breadcrumb:hover {
+    opacity: 1;
+  }
+
+  .breadcrumb-separator {
+    margin: 0 0.5rem;
+    opacity: 0.5;
+  }
+</style>
