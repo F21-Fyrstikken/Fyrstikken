@@ -9,8 +9,8 @@ const basePath = getBasePath();
 const years = await getAllYears();
 ---
 
-<HeaderImg variant="smal" />
 <BaseLayout title="Fyrstikken - Års" description="Utforsk Fyrstikken priser gjennom årene">
+  <HeaderImg variant="smal" slot="header" />
   <h1 slot="pageTitle">Fyrstikken gjennom årene</h1>
 
   <YearsList years={years} basePath={basePath} />

@@ -45,7 +45,7 @@ if (!year || !category || !categoryData) {
 }
 ---
 
-<HeaderImg variant="smal" />
 <BaseLayout title={`${category} - Fyrstikken ${year}`} description={`Prosjekter i kategorien ${category}`}>
+  <HeaderImg variant="smal" slot="header" />
   <CategoryContent year={year} categoryData={categoryData} projects={projects} basePath={basePath} />
 </BaseLayout>

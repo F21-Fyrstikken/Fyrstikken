@@ -48,8 +48,8 @@ if (!year || !category || !project || !projectData) {
 }
 ---
 
-<HeaderImg variant="smal" />
 <BaseLayout title={`${projectData.title} - Fyrstikken`} description={projectData.description || "Fyrstikken project"}>
+  <HeaderImg variant="smal" slot="header" />
   <ProjectContent
     year={year}
     category={category}
