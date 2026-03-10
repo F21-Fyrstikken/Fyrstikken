@@ -1,0 +1,143 @@
+---
+
+---
+
+<div class="vote-modal-overlay" id="voteModalOverlay">
+  <div class="vote-modal">
+    <h2>Er du sikker på at du vil stemme på dette prosjektet?</h2>
+    <h4 id="selectedProjectTitle">Du har valgt: </h4>
+
+    <p class="mail-label">Mail:</p>
+    <input type="email" placeholder="bruker000@osloskolen.no" class="mail-input" id="voteEmail" />
+    <p class="error">* Du må skrive inn en gyldig osloskolen e-postadresse</p>
+
+    <div class="vote-options">
+      <button id="confirmVoteBtn">Ja</button>
+      <button id="cancelVoteBtn">Nei</button>
+    </div>
+
+    <p><b>Du har bare én stemme per kategori, og den kan ikke endres</b></p>
+  </div>
+</div>
+
+<style>
+  .vote-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .vote-modal-overlay.active {
+    display: flex;
+  }
+
+  .vote-modal {
+    background-color: light-dark(var(--light-main), var(--dark-main));
+    border: light-dark(var(--light-ramme), var(--dark-ramme)) 2px solid;
+    border-radius: 12px;
+    padding: 42px;
+    max-width: 600px;
+  }
+
+  .mail-label {
+    display: block;
+    font-style: bold;
+  }
+  .mail-input {
+    width: 50%;
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+
+  .vote-options {
+    display: flex;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .vote-options button {
+    background-color: light-dark(var(--light-ixDBoks), var(--dark-ixDBoks));
+    padding: 12px 32px;
+    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    border-radius: 6px;
+  }
+  .vote-options button:hover {
+    cursor: pointer;
+    border-color: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+
+  .error {
+    color: light-dark(var(--light-rubin), var(--dark-rubin));
+    font-weight: bold;
+    display: none;
+  }
+</style>
+
+<script>
+  const overlay = document.getElementById("voteModalOverlay");
+  const cancelBtn = document.getElementById("cancelVoteBtn");
+  const confirmBtn = document.getElementById("confirmVoteBtn");
+
+  // Funksjon for å lukke modalen
+  function closeModal() {
+    overlay?.classList.remove("active");
+    document.body.style.overflow = "";
+    document.querySelector(".project-card.selected")?.classList.remove("selected");
+  }
+
+  // Lukk modal ved klikk på "Nei"
+  cancelBtn?.addEventListener("click", closeModal);
+
+  // Lukk modal ved klikk utenfor
+  overlay?.addEventListener("click", (e) => {
+    if (e.target === overlay) {
+      closeModal();
+    }
+  });
+
+  // Bekreft stemme
+  confirmBtn?.addEventListener("click", () => {
+    const email = (document.getElementById("voteEmail") as HTMLInputElement)?.value;
+    const errorElement = document.querySelector(".error") as HTMLElement;
+    if (!email || !email.endsWith("@osloskolen.no")) {
+      // TODO: Bedre validering
+      if (errorElement) {
+        errorElement.style.display = "block";
+      }
+      return;
+    } else {
+      if (errorElement) {
+        errorElement.style.display = "none";
+      }
+    }
+
+    // Legg til voted-klasse på det valgte prosjektet
+    const selectedCard = document.querySelector(".project-card.selected") as HTMLAnchorElement;
+    const sectionId = selectedCard?.closest(".category-section")?.id;
+    const projectHref = selectedCard?.getAttribute("href");
+
+    if (selectedCard) {
+      selectedCard.classList.add("voted");
+      selectedCard.classList.remove("selected");
+    }
+
+    // Lagre stemmen i localStorage
+    if (sectionId && projectHref) {
+      const votes = JSON.parse(localStorage.getItem("fyrstikken-votes") || "{}");
+      votes[sectionId] = projectHref;
+      localStorage.setItem("fyrstikken-votes", JSON.stringify(votes));
+    }
+
+    overlay?.classList.remove("active");
+    document.body.style.overflow = "";
+
+    // Send event for å avslutte stemmemodus
+    document.dispatchEvent(new CustomEvent("voteConfirmed"));
+  });
+</script>

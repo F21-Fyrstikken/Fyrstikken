@@ -17,22 +17,138 @@ const buttonId = `voteButton-${categoryIndex}`;
 </button>
 
 <script>
-  document.querySelectorAll(".vote-button").forEach((button) => {
-    let voting = false;
+  let activeButton: HTMLElement | null = null;
+  let activeSection: HTMLElement | null = null;
+  let selectedProject: HTMLElement | null = null;
 
-    button.addEventListener("click", () => {
-      voting = !voting;
-      console.log(`Voting state for category`, voting);
+  // Last inn stemmer fra localStorage ved sideinnlasting
+  function loadVotesFromStorage() {
+    const votes = JSON.parse(localStorage.getItem("fyrstikken-votes") || "{}");
 
-      if (voting) {
-        button.classList.add("vote");
-        button.textContent = "Avbryt";
-      } else {
-        button.classList.remove("vote");
-        button.textContent = "Stem";
+    Object.entries(votes).forEach(([sectionId, projectHref]) => {
+      const section = document.getElementById(sectionId);
+      if (!section) return;
+
+      // Deaktiver stemmeknappen for denne kategorien
+      const voteButton = section.querySelector(".vote-button") as HTMLButtonElement;
+      if (voteButton) {
+        voteButton.textContent = "Stemt";
+        voteButton.setAttribute("disabled", "true");
+      }
+
+      // Merk det stemte prosjektet
+      const votedCard = section.querySelector(`a[href="${projectHref}"]`);
+      if (votedCard) {
+        votedCard.classList.add("voted");
       }
     });
+  }
+
+  // Kjør ved sideinnlasting
+  loadVotesFromStorage();
+
+  // Håndter klikk på prosjektkort
+  document.querySelectorAll(".project-card").forEach((card) => {
+    card.addEventListener("click", (e) => {
+      const htmlCard = card as HTMLElement;
+      const section = htmlCard.closest(".category-section") as HTMLElement;
+
+      // Bare håndter stemming hvis kategorien er i stemmemodus
+      if (!section?.classList.contains("voting")) {
+        return; // La lenken fungere som normalt
+      }
+
+      // Forhindre navigasjon når man stemmer
+      e.preventDefault();
+
+      // Klikket på samme prosjekt = fjern valget
+      if (selectedProject === htmlCard) {
+        htmlCard.classList.remove("selected");
+        selectedProject = null;
+        return;
+      }
+
+      // Fjern valg fra forrige prosjekt
+      if (selectedProject) {
+        selectedProject.classList.remove("selected");
+      }
+
+      // Velg dette prosjektet
+      htmlCard.classList.add("selected");
+      selectedProject = htmlCard;
+
+      // Vis modalen med prosjektinfo
+      const modal = document.getElementById("voteModalOverlay");
+      const titleElement = document.getElementById("selectedProjectTitle");
+      const projectTitle = htmlCard.querySelector("h2")?.textContent || "Ukjent prosjekt";
+      const categoryTitle = section.querySelector(".category-title")?.textContent || "Ukjent kategori";
+
+      if (titleElement) {
+        titleElement.textContent = `Du har valgt: ${projectTitle} i kategorien ${categoryTitle}`;
+      }
+      modal?.classList.add("active");
+      document.body.style.overflow = "hidden";
+    });
   });
+
+  document.querySelectorAll(".vote-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const htmlButton = button as HTMLElement;
+      const section = htmlButton.closest(".category-section") as HTMLElement;
+
+      // Klikket på samme knapp som allerede er valgt - avbryt stemming
+      if (activeButton === htmlButton) {
+        htmlButton.classList.remove("vote");
+        htmlButton.textContent = "Stem";
+        section?.classList.remove("voting");
+        // Fjern valgt prosjekt når man avbryter
+        if (selectedProject) {
+          selectedProject.classList.remove("selected");
+          selectedProject = null;
+        }
+        activeButton = null;
+        activeSection = null;
+        return;
+      }
+
+      // Hvis en annen kategori var valgt fra før - fjern valget der
+      if (activeButton) {
+        activeButton.classList.remove("vote");
+        activeButton.textContent = "Stem";
+        activeSection?.classList.remove("voting");
+        // Fjern valgt prosjekt fra forrige kategori
+        if (selectedProject) {
+          selectedProject.classList.remove("selected");
+          selectedProject = null;
+        }
+      }
+
+      // Velg denne kategorien for stemming
+      htmlButton.classList.add("vote");
+      htmlButton.textContent = "Avbryt";
+      section?.classList.add("voting");
+      activeButton = htmlButton;
+      activeSection = section;
+    });
+  });
+
+  // Lytt etter bekreftelse på stemme og avslutt stemmemodus
+  document.addEventListener("voteConfirmed", (() => {
+    if (activeButton) {
+      activeButton.classList.remove("vote");
+      activeButton.textContent = "Stemt";
+      activeButton.setAttribute("disabled", "true");
+    }
+    if (activeSection) {
+      activeSection.classList.remove("voting");
+    }
+    if (selectedProject) {
+      selectedProject.classList.remove("selected");
+      selectedProject = null;
+    }
+    activeButton = null;
+    activeSection = null;
+  }) as EventListener);
 </script>
 
 <style define:vars={{ "category-light-color": categoryColor.light, "category-dark-color": categoryColor.dark }}>
@@ -47,5 +163,10 @@ const buttonId = `voteButton-${categoryIndex}`;
 
   button.vote {
     border-color: light-dark(var(--category-light-color), var(--category-dark-color));
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 </style>
