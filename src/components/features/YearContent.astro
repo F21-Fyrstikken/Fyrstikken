@@ -2,6 +2,8 @@
 import ProjectCard from "../common/ProjectCard.astro";
 import BackLink from "../common/BackLink.astro";
 import VoteButton from "./VoteButton.astro";
+import VoteModal from "../VoteModal.astro";
+import { THEME_COLORS } from "../../config";
 import type { IYearContentProps } from "../../types";
 
 const { yearData, categories, basePath = "" } = Astro.props as IYearContentProps;
@@ -23,11 +25,16 @@ const hasCategories = categories && categories.length > 0;
           const hasProjects = category.projects && category.projects.length > 0;
 
           return (
-            <section class="category-section" id={category.slug.current}>
+            <section
+              class="category-section"
+              id={category.slug.current}
+              style={`--category-light-color: ${THEME_COLORS[index % THEME_COLORS.length].light}; --category-dark-color: ${THEME_COLORS[index % THEME_COLORS.length].dark};`}>
               <div class="category-header">
-                <h2 class="category-title">{category.title}</h2>
+                <div class="category-header-row">
+                  <h2 class="category-title">{category.title}</h2>
+                  <VoteButton categoryIndex={index} />
+                </div>
                 {category.description && <p class="category-description">{category.description}</p>}
-                <VoteButton categoryIndex={index} />
               </div>
 
               {hasProjects && (
@@ -43,6 +50,7 @@ const hasCategories = categories && categories.length > 0;
             </section>
           );
         })}
+        <VoteModal />
       </div>
     ) : (
       <p>Ingen kategorier funnet for dette året.</p>
@@ -64,12 +72,37 @@ const hasCategories = categories && categories.length > 0;
 
   .category-section {
     margin-bottom: 4rem;
+    padding: 1.5rem;
+    border-radius: 1rem;
+  }
+
+  .category-section.voting {
+    background-color: light-dark(
+      color-mix(in srgb, var(--category-light-color) 10%, transparent),
+      color-mix(in srgb, var(--category-dark-color) 10%, transparent)
+    );
   }
 
   .category-header {
     margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 3px solid light-dark(var(--light-safir), var(--dark-safir));
+  }
+
+  .category-header-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .category-header-row::before {
+    content: "";
+    flex: 1;
+    height: 2px;
+    background-color: light-dark(var(--category-light-color), var(--category-dark-color));
+    order: 1;
+  }
+
+  .category-header-row :global(.vote-button) {
+    order: 2;
   }
 
   .category-title {
