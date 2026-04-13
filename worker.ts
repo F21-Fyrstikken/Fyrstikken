@@ -208,7 +208,7 @@ async function handleSubmission(request: Request, env: IEnv): Promise<Response> 
   } catch (error) {
     const message = error instanceof Error ? error.message : "Ukjent feil";
     console.error("Submission error:", message);
-    return jsonResponse({ error: "Noe gikk galt. Prøv igjen senere." }, 500);
+    return jsonResponse({ error: message }, 500);
   }
 }
 
