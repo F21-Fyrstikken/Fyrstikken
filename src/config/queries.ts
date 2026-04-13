@@ -185,4 +185,9 @@ export const GROQ_QUERIES = {
       order
     }
   }`,
+
+  CATEGORIES_FOR_SUBMISSION: `*[_type == "category" && year->year == $yearId] | order(order asc) {
+    _id,
+    title
+  }`,
 } as const;

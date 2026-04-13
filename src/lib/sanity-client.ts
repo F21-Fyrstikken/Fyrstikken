@@ -97,3 +97,9 @@ export async function getAllProjectsWithDetails(): Promise<IProjectWithSiblings[
 export async function getAllCategoriesWithProjects(): Promise<ICategoryWithProjectsAndYear[]> {
   return safeFetch("ALL_CATEGORIES_WITH_PROJECTS", () => sanityClient.fetch(GROQ_QUERIES.ALL_CATEGORIES_WITH_PROJECTS));
 }
+
+export async function getCategoriesForSubmission(yearId: number): Promise<Array<{ _id: string; title: string }>> {
+  return safeFetch("CATEGORIES_FOR_SUBMISSION", () =>
+    sanityClient.fetch(GROQ_QUERIES.CATEGORIES_FOR_SUBMISSION, { yearId })
+  );
+}
