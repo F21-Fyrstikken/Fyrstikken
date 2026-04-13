@@ -36,10 +36,18 @@ const buttonId = `voteButton-${categoryIndex}`;
         voteButton.setAttribute("disabled", "true");
       }
 
-      // Merk det stemte prosjektet
+      // Merk det stemte prosjektet og deaktiver resten
       const votedCard = section.querySelector(`a[href="${projectHref}"]`);
       if (votedCard) {
         votedCard.classList.add("voted");
+        
+        // Gjør alle andre prosjekter i samme kategori grå
+        const allCards = section.querySelectorAll(".project-card");
+        allCards.forEach(card => {
+          if (card !== votedCard) {
+            card.classList.add("inactive");
+          }
+        });
       }
     });
   }

@@ -125,6 +125,15 @@
     if (selectedCard) {
       selectedCard.classList.add("voted");
       selectedCard.classList.remove("selected");
+      
+      // Gjør alle andre prosjekter i samme kategori grå
+      const section = selectedCard.closest(".category-section");
+      const allCards = section?.querySelectorAll(".project-card");
+      allCards?.forEach(card => {
+        if (card !== selectedCard) {
+          card.classList.add("inactive");
+        }
+      });
     }
 
     // Lagre stemmen i localStorage
