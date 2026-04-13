@@ -53,13 +53,13 @@ const year = SITE_CONFIG.submissionYear;
           <input type="text" id="tittel" name="title" required />
         </div>
 
-        <!-- E) Filer og lenker -->
+        <!-- E) Filer -->
         <div class="form-group">
-          <label>Filer og lenker</label>
+          <label>Filer</label>
           <div id="attachments-list">
             <!-- Dynamisk lagt til med JS -->
           </div>
-          <button type="button" id="add-attachment-btn" class="outline-btn">Legg til fil/lenke</button>
+          <button type="button" id="add-attachment-btn" class="outline-btn">Legg til fil</button>
         </div>
 
         <!-- F) Submit Actions -->
@@ -120,7 +120,6 @@ const year = SITE_CONFIG.submissionYear;
   }
 
   input[type="text"],
-  input[type="url"],
   select,
   textarea,
   input[type="file"] {
@@ -162,14 +161,8 @@ const year = SITE_CONFIG.submissionYear;
     min-width: 0;
   }
 
-  .attachment-row .attachment-type {
-    width: 120px;
-    flex-shrink: 0;
-  }
-
-  .attachment-row .attachment-input-wrapper {
+  .attachment-row input[type="file"] {
     flex: 1;
-    display: flex;
     min-width: 0;
   }
 
@@ -338,39 +331,10 @@ const year = SITE_CONFIG.submissionYear;
       const div = document.createElement("div");
       div.className = "row-group attachment-row";
       div.innerHTML = `
-        <select class="attachment-type" aria-label="Velg type">
-          <option value="file">Fil</option>
-          <option value="url">Lenke</option>
-        </select>
-        <div class="attachment-input-wrapper">
-          <input type="file" name="attachment[]" class="attachment-file" />
-          <input type="url" name="attachmentUrl[]" class="attachment-url" placeholder="https://..." hidden disabled />
-        </div>
-        <button type="button" class="remove-btn remove-attachment" aria-label="Fjern fil/lenke">Fjern</button>
+        <input type="file" name="attachment[]" class="attachment-file" />
+        <button type="button" class="remove-btn remove-attachment" aria-label="Fjern fil">Fjern</button>
       `;
       attachmentsList.appendChild(div);
-    });
-
-    attachmentsList.addEventListener("change", (e) => {
-      const target = e.target as HTMLSelectElement;
-      if (target.classList.contains("attachment-type")) {
-        const row = target.closest(".attachment-row");
-        if (row) {
-          const fileInput = row.querySelector(".attachment-file") as HTMLInputElement;
-          const urlInput = row.querySelector(".attachment-url") as HTMLInputElement;
-          if (target.value === "file") {
-            fileInput.hidden = false;
-            fileInput.disabled = false;
-            urlInput.hidden = true;
-            urlInput.disabled = true;
-          } else {
-            fileInput.hidden = true;
-            fileInput.disabled = true;
-            urlInput.hidden = false;
-            urlInput.disabled = false;
-          }
-        }
-      }
     });
 
     attachmentsList.addEventListener("click", (e) => {

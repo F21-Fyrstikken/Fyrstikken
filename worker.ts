@@ -3,7 +3,7 @@ const SANITY_DATASET = "production";
 const SANITY_API_VERSION = "2024-01-01";
 
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
-const MAX_FILE_SIZE = 50 * 1024 * 1024;
+const MAX_TOTAL_FILE_SIZE = 1024 * 1024 * 1024;
 
 interface IEnv {
   ASSETS: { fetch(input: RequestInfo, init?: RequestInit): Promise<Response> };
@@ -13,7 +13,6 @@ interface IEnv {
 interface IContentBlock {
   _type: string;
   _key: string;
-  url?: string;
   asset?: { _type: "reference"; _ref: string };
 }
 
@@ -71,24 +70,17 @@ function validateImage(image: File | null): string | null {
   return null;
 }
 
-function validateAttachmentFile(file: File): string | null {
-  if (file.size > MAX_FILE_SIZE) {
-    return `Filen "${file.name}" er for stor (maks 50 MB).`;
-  }
-  return null;
-}
-
 async function buildContentFromAttachments(formData: FormData, token: string): Promise<IContentBlock[]> {
   const files = formData.getAll("attachment[]");
-  const urls = formData.getAll("attachmentUrl[]") as string[];
   const blocks: IContentBlock[] = [];
   let key = 0;
+  let totalSize = 0;
 
   for (const file of files) {
     if (file instanceof File && file.size > 0) {
-      const error = validateAttachmentFile(file);
-      if (error !== null) {
-        throw new Error(error);
+      totalSize += file.size;
+      if (totalSize > MAX_TOTAL_FILE_SIZE) {
+        throw new Error("Total filstørrelse overskrider grensen på 1 GB.");
       }
       const assetId = await uploadAsset("files", file, token);
       blocks.push({
@@ -96,13 +88,6 @@ async function buildContentFromAttachments(formData: FormData, token: string): P
         _key: String(key++),
         asset: { _type: "reference", _ref: assetId },
       });
-    }
-  }
-
-  for (const url of urls) {
-    const trimmed = url.trim();
-    if (trimmed !== "") {
-      blocks.push({ _type: "embed", _key: String(key++), url: trimmed });
     }
   }
 
@@ -131,7 +116,7 @@ function buildDocument(
   };
 
   if (members !== "") {
-    doc.description = members;
+    doc.description = `Laget av ${members}`;
   }
 
   if (content.length > 0) {
@@ -208,7 +193,7 @@ async function handleSubmission(request: Request, env: IEnv): Promise<Response> 
   } catch (error) {
     const message = error instanceof Error ? error.message : "Ukjent feil";
     console.error("Submission error:", message);
-    return jsonResponse({ error: message }, 500);
+    return jsonResponse({ error: "Noe gikk galt. Prøv igjen senere." }, 500);
   }
 }
 
