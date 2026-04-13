@@ -6,7 +6,7 @@ export default {
   async fetch(request: Request, env: IEnv): Promise<Response> {
     const url = new URL(request.url);
 
-    if (url.pathname.startsWith("/studio")) {
+    if (url.pathname === "/studio" || url.pathname.startsWith("/studio/")) {
       const assetResponse = await env.ASSETS.fetch(request);
       if (assetResponse.status !== 404) {
         return assetResponse;
