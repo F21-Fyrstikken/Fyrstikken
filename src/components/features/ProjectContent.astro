@@ -19,7 +19,6 @@ const { year, category, projectData, allProjects, basePath = "" } = Astro.props 
 const breadcrumbItems = [
   { label: "År", href: "/years" },
   { label: year, href: `/years/${year}` },
-  { label: projectData.category.title, href: `/years/${year}/${category}` },
 ];
 
 // Helper variables for the main project image
