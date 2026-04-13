@@ -1,0 +1,438 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCategoriesForSubmission } from "../lib/sanity-client";
+import { SITE_CONFIG } from "../config";
+
+const categories = await getCategoriesForSubmission(SITE_CONFIG.submissionYear);
+const year = SITE_CONFIG.submissionYear;
+---
+
+<BaseLayout title="Send inn prosjekt — Fyrstikken">
+  <div class="submit-page">
+    <header class="page-header">
+      <h1>Send inn prosjekt — Fyrstikken {year}</h1>
+      <p>Her kan du sende inn ditt prosjekt til Fyrstikken {year}. Fyll ut skjemaet under, så vil prosjektet bli gjennomgått av juryen.</p>
+    </header>
+
+    <div id="form-wrapper">
+      <form id="submit-form" method="POST" action="/api/submit" enctype="multipart/form-data">
+        
+        <!-- A) Medlemmer -->
+        <div class="form-group">
+          <label>Medlemmer <span class="required" aria-hidden="true">*</span></label>
+          <div id="members-list">
+            <div class="row-group member-row">
+              <input type="text" class="member-name" placeholder="Fullt navn" required />
+              <input type="text" class="member-class" placeholder="f.eks. 3IMA" required />
+              <button type="button" class="remove-btn remove-member" aria-label="Fjern medlem" style="visibility: hidden;">Fjern</button>
+            </div>
+          </div>
+          <button type="button" id="add-member-btn" class="outline-btn">Legg til medlem</button>
+        </div>
+
+        <!-- B) Thumbnail -->
+        <div class="form-group">
+          <label for="prosjektbilde">Thumbnail</label>
+          <input type="file" id="prosjektbilde" name="image" accept="image/*" />
+        </div>
+
+        <!-- C) Kategori -->
+        <div class="form-group">
+          <label for="kategori">Kategori <span class="required" aria-hidden="true">*</span></label>
+          <select id="kategori" name="category" required>
+            <option value="" disabled selected>Velg en kategori</option>
+            {categories.map((cat: { _id: string; title: string }) => (
+              <option value={cat._id}>{cat.title}</option>
+            ))}
+          </select>
+        </div>
+
+        <!-- D) Tittel -->
+        <div class="form-group">
+          <label for="tittel">Tittel <span class="required" aria-hidden="true">*</span></label>
+          <input type="text" id="tittel" name="title" required />
+        </div>
+
+        <!-- E) Filer og lenker -->
+        <div class="form-group">
+          <label>Filer og lenker</label>
+          <div id="attachments-list">
+            <!-- Dynamisk lagt til med JS -->
+          </div>
+          <button type="button" id="add-attachment-btn" class="outline-btn">Legg til fil/lenke</button>
+        </div>
+
+        <!-- F) Submit Actions -->
+        <div class="form-actions">
+          <button type="submit" id="submit-btn" class="submit-btn">Send inn prosjekt</button>
+        </div>
+
+        <div id="form-error" class="error-msg" hidden></div>
+      </form>
+    </div>
+
+    <div id="success-msg" class="success-msg" hidden>
+      <h2>Takk!</h2>
+      <p>Prosjektet ditt er sendt inn! Det vil bli gjennomgått av juryen.</p>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .submit-page {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: var(--space-xl, 3.2rem) var(--space-md, 1.6rem);
+  }
+
+  .page-header {
+    margin-bottom: var(--space-xl, 3.2rem);
+    text-align: center;
+  }
+
+  .page-header h1 {
+    font-size: 3.2rem;
+    margin-bottom: var(--space-sm, 0.8rem);
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+
+  .page-header p {
+    font-size: 1.8rem;
+    line-height: 1.5;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+    opacity: 0.8;
+  }
+
+  .form-group {
+    margin-bottom: var(--space-lg, 2.4rem);
+  }
+
+  label {
+    display: block;
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: var(--space-xs, 0.4rem);
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+
+  .required {
+    color: light-dark(var(--light-rubin), var(--dark-rubin));
+  }
+
+  input[type="text"],
+  input[type="url"],
+  select,
+  textarea,
+  input[type="file"] {
+    display: block;
+    width: 100%;
+    background: light-dark(var(--light-ixDBoks), var(--dark-ixDBoks));
+    border: 1px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+    border-radius: var(--radius-md, 8px);
+    padding: var(--space-sm, 0.8rem) var(--space-md, 1.6rem);
+    font-size: 1.6rem;
+    font-family: inherit;
+    transition: border-color var(--transition-fast, 0.2s ease);
+    box-sizing: border-box;
+  }
+
+  input[type="file"] {
+    padding: var(--space-sm, 0.8rem);
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: light-dark(var(--light-safir), var(--dark-safir));
+  }
+
+  /* Dynamiske Rader (Row-Groups) */
+  .row-group {
+    display: flex;
+    gap: var(--space-sm, 0.8rem);
+    margin-bottom: var(--space-sm, 0.8rem);
+    align-items: center;
+    width: 100%;
+  }
+
+  .member-row input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .attachment-row .attachment-type {
+    width: 120px;
+    flex-shrink: 0;
+  }
+
+  .attachment-row .attachment-input-wrapper {
+    flex: 1;
+    display: flex;
+    min-width: 0;
+  }
+
+  .outline-btn {
+    display: inline-block;
+    background: transparent;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+    border: 1px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    border-radius: var(--radius-md, 8px);
+    padding: var(--space-xs, 0.4rem) var(--space-md, 1.6rem);
+    font-size: 1.4rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast, 0.2s ease);
+    margin-top: var(--space-xs, 0.4rem);
+  }
+
+  .outline-btn:hover {
+    border-color: light-dark(var(--light-safir), var(--dark-safir));
+    color: light-dark(var(--light-safir), var(--dark-safir));
+  }
+
+  .remove-btn {
+    background: transparent;
+    border: none;
+    color: light-dark(var(--light-rubin), var(--dark-rubin));
+    font-size: 1.4rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: var(--space-xs, 0.4rem);
+    opacity: 0.8;
+    transition: opacity var(--transition-fast, 0.2s ease);
+    flex-shrink: 0;
+  }
+
+  .remove-btn:hover {
+    opacity: 1;
+  }
+
+  /* Prevent clicks on hidden remove buttons */
+  .remove-btn[style*="visibility: hidden"] {
+    pointer-events: none;
+  }
+
+  .form-actions {
+    margin-top: var(--space-xl, 3.2rem);
+  }
+
+  .submit-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background: light-dark(var(--light-safir), var(--dark-safir));
+    color: #ffffff;
+    border: none;
+    border-radius: var(--radius-md, 8px);
+    padding: var(--space-md, 1.6rem) var(--space-lg, 2.4rem);
+    font-size: 1.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform var(--transition-fast, 0.2s ease), opacity var(--transition-fast, 0.2s ease);
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .error-msg {
+    margin-top: var(--space-md, 1.6rem);
+    padding: var(--space-md, 1.6rem);
+    background: light-dark(var(--light-rubin), var(--dark-rubin));
+    color: #ffffff;
+    border-radius: var(--radius-md, 8px);
+    font-size: 1.4rem;
+    text-align: center;
+  }
+
+  .success-msg {
+    text-align: center;
+    padding: var(--space-xl, 3.2rem);
+    background: light-dark(var(--light-ixDBoks), var(--dark-ixDBoks));
+    border-radius: var(--radius-lg, 12px);
+    border: 1px solid light-dark(var(--light-ramme), var(--dark-ramme));
+  }
+
+  .success-msg h2 {
+    color: light-dark(var(--light-amazonitt), var(--dark-amazonitt));
+    margin-bottom: var(--space-sm, 0.8rem);
+    font-size: 2.4rem;
+  }
+
+  .success-msg p {
+    font-size: 1.8rem;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+</style>
+
+<script>
+  const form = document.getElementById("submit-form") as HTMLFormElement | null;
+  const formWrapper = document.getElementById("form-wrapper");
+  const successMsg = document.getElementById("success-msg");
+  const errorMsg = document.getElementById("form-error");
+  const submitBtn = document.getElementById("submit-btn") as HTMLButtonElement | null;
+
+  // Medlemmer Logikk
+  const membersList = document.getElementById("members-list");
+  const addMemberBtn = document.getElementById("add-member-btn");
+
+  if (membersList && addMemberBtn) {
+    addMemberBtn.addEventListener("click", () => {
+      const rows = membersList.querySelectorAll(".member-row");
+      if (rows.length > 0) {
+        const firstRow = rows[0] as HTMLElement;
+        const newRow = firstRow.cloneNode(true) as HTMLElement;
+
+        const inputs = newRow.querySelectorAll("input");
+        inputs.forEach(input => input.value = "");
+
+        const removeBtn = newRow.querySelector(".remove-btn") as HTMLButtonElement;
+        if (removeBtn) {
+          removeBtn.style.visibility = "visible";
+        }
+
+        membersList.appendChild(newRow);
+      }
+    });
+
+    membersList.addEventListener("click", (e) => {
+      const target = e.target as HTMLElement;
+      if (target.classList.contains("remove-member")) {
+        const rows = membersList.querySelectorAll(".member-row");
+        if (rows.length > 1) {
+          target.closest(".member-row")?.remove();
+        }
+      }
+    });
+  }
+
+  function serializeMembers(): string {
+    if (!membersList) return "";
+    const rows = membersList.querySelectorAll(".member-row");
+    const parts: string[] = [];
+    rows.forEach(row => {
+      const name = (row.querySelector(".member-name") as HTMLInputElement)?.value.trim() ?? "";
+      const cls = (row.querySelector(".member-class") as HTMLInputElement)?.value.trim() ?? "";
+      if (name !== "" && cls !== "") {
+        parts.push(`${name} ${cls}`);
+      }
+    });
+    return parts.join(", ");
+  }
+
+  // Filer og Lenker Logikk
+  const attachmentsList = document.getElementById("attachments-list");
+  const addAttachmentBtn = document.getElementById("add-attachment-btn");
+
+  if (attachmentsList && addAttachmentBtn) {
+    addAttachmentBtn.addEventListener("click", () => {
+      const div = document.createElement("div");
+      div.className = "row-group attachment-row";
+      div.innerHTML = `
+        <select class="attachment-type" aria-label="Velg type">
+          <option value="file">Fil</option>
+          <option value="url">Lenke</option>
+        </select>
+        <div class="attachment-input-wrapper">
+          <input type="file" name="attachment[]" class="attachment-file" />
+          <input type="url" name="attachmentUrl[]" class="attachment-url" placeholder="https://..." hidden disabled />
+        </div>
+        <button type="button" class="remove-btn remove-attachment" aria-label="Fjern fil/lenke">Fjern</button>
+      `;
+      attachmentsList.appendChild(div);
+    });
+
+    attachmentsList.addEventListener("change", (e) => {
+      const target = e.target as HTMLSelectElement;
+      if (target.classList.contains("attachment-type")) {
+        const row = target.closest(".attachment-row");
+        if (row) {
+          const fileInput = row.querySelector(".attachment-file") as HTMLInputElement;
+          const urlInput = row.querySelector(".attachment-url") as HTMLInputElement;
+          if (target.value === "file") {
+            fileInput.hidden = false;
+            fileInput.disabled = false;
+            urlInput.hidden = true;
+            urlInput.disabled = true;
+          } else {
+            fileInput.hidden = true;
+            fileInput.disabled = true;
+            urlInput.hidden = false;
+            urlInput.disabled = false;
+          }
+        }
+      }
+    });
+
+    attachmentsList.addEventListener("click", (e) => {
+      const target = e.target as HTMLElement;
+      if (target.classList.contains("remove-attachment")) {
+        target.closest(".attachment-row")?.remove();
+      }
+    });
+  }
+
+  // Submit Handler
+  if (form && formWrapper && successMsg && errorMsg && submitBtn) {
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const originalBtnText = submitBtn.textContent || "Send inn prosjekt";
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Sender...";
+      errorMsg.hidden = true;
+      errorMsg.textContent = "";
+
+      try {
+        const members = serializeMembers();
+        if (members === "") {
+          throw new Error("Minst ett medlem (navn og klasse) er påkrevd.");
+        }
+
+        const formData = new FormData(form);
+        formData.append("members", members);
+
+        const response = await fetch(form.action, {
+          method: form.method,
+          body: formData,
+        });
+
+        if (response.ok) {
+          formWrapper.hidden = true;
+          successMsg.hidden = false;
+        } else {
+          let errorText = "Noe gikk galt ved innsending.";
+          try {
+            const data = await response.json();
+            if (data.message) {
+              errorText = data.message;
+            } else if (data.error) {
+              errorText = data.error;
+            }
+          } catch (e) {
+            // response was not JSON or failed to parse
+          }
+          throw new Error(errorText);
+        }
+      } catch (err) {
+        if (err instanceof Error) {
+          errorMsg.textContent = err.message;
+        } else {
+          errorMsg.textContent = "En ukjent feil oppstod.";
+        }
+        errorMsg.hidden = false;
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalBtnText;
+      }
+    });
+  }
+</script>

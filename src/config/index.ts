@@ -20,6 +20,7 @@ export const SITE_CONFIG = {
   locale: "nb-NO",
   /** Fallback URL used when Astro.site is not configured */
   fallbackUrl: "https://f21-fyrstikken.github.io/Fyrstikken/",
+  submissionYear: 2026,
 } as const;
 
 /**
