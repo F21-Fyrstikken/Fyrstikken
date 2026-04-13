@@ -118,6 +118,14 @@ const hasCategories = categories && categories.length > 0;
     cursor: pointer;
   }
 
+  .kategori-knapp:hover {
+    box-shadow: inset 0 0 0 1000px
+      light-dark(
+        color-mix(in srgb, var(--btn-light-color) 10%, transparent),
+        color-mix(in srgb, var(--btn-dark-color) 10%, transparent)
+      );
+  }
+
   .category-section {
     margin-bottom: 4rem;
     padding: 1.5rem;
