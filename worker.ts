@@ -11,6 +11,15 @@ export default {
       if (assetResponse.status !== 404) {
         return assetResponse;
       }
+
+      const method = request.method.toUpperCase();
+      const accept = request.headers.get("Accept") || "";
+      const isNavigationRequest =
+        (method === "GET" || method === "HEAD") && accept.includes("text/html");
+
+      if (!isNavigationRequest) {
+        return assetResponse;
+      }
       return env.ASSETS.fetch(new Request(new URL("/studio/index.html", request.url), request));
     }
 
