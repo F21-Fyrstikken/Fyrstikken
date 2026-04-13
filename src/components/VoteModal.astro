@@ -83,6 +83,19 @@
   const overlay = document.getElementById("voteModalOverlay");
   const cancelBtn = document.getElementById("cancelVoteBtn");
   const confirmBtn = document.getElementById("confirmVoteBtn");
+  const emailInput = document.getElementById("voteEmail") as HTMLInputElement;
+
+  // Last inn lagret e-post ved sideinnlasting
+  function loadSavedEmail() {
+    const savedEmail = localStorage.getItem("fyrstikken-email");
+    if (savedEmail && emailInput) {
+      emailInput.value = savedEmail;
+      emailInput.setAttribute("disabled", "true");
+    }
+  }
+
+  // Kjør ved sideinnlasting
+  loadSavedEmail();
 
   // Funksjon for å lukke modalen
   function closeModal() {
@@ -141,6 +154,14 @@
       const votes = JSON.parse(localStorage.getItem("fyrstikken-votes") || "{}");
       votes[sectionId] = projectHref;
       localStorage.setItem("fyrstikken-votes", JSON.stringify(votes));
+      
+      // Lagre e-posten i localStorage (bare første gang)
+      if (email && !localStorage.getItem("fyrstikken-email")) {
+        localStorage.setItem("fyrstikken-email", email);
+        if (emailInput) {
+          emailInput.setAttribute("disabled", "true");
+        }
+      }
     }
 
     overlay?.classList.remove("active");
