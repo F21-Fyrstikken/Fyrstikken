@@ -362,7 +362,23 @@ const year = SITE_CONFIG.submissionYear;
           throw new Error("Minst ett medlem (navn og klasse) er påkrevd.");
         }
 
+        const title = (document.getElementById("tittel") as HTMLInputElement).value.trim();
+        if (title === "") {
+          throw new Error("Tittel er påkrevd.");
+        }
+
+        const category = (document.getElementById("kategori") as HTMLSelectElement).value;
+        if (category === "") {
+          throw new Error("Kategori er påkrevd.");
+        }
+
         const formData = new FormData(form);
+        const attachments = formData.getAll("attachment[]");
+        const hasFile = attachments.some(f => f instanceof File && f.size > 0);
+        if (!hasFile) {
+          throw new Error("Du må laste opp minst én fil.");
+        }
+
         formData.append("members", members);
 
         const response = await fetch(form.action, {
