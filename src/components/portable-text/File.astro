@@ -6,55 +6,108 @@ const { node } = Astro.props as IPortableTextNode<IFileNode>;
 
 const fileUrl = getFileUrl(node.asset);
 const fileName = getFilenameFromUrl(fileUrl, "Download file");
-const isPdf = fileName.split(".").pop()?.toLowerCase() === "pdf";
+const ext = fileName.split(".").pop()?.toLowerCase() ?? "";
+
+const imageExts = ["jpg", "jpeg", "png", "gif", "webp", "svg", "avif"];
+const videoExts = ["mp4", "webm", "mov", "avi", "mkv"];
+const audioExts = ["mp3", "wav", "ogg", "m4a", "flac", "aac"];
+
+const isImage = imageExts.includes(ext);
+const isVideo = videoExts.includes(ext);
+const isAudio = audioExts.includes(ext);
+const isPdf = ext === "pdf";
 ---
 
-{
-  fileUrl && isPdf && (
-    <div class="pdf-container">
-      <div class="pdf-preview">
-        <embed src={fileUrl} type="application/pdf" width="100%" height="600px" />
-        <p class="pdf-fallback">
-          PDF preview is not supported in your browser.
-          <a href={fileUrl} target="_blank" rel="noopener noreferrer">
-            Åpne PDF i ny fane
-          </a>{" "}
-          eller
-          <a href={fileUrl} download>
-            last ned PDF
-          </a>
-          .
-        </p>
-      </div>
-      <div class="pdf-actions">
-        <a href={fileUrl} target="_blank" rel="noopener noreferrer">
-          Åpne i ny fane
-        </a>
-        <a href={fileUrl} download>
-          Last ned PDF
-        </a>
-      </div>
-    </div>
-  )
-}
+{fileUrl && isImage && (
+  <figure class="content-image">
+    <img src={fileUrl} alt={fileName} loading="lazy" />
+  </figure>
+)}
 
-{
-  fileUrl && !isPdf && (
-    <div class="file-download">
-      <a href={fileUrl} download target="_blank" rel="noopener noreferrer">
-        Lenke
-      </a>
+{fileUrl && isVideo && (
+  <div class="video-container">
+    <video controls preload="metadata">
+      <source src={fileUrl} type={`video/${ext === "mov" ? "quicktime" : ext}`} />
+      Nettleseren din støtter ikke videoavspilling.
+    </video>
+    <div class="file-actions">
+      <a href={fileUrl} download>{fileName}</a>
     </div>
-  )
-}
+  </div>
+)}
+
+{fileUrl && isAudio && (
+  <div class="audio-container">
+    <audio controls preload="metadata">
+      <source src={fileUrl} type={`audio/${ext === "mp3" ? "mpeg" : ext === "m4a" ? "mp4" : ext}`} />
+      Nettleseren din støtter ikke lydavspilling.
+    </audio>
+    <div class="file-actions">
+      <a href={fileUrl} download>{fileName}</a>
+    </div>
+  </div>
+)}
+
+{fileUrl && isPdf && (
+  <div class="pdf-container">
+    <div class="pdf-preview">
+      <embed src={fileUrl} type="application/pdf" width="100%" height="600px" />
+      <p class="pdf-fallback">
+        PDF-forhåndsvisning støttes ikke i nettleseren din.
+        <a href={fileUrl} target="_blank" rel="noopener noreferrer">Åpne PDF i ny fane</a>
+        {" "}eller{" "}
+        <a href={fileUrl} download>last ned PDF</a>.
+      </p>
+    </div>
+    <div class="file-actions">
+      <a href={fileUrl} target="_blank" rel="noopener noreferrer">Åpne i ny fane</a>
+      <a href={fileUrl} download>Last ned PDF</a>
+    </div>
+  </div>
+)}
+
+{fileUrl && !isImage && !isVideo && !isAudio && !isPdf && (
+  <div class="file-download">
+    <a href={fileUrl} download target="_blank" rel="noopener noreferrer">
+      {fileName}
+    </a>
+  </div>
+)}
 
 <style>
+  .content-image {
+    margin: 2.5rem 0;
+    text-align: center;
+  }
+
+  .content-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .video-container,
+  .audio-container,
   .pdf-container {
     margin: 2.5rem 0;
     border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
     border-radius: 12px;
     overflow: hidden;
     background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
+  }
+
+  .video-container video {
+    display: block;
+    width: 100%;
+    max-height: 80vh;
+    background: #000;
+  }
+
+  .audio-container audio {
+    display: block;
+    width: 100%;
+    padding: 1.5rem;
   }
 
   .pdf-preview {
@@ -74,7 +127,7 @@ const isPdf = fileName.split(".").pop()?.toLowerCase() === "pdf";
     font-size: 0.95rem;
   }
 
-  .pdf-actions {
+  .file-actions {
     display: flex;
     gap: 1rem;
     padding: 1.25rem 1.5rem;
@@ -82,7 +135,7 @@ const isPdf = fileName.split(".").pop()?.toLowerCase() === "pdf";
     border-top: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
   }
 
-  .pdf-actions a {
+  .file-actions a {
     color: light-dark(var(--light-safir), var(--dark-safir));
     text-decoration: none;
     font-weight: 500;
@@ -96,7 +149,7 @@ const isPdf = fileName.split(".").pop()?.toLowerCase() === "pdf";
     transition: all 0.2s ease;
   }
 
-  .pdf-actions a:hover {
+  .file-actions a:hover {
     border-color: light-dark(var(--light-safir), var(--dark-safir));
     background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
   }
@@ -134,12 +187,12 @@ const isPdf = fileName.split(".").pop()?.toLowerCase() === "pdf";
       min-height: 400px;
     }
 
-    .pdf-actions {
+    .file-actions {
       flex-direction: column;
       gap: 0.75rem;
     }
 
-    .pdf-actions a {
+    .file-actions a {
       justify-content: center;
     }
   }
