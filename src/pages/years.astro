@@ -4,14 +4,18 @@ import YearsList from "../components/features/YearsList.astro";
 import { getBasePath } from "../utils/paths";
 import { getAllYears } from "../lib/sanity-client";
 import HeaderImg from "../components/layout/HeaderImg.astro";
+import { SITE_CONFIG } from "../config";
 
 const basePath = getBasePath();
-const years = await getAllYears();
+const allYears = await getAllYears();
+
+// Filtrer bort inneværende år — denne siden viser kun tidligere år
+const previousYears = allYears.filter((y) => y.year !== SITE_CONFIG.submissionYear);
 ---
 
 <BaseLayout title="Fyrstikken - År" description="Utforsk Fyrstikken priser gjennom årene">
   <HeaderImg variant="smal" slot="header" />
   <h1 slot="pageTitle">Fyrstikken gjennom årene</h1>
 
-  <YearsList years={years} basePath={basePath} />
+  <YearsList years={previousYears} basePath={basePath} />
 </BaseLayout>

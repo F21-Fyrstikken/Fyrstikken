@@ -4,15 +4,19 @@ import YearContent from "../../components/features/YearContent.astro";
 import { getAllYears, getCategoriesWithProjectsForYear } from "../../lib/sanity-client";
 import { getBasePath } from "../../utils/paths";
 import HeaderImg from "../../components/layout/HeaderImg.astro";
+import { SITE_CONFIG } from "../../config"; // Importer konfigurasjonen
 
 export async function getStaticPaths() {
   // 1. Fetch all available years
-  const years = await getAllYears();
+  const allYears = await getAllYears();
 
-  // 2. For each year, fetch all categories and their projects
-  // Promise.all lets us fetch data for all years in parallel, which is faster
+  // 2. FILTER UT inneværende år (2026)
+  // Vi vil kun generere sider for tidligere år her
+  const previousYears = allYears.filter((yearData) => yearData.year !== SITE_CONFIG.submissionYear);
+
+  // 3. For each PREVIOUS year, fetch categories and projects
   return await Promise.all(
-    years.map(async (yearData) => {
+    previousYears.map(async (yearData) => {
       const yearString = yearData.year.toString();
       const categories = await getCategoriesWithProjectsForYear(yearString);
 

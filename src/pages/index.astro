@@ -2,16 +2,32 @@
 import Link from "../components/common/Link.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import HeaderImg from "../components/layout/HeaderImg.astro";
+import YearContent from "../components/features/YearContent.astro";
+import { getAllYears, getCategoriesWithProjectsForYear } from "../lib/sanity-client";
+import { getBasePath } from "../utils/paths";
+import { SITE_CONFIG } from "../config";
 
 const base = import.meta.env.BASE_URL;
+const basePath = getBasePath();
+const currentYear = SITE_CONFIG.submissionYear; // 2026
+
+// Hent inneværende års data
+const allYears = await getAllYears();
+const yearData = allYears.find((y) => y.year === currentYear) ?? null;
+const categories = yearData ? await getCategoriesWithProjectsForYear(String(currentYear)) : [];
 ---
 
 <BaseLayout title="Home" description="Fyrstikken er F21 VGS sin lokale prisutdelingsarrangement">
   <HeaderImg variant="stor" slot="header" />
   <h1 slot="pageTitle">Fyrstikken</h1>
+
   <section>
     <h2>Info</h2>
     <p>Fyrstikken er F21s årlige kåring av de beste IT og medieproduktene laget av våre elever.</p>
     <Link href={`${base}years/`}>Utforsk tidligere år</Link>
   </section>
+
+  {/* Vis inneværende års kategorier og prosjekter */}
+  {yearData && categories.length > 0 && <YearContent yearData={yearData} categories={categories} basePath={basePath} />}
 </BaseLayout>
+<style></style>
