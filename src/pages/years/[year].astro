@@ -1,46 +1,254 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import YearContent from "../../components/features/YearContent.astro";
-import { getAllYears, getCategoriesWithProjectsForYear } from "../../lib/sanity-client";
-import { getBasePath } from "../../utils/paths";
-import HeaderImg from "../../components/layout/HeaderImg.astro";
-import { SITE_CONFIG } from "../../config"; // Importer konfigurasjonen
+import ProjectCard from "../../components/common/ProjectCard.astro";
+import BackLink from "../../components/common/BackLink.astro";
+import VoteButton from "../../components/features/VoteButton.astro";
+import VoteModal from "../../components/VoteModal.astro";
+import ProjectModal from "../../components/common/ProjectModal.astro";
+import { THEME_COLORS } from "../../config";
+import type { IYearContentProps } from "../../types";
+import type { IProject } from "../../types";
 
-export async function getStaticPaths() {
-  // 1. Fetch all available years
-  const allYears = await getAllYears();
+const { yearData, categories, basePath = "" } = Astro.props as IYearContentProps;
 
-  // 2. FILTER UT inneværende år (2026)
-  // Vi vil kun generere sider for tidligere år her
-  const previousYears = allYears.filter((yearData) => yearData.year !== SITE_CONFIG.submissionYear);
+const hasCategories = categories && categories.length > 0;
 
-  // 3. For each PREVIOUS year, fetch categories and projects
-  return await Promise.all(
-    previousYears.map(async (yearData) => {
-      const yearString = yearData.year.toString();
-      const categories = await getCategoriesWithProjectsForYear(yearString);
+// State for å håndtere åpen modal
+let selectedProject: IProject | null = null;
+let selectedCategorySlug: string = "";
+let selectedYear: string = "";
+let isModalOpen = false;
 
-      return {
-        params: { year: yearString },
-        props: {
-          yearData,
-          categories,
-        },
-      };
-    })
-  );
+// Funksjon for å åpne prosjekt-modal
+function openProjectModal(project: IProject, categorySlug: string, year: string) {
+  selectedProject = project;
+  selectedCategorySlug = categorySlug;
+  selectedYear = year;
+  isModalOpen = true;
 }
 
-const { year } = Astro.params;
-const { yearData, categories } = Astro.props;
-const basePath = getBasePath();
-
-if (!year) {
-  return Astro.redirect("/years/");
+// Funksjon for å lukke modal
+function closeProjectModal() {
+  isModalOpen = false;
+  selectedProject = null;
 }
 ---
 
-<BaseLayout title={`Fyrstikken ${year}`} description={`Kategorier for Fyrstikken ${year}`}>
-  <HeaderImg variant="smal" slot="header" />
-  <YearContent yearData={yearData} categories={categories} basePath={basePath} />
-</BaseLayout>
+<div>
+  <div class="page-header-content">
+    <BackLink href={`${basePath}/years/`} label="Tilbake til år" />
+    <h1>Fyrstikken {yearData.year}</h1>
+    {yearData.description && <p class="year-description">{yearData.description}</p>}
+  </div>
+
+  <div class="kategorier">
+    {
+      categories.map((category, index) => (
+        <a
+          class="kategori-knapp"
+          href={"#" + category.slug.current}
+          style={`--btn-light-color: ${THEME_COLORS[index % THEME_COLORS.length].light}; --btn-dark-color: ${THEME_COLORS[index % THEME_COLORS.length].dark};`}>
+          {category.title}
+        </a>
+      ))
+    }
+  </div>
+
+  {
+    hasCategories ? (
+      <div class="year-content">
+        {categories.map((category, index) => {
+          const hasProjects = category.projects && category.projects.length > 0;
+
+          return (
+            <section
+              class="category-section"
+              id={category.slug.current}
+              style={`--category-light-color: ${THEME_COLORS[index % THEME_COLORS.length].light}; --category-dark-color: ${THEME_COLORS[index % THEME_COLORS.length].dark};`}>
+              <div class="category-header">
+                <div class="category-header-row">
+                  <h2 class="category-title">{category.title}</h2>
+                  <VoteButton categoryIndex={index} />
+                </div>
+                {category.description && <p class="category-description">{category.description}</p>}
+              </div>
+
+              {hasProjects && (
+                <div class="projects-grid">
+                  {category.projects?.map((project) => (
+                    <ProjectCard
+                      project={project}
+                      onClick={() => openProjectModal(project, category.slug.current, String(yearData.year))}
+                      categorySlug={category.slug.current}
+                      year={String(yearData.year)}
+                    />
+                  ))}
+                </div>
+              )}
+            </section>
+          );
+        })}
+
+        {/* Modal-komponenter */}
+        <VoteModal />
+        {selectedProject && (
+          <ProjectModal
+            project={selectedProject}
+            categorySlug={selectedCategorySlug}
+            year={selectedYear}
+            isOpen={isModalOpen}
+            onClose={closeProjectModal}
+            basePath={basePath}
+          />
+        )}
+      </div>
+    ) : (
+      <p>Ingen kategorier funnet for dette året.</p>
+    )
+  }
+</div>
+
+<a href="#" class="scroll-to-top" id="scrollToTop" aria-label="Scroll til toppen">↑</a>
+
+<script>
+  const btn = document.getElementById("scrollToTop");
+  const kategorier = document.querySelector(".kategorier");
+
+  if (btn && kategorier) {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        btn.classList.toggle("visible", !entry.isIntersecting);
+      },
+      { threshold: 0 }
+    );
+    observer.observe(kategorier);
+  }
+</script>
+
+<style>
+  /* Behold eksisterende CSS - ingen endringer nødvendig her */
+  .year-description {
+    font-size: 1.2rem;
+    opacity: 0.85;
+    margin-top: 0.75rem;
+    font-weight: 400;
+  }
+
+  .year-content {
+    margin-top: 2rem;
+  }
+
+  .kategorier {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .kategori-knapp {
+    background-color: light-dark(var(--light-ixDBoks), var(--dark-ixDBoks));
+    padding: 0.5rem 1.5rem;
+    border: 2px solid light-dark(var(--btn-light-color), var(--btn-dark-color));
+    border-radius: 6px;
+    font-weight: normal;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .kategori-knapp:hover {
+    box-shadow: inset 0 0 0 1000px
+      light-dark(
+        color-mix(in srgb, var(--btn-light-color) 10%, transparent),
+        color-mix(in srgb, var(--btn-dark-color) 10%, transparent)
+      );
+  }
+
+  .category-section {
+    margin-bottom: 4rem;
+    padding: 1.5rem;
+    border-radius: 1rem;
+  }
+
+  .category-header {
+    margin-bottom: 2rem;
+  }
+
+  .category-header-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .category-header-row::before {
+    content: "";
+    flex: 1;
+    height: 2px;
+    background-color: light-dark(var(--category-light-color), var(--category-dark-color));
+    order: 1;
+  }
+
+  .category-header-row :global(.vote-button) {
+    order: 2;
+  }
+
+  .category-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+
+  .category-description {
+    font-size: 1.1rem;
+    opacity: 0.85;
+    margin: 0;
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .category-title {
+      font-size: 1.75rem;
+    }
+
+    .projects-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .category-section {
+      margin-bottom: 3rem;
+    }
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .projects-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .scroll-to-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    color: inherit;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 100;
+    text-decoration: none;
+  }
+
+  .scroll-to-top.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .scroll-to-top:hover {
+    opacity: 0.8;
+  }
+</style>

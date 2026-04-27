@@ -54,6 +54,16 @@ export interface IProjectDetail {
   };
 }
 
+export interface IProject {
+  _id: string;
+  slug: ISlug;
+  title: string;
+  description?: string;
+  image?: ISanityImage; // eller spesifikk bilde-type
+  content?: string; // PortableText
+  year: number;
+}
+
 export interface ICategoryWithProjects {
   _id: string;
   title: string;

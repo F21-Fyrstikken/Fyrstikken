@@ -1,93 +1,101 @@
 ---
-import type { IProjectCardProps } from "../../types";
 import { getImageUrl, getImageAlt } from "../../utils/sanity";
+import type { IProject } from "../../types";
 
-const { project, href } = Astro.props as IProjectCardProps;
+interface Props {
+  project: IProject;
+  href?: string;
+  onClick?: (project: IProject) => void;
+  categorySlug?: string;
+  year?: string;
+}
+
+const { project, href, onClick, categorySlug, year } = Astro.props as Props;
+
 const imageUrl = getImageUrl(project.image);
 const imageAlt = getImageAlt(project.image, project.title);
 ---
 
-<a href={href} class="project-card">
-  {imageUrl && <img src={imageUrl} alt={imageAlt} class="project-image" loading="lazy" />}
-  <div class="project-content">
-    <h2>{project.title}</h2>
-    {project.description && <p>{project.description}</p>}
-  </div>
-</a>
+{
+  onClick ? (
+    <div
+      class="project-card"
+      role="button"
+      tabindex="0"
+      onclick={() => onClick?.(project)}
+      onkeydown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick?.(project);
+        }
+      }}>
+      {imageUrl && <img src={imageUrl} alt={imageAlt} class="project-card-image" loading="lazy" />}
+      <div class="project-card-content">
+        <h3 class="project-card-title">{project.title}</h3>
+        {project.description && <p class="project-card-description">{project.description}</p>}
+      </div>
+    </div>
+  ) : (
+    <a href={href} class="project-card">
+      {imageUrl && <img src={imageUrl} alt={imageAlt} class="project-card-image" loading="lazy" />}
+      <div class="project-card-content">
+        <h3 class="project-card-title">{project.title}</h3>
+        {project.description && <p class="project-card-description">{project.description}</p>}
+      </div>
+    </a>
+  )
+}
 
 <style>
   .project-card {
+    display: block;
     background: light-dark(var(--light-main), var(--dark-main));
     border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
     border-radius: 12px;
-    text-decoration: none;
     overflow: hidden;
     transition:
       transform 0.2s ease,
       box-shadow 0.2s ease,
       border-color 0.2s ease;
+    cursor: pointer;
+    text-decoration: none;
     color: inherit;
-    display: flex;
-    flex-direction: column;
   }
 
   .project-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    border-color: light-dark(
-      var(--category-light-color, var(--light-safir)),
-      var(--category-dark-color, var(--dark-safir))
-    );
-  }
-
-  .project-card.selected {
-    border-width: 4px;
-    border-color: light-dark(
-      color-mix(in srgb, var(--category-light-color, var(--light-safir)) 70%, transparent),
-      color-mix(in srgb, var(--category-dark-color, var(--dark-safir)) 70%, transparent)
-    );
     transform: translateY(-4px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    border-color: light-dark(var(--light-amazonitt), var(--dark-amazonitt));
   }
 
-  .project-card.voted {
-    border-width: 3px;
-    border-color: light-dark(
-      var(--category-light-color, var(--light-safir)),
-      var(--category-dark-color, var(--dark-safir))
-    );
-  }
-
-  .project-card.inactive {
-    opacity: 0.8;
-    filter: grayscale(100%);
-  }
-
-  .project-image {
+  .project-card-image {
     width: 100%;
-    height: 220px;
+    height: 200px;
     object-fit: cover;
-    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
   }
 
-  .project-content {
+  .project-card-content {
     padding: 1.5rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
   }
 
-  .project-content h2 {
-    font-size: 1.5rem;
+  .project-card-title {
+    font-size: 1.25rem;
     font-weight: 600;
-    margin: 0 0 0.75rem 0;
+    margin: 0 0 0.5rem 0;
     color: light-dark(var(--light-tekst), var(--dark-tekst));
   }
 
-  .project-content p {
+  .project-card-description {
+    font-size: 0.95rem;
     margin: 0;
     opacity: 0.85;
-    line-height: 1.6;
-    font-size: 1rem;
+    line-height: 1.5;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+
+  /* Fokus-stil for tilgjengelighet */
+  .project-card:focus {
+    outline: 2px solid light-dark(var(--light-safir), var(--dark-safir));
+    outline-offset: 2px;
   }
 </style>

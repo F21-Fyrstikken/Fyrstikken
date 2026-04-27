@@ -11,6 +11,8 @@ export interface IBreadcrumbItem {
   href: string;
 }
 
+export type { IProject } from "./sanity";
+
 export interface IBreadcrumbProps {
   items: IBreadcrumbItem[];
   basePath?: string;
