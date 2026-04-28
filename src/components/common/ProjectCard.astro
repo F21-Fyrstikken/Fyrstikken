@@ -2,18 +2,18 @@
 import type { IProjectCardProps } from "../../types";
 import { getImageUrl, getImageAlt } from "../../utils/sanity";
 
-const { project, href } = Astro.props as IProjectCardProps;
+const { project } = Astro.props as IProjectCardProps;
 const imageUrl = getImageUrl(project.image);
 const imageAlt = getImageAlt(project.image, project.title);
 ---
 
-<a href={href} class="project-card">
+<button type="button" class="project-card" data-project-id={project._id} data-project-slug={project.slug.current}>
   {imageUrl && <img src={imageUrl} alt={imageAlt} class="project-image" loading="lazy" />}
   <div class="project-content">
     <h2>{project.title}</h2>
     {project.description && <p>{project.description}</p>}
   </div>
-</a>
+</button>
 
 <style>
   .project-card {
@@ -29,6 +29,11 @@ const imageAlt = getImageAlt(project.image, project.title);
     color: inherit;
     display: flex;
     flex-direction: column;
+    cursor: pointer;
+    padding: 0;
+    font: inherit;
+    text-align: left;
+    width: 100%;
   }
 
   .project-card:hover {

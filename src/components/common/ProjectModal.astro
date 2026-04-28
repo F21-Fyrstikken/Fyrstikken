@@ -1,0 +1,451 @@
+---
+/**
+ * ProjectModal - displays project details in a modal overlay.
+ *
+ * On card click, fetches the project's content from Sanity CDN via GROQ
+ * and renders PortableText to HTML client-side.
+ */
+---
+
+<div class="project-modal-overlay" id="projectModalOverlay">
+  <div class="project-modal">
+    <button type="button" class="project-modal-close" id="projectModalClose" aria-label="Lukk">&times;</button>
+    <div class="project-modal-body" id="projectModalBody"></div>
+  </div>
+</div>
+
+<style>
+  .project-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+  }
+
+  .project-modal-overlay.active {
+    display: flex;
+  }
+
+  .project-modal {
+    background-color: light-dark(var(--light-main), var(--dark-main));
+    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    border-radius: 12px;
+    padding: 2.5rem;
+    max-width: 800px;
+    width: 100%;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .project-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+    line-height: 1;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+  }
+
+  .project-modal-close:hover {
+    background-color: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
+  }
+
+  .project-modal-body :global(.project-title) {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    padding-right: 2rem;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+
+  .project-modal-body :global(.project-description) {
+    font-size: 1.15rem;
+    opacity: 0.9;
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+    font-weight: 500;
+  }
+
+  .project-modal-body :global(.project-content) {
+    line-height: 1.8;
+  }
+
+  .project-modal-body :global(.project-content h2) {
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: light-dark(var(--light-safir), var(--dark-safir));
+  }
+
+  .project-modal-body :global(.project-content h3) {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: light-dark(var(--light-akvamarin), var(--dark-akvamarin));
+  }
+
+  .project-modal-body :global(.project-content p) {
+    margin-bottom: 1rem;
+    font-size: 1.05rem;
+  }
+
+  .project-modal-body :global(.project-content ul),
+  .project-modal-body :global(.project-content ol) {
+    margin-bottom: 1.5rem;
+    padding-left: 2rem;
+  }
+
+  .project-modal-body :global(.project-content li) {
+    margin-bottom: 0.5rem;
+    font-size: 1.05rem;
+  }
+
+  .project-modal-body :global(.project-content ul li) {
+    list-style-type: disc;
+  }
+
+  .project-modal-body :global(.project-content ol li) {
+    list-style-type: decimal;
+  }
+
+  .project-modal-body :global(.project-content blockquote) {
+    border-left: 4px solid light-dark(var(--light-safir), var(--dark-safir));
+    padding-left: 1.5rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    opacity: 0.9;
+  }
+
+  .project-modal-body :global(.project-content a) {
+    color: light-dark(var(--light-safir), var(--dark-safir));
+    text-decoration: underline;
+  }
+
+  .project-modal-body :global(.project-content img) {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 1rem 0;
+  }
+
+  .project-modal-body :global(.video-embed) {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    margin: 1.5rem 0;
+    border-radius: 12px;
+  }
+
+  .project-modal-body :global(.video-embed iframe) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 12px;
+  }
+
+  .project-modal-body :global(.audio-player) {
+    margin: 1.5rem 0;
+    padding: 1.5rem;
+    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
+    border-radius: 12px;
+    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+  }
+
+  .project-modal-body :global(.audio-player audio) {
+    width: 100%;
+  }
+
+  .project-modal-body :global(.embed-container) {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    margin: 1.5rem 0;
+    border-radius: 12px;
+  }
+
+  .project-modal-body :global(.embed-container iframe) {
+    width: 100%;
+    border: 0;
+    border-radius: 12px;
+  }
+
+  .project-modal-body :global(.content-image) {
+    margin: 1.5rem 0;
+    text-align: center;
+  }
+
+  .project-modal-body :global(.content-image img) {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .project-modal-body :global(.content-image figcaption) {
+    margin-top: 0.75rem;
+    font-size: 0.95rem;
+    opacity: 0.75;
+    font-style: italic;
+  }
+
+  .project-modal-body :global(.link-button-container) {
+    margin: 1.5rem 0;
+    text-align: center;
+  }
+
+  .project-modal-body :global(.link-button-container a) {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    background: light-dark(var(--light-safir), var(--dark-safir));
+    color: white;
+  }
+
+  .project-modal-body :global(.file-download) {
+    margin: 1.5rem 0;
+    padding: 1.25rem 1.5rem;
+    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
+    border-radius: 12px;
+    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+  }
+
+  .project-modal-body :global(.file-download a) {
+    color: light-dark(var(--light-safir), var(--dark-safir));
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
+    .project-modal-overlay {
+      padding: 1rem;
+    }
+
+    .project-modal {
+      padding: 1.5rem;
+    }
+
+    .project-modal-body :global(.project-title) {
+      font-size: 1.5rem;
+    }
+  }
+</style>
+
+<script>
+  import { createClient } from "@sanity/client";
+  import { toHTML } from "@portabletext/to-html";
+
+  const client = createClient({
+    projectId: "531mn2v8",
+    dataset: "production",
+    apiVersion: "2024-01-01",
+    useCdn: true,
+  });
+
+  const PROJECT_QUERY = `*[_type == "project" && slug.current == $slug][0] {
+    _id,
+    title,
+    description,
+    content[] {
+      ...,
+      _type == "image" => {
+        ...,
+        "imageUrl": asset->url
+      },
+      _type == "file" => {
+        ...,
+        "fileUrl": asset->url
+      },
+      _type == "audio" => {
+        ...,
+        "fileUrl": asset->url
+      }
+    }
+  }`;
+
+  // --- Utility functions (mirrored from src/utils/) ---
+
+  function getYouTubeId(url: string): string | null {
+    const match = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/.exec(url);
+    return match && match[2].length === 11 ? match[2] : null;
+  }
+
+  function getVimeoId(url: string): string | null {
+    const match =
+      /(?:vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^/]*)\/videos\/|album\/(?:\d+)\/video\/|video\/|))(\d+)(?:[a-zA-Z0-9_-]+)?/.exec(
+        url
+      );
+    return match ? match[1] : null;
+  }
+
+  function buildImageUrl(ref: string): string {
+    const refWithoutPrefix = ref.replace(/^image-/, "");
+    const parts = refWithoutPrefix.split("-");
+    const format = parts[parts.length - 1];
+    const dimensions = parts[parts.length - 2];
+    const id = parts.slice(0, -2).join("-");
+    return `https://cdn.sanity.io/images/531mn2v8/production/${id}-${dimensions}.${format}`;
+  }
+
+  function buildFileUrl(ref: string): string {
+    const refWithoutPrefix = ref.replace(/^file-/, "");
+    const lastDashIndex = refWithoutPrefix.lastIndexOf("-");
+    const id = refWithoutPrefix.substring(0, lastDashIndex);
+    const extension = refWithoutPrefix.substring(lastDashIndex + 1);
+    return `https://cdn.sanity.io/files/531mn2v8/production/${id}.${extension}`;
+  }
+
+  function getFileUrl(asset?: { url?: string; _ref?: string }): string {
+    if (!asset) return "";
+    if (asset.url) return asset.url;
+    if (asset._ref) return buildFileUrl(asset._ref);
+    return "";
+  }
+
+  // --- PortableText serializers ---
+
+  const portableTextComponents = {
+    types: {
+      youtube: ({ value }: { value: { url: string } }) => {
+        const videoId = getYouTubeId(value.url);
+        if (!videoId) return "";
+        return `<div class="video-embed"><iframe src="https://www.youtube.com/embed/${videoId}" title="YouTube video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe></div>`;
+      },
+      vimeo: ({ value }: { value: { url: string } }) => {
+        const videoId = getVimeoId(value.url);
+        if (!videoId) return "";
+        return `<div class="video-embed"><iframe src="https://player.vimeo.com/video/${videoId}" title="Vimeo video" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>`;
+      },
+      image: ({ value }: { value: { imageUrl?: string; asset?: { _ref?: string }; alt?: string; caption?: string } }) => {
+        const imageUrl = value.imageUrl || (value.asset?._ref ? buildImageUrl(value.asset._ref) : "");
+        if (!imageUrl) return "";
+        const caption = value.caption ? `<figcaption>${value.caption}</figcaption>` : "";
+        return `<figure class="content-image"><img src="${imageUrl}" alt="${value.alt || ""}" loading="lazy" />${caption}</figure>`;
+      },
+      audio: ({ value }: { value: { fileUrl?: string; asset?: { _ref?: string; url?: string } } }) => {
+        const audioUrl = value.fileUrl || getFileUrl(value.asset);
+        if (!audioUrl) return "";
+        return `<div class="audio-player"><audio controls><source src="${audioUrl}" /></audio></div>`;
+      },
+      file: ({ value }: { value: { fileUrl?: string; asset?: { _ref?: string; url?: string } } }) => {
+        const fileUrl = value.fileUrl || getFileUrl(value.asset);
+        if (!fileUrl) return "";
+        const fileName = fileUrl.split("/").pop() || "file";
+        const ext = fileName.split(".").pop()?.toLowerCase() ?? "";
+        const imageExts = ["jpg", "jpeg", "png", "gif", "webp", "svg", "avif"];
+        const videoExts = ["mp4", "webm", "mov", "avi", "mkv"];
+        const audioExts = ["mp3", "wav", "ogg", "m4a", "flac", "aac"];
+        if (imageExts.includes(ext)) {
+          return `<figure class="content-image"><img src="${fileUrl}" alt="${fileName}" loading="lazy" /></figure>`;
+        }
+        if (videoExts.includes(ext)) {
+          return `<div class="video-container"><video controls preload="metadata"><source src="${fileUrl}" type="video/${ext === "mov" ? "quicktime" : ext}" /></video></div>`;
+        }
+        if (audioExts.includes(ext)) {
+          return `<div class="audio-player"><audio controls><source src="${fileUrl}" /></audio></div>`;
+        }
+        if (ext === "pdf") {
+          return `<div class="embed-container" style="height: 600px"><embed src="${fileUrl}" type="application/pdf" width="100%" height="100%" /></div>`;
+        }
+        return `<div class="file-download"><a href="${fileUrl}" download target="_blank" rel="noopener noreferrer">${fileName}</a></div>`;
+      },
+      embed: ({ value }: { value: { url: string; height?: number } }) => {
+        const height = value.height ?? 450;
+        return `<div class="embed-container" style="height: ${height}px"><iframe src="${value.url}" title="Embedded content" allowfullscreen></iframe></div>`;
+      },
+      linkButton: ({ value }: { value: { text: string; url: string; newTab?: boolean } }) => {
+        const target = value.newTab ? ' target="_blank" rel="noopener noreferrer"' : "";
+        return `<div class="link-button-container"><a href="${value.url}"${target}>${value.text}</a></div>`;
+      },
+    },
+  };
+
+  // --- Modal logic ---
+
+  const overlay = document.getElementById("projectModalOverlay");
+  const closeBtn = document.getElementById("projectModalClose");
+  const modalBody = document.getElementById("projectModalBody");
+
+  const contentCache = new Map<string, string>();
+
+  async function openProjectModal(slug: string) {
+    if (!modalBody || !overlay) return;
+
+    modalBody.innerHTML = '<p style="text-align:center;opacity:0.6;">Laster innhold...</p>';
+    overlay.classList.add("active");
+    document.body.style.overflow = "hidden";
+
+    const cached = contentCache.get(slug);
+    if (cached) {
+      modalBody.innerHTML = cached;
+      return;
+    }
+
+    try {
+      const project = await client.fetch(PROJECT_QUERY, { slug });
+      if (!project) {
+        modalBody.innerHTML = '<p style="text-align:center;opacity:0.6;">Kunne ikke finne prosjektet.</p>';
+        return;
+      }
+
+      let html = `<h1 class="project-title">${project.title}</h1>`;
+      if (project.description) {
+        html += `<p class="project-description">${project.description}</p>`;
+      }
+      if (project.content) {
+        html += `<div class="project-content">${toHTML(project.content, { components: portableTextComponents })}</div>`;
+      }
+
+      contentCache.set(slug, html);
+      modalBody.innerHTML = html;
+    } catch {
+      modalBody.innerHTML = '<p style="text-align:center;opacity:0.6;">Noe gikk galt ved lasting av innhold.</p>';
+    }
+  }
+
+  function closeProjectModal() {
+    overlay?.classList.remove("active");
+    document.body.style.overflow = "";
+    if (modalBody) modalBody.innerHTML = "";
+  }
+
+  closeBtn?.addEventListener("click", closeProjectModal);
+
+  overlay?.addEventListener("click", (e) => {
+    if (e.target === overlay) closeProjectModal();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && overlay?.classList.contains("active")) {
+      closeProjectModal();
+    }
+  });
+
+  // Listen for clicks on project cards
+  document.querySelectorAll<HTMLButtonElement>(".project-card[data-project-slug]").forEach((card) => {
+    card.addEventListener("click", () => {
+      const slug = card.dataset.projectSlug;
+      if (slug) openProjectModal(slug);
+    });
+  });
+</script>

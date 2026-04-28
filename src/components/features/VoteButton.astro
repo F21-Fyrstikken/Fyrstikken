@@ -25,7 +25,7 @@ const buttonId = `voteButton-${categoryIndex}`;
   function loadVotesFromStorage() {
     const votes = JSON.parse(localStorage.getItem("fyrstikken-votes") || "{}");
 
-    Object.entries(votes).forEach(([sectionId, projectHref]) => {
+    Object.entries(votes).forEach(([sectionId, projectId]) => {
       const section = document.getElementById(sectionId);
       if (!section) return;
 
@@ -37,7 +37,7 @@ const buttonId = `voteButton-${categoryIndex}`;
       }
 
       // Merk det stemte prosjektet og deaktiver resten
-      const votedCard = section.querySelector(`a[href="${projectHref}"]`);
+      const votedCard = section.querySelector(`[data-project-id="${projectId}"]`);
       if (votedCard) {
         votedCard.classList.add("voted");
         
@@ -63,11 +63,11 @@ const buttonId = `voteButton-${categoryIndex}`;
 
       // Bare håndter stemming hvis kategorien er i stemmemodus
       if (!section?.classList.contains("voting")) {
-        return; // La lenken fungere som normalt
+        return; // La modal-åpning fungere som normalt
       }
 
-      // Forhindre navigasjon når man stemmer
-      e.preventDefault();
+      // Stopp event fra å åpne prosjektmodalen
+      e.stopImmediatePropagation();
 
       // Klikket på samme prosjekt = fjern valget
       if (selectedProject === htmlCard) {

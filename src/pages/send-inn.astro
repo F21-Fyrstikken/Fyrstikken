@@ -23,7 +23,22 @@ const year = SITE_CONFIG.submissionYear;
           <div id="members-list">
             <div class="row-group member-row">
               <input type="text" class="member-name" placeholder="Fullt navn" required />
-              <input type="text" class="member-class" placeholder="f.eks. 3IMA" required />
+              <select class="member-class" required>
+                <option value="" disabled selected>Velg klasse</option>
+                <option value="1IMA">1IMA</option>
+                <option value="1IMB">1IMB</option>
+                <option value="1IMC">1IMC</option>
+                <option value="2ITA">2ITA</option>
+                <option value="2ITB">2ITB</option>
+                <option value="2MP">2MP</option>
+                <option value="1MKA">1MKA</option>
+                <option value="1MKB">1MKB</option>
+                <option value="2MKA">2MKA</option>
+                <option value="2MKB">2MKB</option>
+                <option value="3MKA">3MKA</option>
+                <option value="3MKB">3MKB</option>
+                <option value="IMT">IMT</option>
+              </select>
               <button type="button" class="remove-btn remove-member" aria-label="Fjern medlem" style="visibility: hidden;">Fjern</button>
             </div>
           </div>
@@ -32,8 +47,9 @@ const year = SITE_CONFIG.submissionYear;
 
         <!-- B) Thumbnail -->
         <div class="form-group">
-          <label for="prosjektbilde">Thumbnail</label>
-          <input type="file" id="prosjektbilde" name="image" accept="image/*" />
+          <label for="prosjektbilde">Thumbnail <span class="required" aria-hidden="true">*</span></label>
+          <p class="field-hint">Dette bildet brukes som thumbnail for prosjektet ditt på nettsiden. Anbefalt format: 16:9 (f.eks. 1920×1080). Aksepterte filtyper: JPG, PNG eller WebP.</p>
+          <input type="file" id="prosjektbilde" name="image" accept="image/jpeg,image/png,image/webp" required />
         </div>
 
         <!-- C) Kategori -->
@@ -60,6 +76,13 @@ const year = SITE_CONFIG.submissionYear;
             <!-- Dynamisk lagt til med JS -->
           </div>
           <button type="button" id="add-attachment-btn" class="outline-btn">Legg til fil</button>
+        </div>
+
+        <!-- B) Thumbnail -->
+        <div class="form-group">
+          <label for="prosjektbilde">Thumbnail <span class="required" aria-hidden="true">*</span></label>
+          <p class="field-hint">Dette bildet brukes som thumbnail for prosjektet ditt på nettsiden. Anbefalt format: 16:9 (f.eks. 1920×1080). Aksepterte filtyper: JPG, PNG eller WebP.</p>
+          <input type="file" id="prosjektbilde" name="image" accept="image/jpeg,image/png,image/webp" required />
         </div>
 
         <!-- F) Submit Actions -->
@@ -119,6 +142,14 @@ const year = SITE_CONFIG.submissionYear;
     color: light-dark(var(--light-rubin), var(--dark-rubin));
   }
 
+  .field-hint {
+    font-size: 1.4rem;
+    line-height: 1.5;
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+    opacity: 0.7;
+    margin-bottom: var(--space-xs, 0.4rem);
+  }
+
   input[type="text"],
   select,
   textarea,
@@ -156,7 +187,8 @@ const year = SITE_CONFIG.submissionYear;
     width: 100%;
   }
 
-  .member-row input {
+  .member-row input,
+  .member-row select {
     flex: 1;
     min-width: 0;
   }
@@ -287,6 +319,9 @@ const year = SITE_CONFIG.submissionYear;
 
         const inputs = newRow.querySelectorAll("input");
         inputs.forEach(input => input.value = "");
+
+        const selects = newRow.querySelectorAll("select");
+        selects.forEach(select => select.value = "");
 
         const removeBtn = newRow.querySelector(".remove-btn") as HTMLButtonElement;
         if (removeBtn) {
