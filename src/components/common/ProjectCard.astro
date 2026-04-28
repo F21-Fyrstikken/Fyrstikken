@@ -40,6 +40,16 @@ const imageAlt = getImageAlt(project.image, project.title);
     );
   }
 
+  .project-card:focus-visible {
+    outline: 3px solid light-dark(
+      var(--category-light-color, var(--light-safir)),
+      var(--category-dark-color, var(--dark-safir))
+    );
+    outline-offset: 2px;
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
   .project-card.selected {
     border-width: 4px;
     border-color: light-dark(
