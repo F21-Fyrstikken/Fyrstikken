@@ -6,7 +6,7 @@ import VoteModal from "../VoteModal.astro";
 import { THEME_COLORS } from "../../config";
 import type { IYearContentProps } from "../../types";
 
-const { yearData, categories, basePath = "" } = Astro.props as IYearContentProps;
+const { yearData, categories, basePath = "", showVoting = true } = Astro.props as IYearContentProps;
 
 const hasCategories = categories && categories.length > 0;
 ---
@@ -45,7 +45,7 @@ const hasCategories = categories && categories.length > 0;
               <div class="category-header">
                 <div class="category-header-row">
                   <h2 class="category-title">{category.title}</h2>
-                  <VoteButton categoryIndex={index} />
+                  {showVoting && <VoteButton categoryIndex={index} />}
                 </div>
                 {category.description && <p class="category-description">{category.description}</p>}
               </div>
@@ -63,7 +63,7 @@ const hasCategories = categories && categories.length > 0;
             </section>
           );
         })}
-        <VoteModal />
+        {showVoting && <VoteModal />}
       </div>
     ) : (
       <p>Ingen kategorier funnet for dette året.</p>
