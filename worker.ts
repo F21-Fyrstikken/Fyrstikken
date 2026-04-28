@@ -62,10 +62,10 @@ function validateImage(image: File | null): string | null {
     return null;
   }
   if (image.size > MAX_IMAGE_SIZE) {
-    return "Thumbnail er for stort (maks 10 MB).";
+    return "Visningsbilde er for stort (maks 10 MB).";
   }
   if (!image.type.startsWith("image/")) {
-    return "Thumbnail må være et bilde.";
+    return "Visningsbilde må være et bilde.";
   }
   return null;
 }
