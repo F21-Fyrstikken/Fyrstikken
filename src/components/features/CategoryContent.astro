@@ -1,5 +1,6 @@
 ---
 import ProjectCard from "../common/ProjectCard.astro";
+import ProjectModal from "../common/ProjectModal.astro";
 import BackLink from "../common/BackLink.astro";
 import type { ICategoryContentProps } from "../../types";
 
@@ -22,10 +23,10 @@ const hasProjects = projects && projects.length > 0;
           {projects.map((project) => (
             <ProjectCard
               project={project}
-              href={`${basePath}/years/${year}/${categoryData.slug.current}/${project.slug.current}/`}
             />
           ))}
         </div>
+        <ProjectModal />
       </div>
     ) : (
       <p class="no-projects">Ingen prosjekter funnet i denne kategorien.</p>

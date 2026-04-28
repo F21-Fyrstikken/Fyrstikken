@@ -30,7 +30,6 @@ export interface IBaseLayoutProps {
 
 export interface IProjectCardProps {
   project: IProject;
-  href: string;
 }
 
 // Portable text node types

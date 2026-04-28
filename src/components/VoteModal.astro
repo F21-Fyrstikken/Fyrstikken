@@ -131,9 +131,9 @@
     }
 
     // Legg til voted-klasse på det valgte prosjektet
-    const selectedCard = document.querySelector(".project-card.selected") as HTMLAnchorElement;
+    const selectedCard = document.querySelector(".project-card.selected") as HTMLButtonElement;
     const sectionId = selectedCard?.closest(".category-section")?.id;
-    const projectHref = selectedCard?.getAttribute("href");
+    const projectId = selectedCard?.dataset.projectId;
 
     if (selectedCard) {
       selectedCard.classList.add("voted");
@@ -150,9 +150,9 @@
     }
 
     // Lagre stemmen i localStorage
-    if (sectionId && projectHref) {
+    if (sectionId && projectId) {
       const votes = JSON.parse(localStorage.getItem("fyrstikken-votes") || "{}");
-      votes[sectionId] = projectHref;
+      votes[sectionId] = projectId;
       localStorage.setItem("fyrstikken-votes", JSON.stringify(votes));
       
       // Lagre e-posten i localStorage (bare første gang)
