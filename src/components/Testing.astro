@@ -1,0 +1,72 @@
+---
+---
+
+<section class="wrapper">
+  <div class="card">
+    <h1 class="title">Welcome to Fyrstikken 🔥</h1>
+    <p class="subtitle">This is a clean, elegant UI built with Astro and Tailwind-style effects.</p>
+    <a href="/" class="btn">Return Home</a>
+  </div>
+</section>
+
+<style>
+  .wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100dvh;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .card {
+    backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 2.5rem 3rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    max-width: 420px;
+    text-align: center;
+  }
+
+  .title {
+    font-size: 2rem;
+    color: white;
+    margin-bottom: 1rem;
+    background: linear-gradient(90deg, #ff8a00, #e52e71);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle {
+    color: #e0e0e0;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .btn {
+    background: linear-gradient(90deg, #3245ff, #bc52ee);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.3s;
+  }
+
+  .btn:hover {
+    background: linear-gradient(90deg, #1f2ef7, #9c3fc9);
+  }
+
+  @media (max-width: 500px) {
+    .card {
+      padding: 2rem;
+    }
+
+    .title {
+      font-size: 1.5rem;
+    }
+  }
+</style>
