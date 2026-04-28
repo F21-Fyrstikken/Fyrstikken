@@ -97,6 +97,7 @@ export interface IYearContentProps {
   yearData: IYear;
   categories: ICategoryWithProjects[];
   basePath?: string;
+  showVoting?: boolean;
 }
 
 export interface ICategoryContentProps {
