@@ -45,11 +45,13 @@ const year = SITE_CONFIG.submissionYear;
           <button type="button" id="add-member-btn" class="outline-btn">Legg til medlem</button>
         </div>
 
-        <!-- B) Thumbnail -->
+        <!-- E) Filer -->
         <div class="form-group">
-          <label for="prosjektbilde">Thumbnail <span class="required" aria-hidden="true">*</span></label>
-          <p class="field-hint">Dette bildet brukes som thumbnail for prosjektet ditt på nettsiden. Anbefalt format: 16:9 (f.eks. 1920×1080). Aksepterte filtyper: JPG, PNG eller WebP.</p>
-          <input type="file" id="prosjektbilde" name="image" accept="image/jpeg,image/png,image/webp" required />
+          <label>Filer</label>
+          <div id="attachments-list">
+            <!-- Dynamisk lagt til med JS -->
+          </div>
+          <button type="button" id="add-attachment-btn" class="outline-btn">Legg til fil</button>
         </div>
 
         <!-- C) Kategori -->
@@ -67,15 +69,6 @@ const year = SITE_CONFIG.submissionYear;
         <div class="form-group">
           <label for="tittel">Tittel <span class="required" aria-hidden="true">*</span></label>
           <input type="text" id="tittel" name="title" required />
-        </div>
-
-        <!-- E) Filer -->
-        <div class="form-group">
-          <label>Filer</label>
-          <div id="attachments-list">
-            <!-- Dynamisk lagt til med JS -->
-          </div>
-          <button type="button" id="add-attachment-btn" class="outline-btn">Legg til fil</button>
         </div>
 
         <!-- B) Thumbnail -->
