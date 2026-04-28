@@ -11,12 +11,14 @@ const year = SITE_CONFIG.submissionYear;
   <div class="submit-page">
     <header class="page-header">
       <h1>Send inn prosjekt — Fyrstikken {year}</h1>
-      <p>Her kan du sende inn ditt prosjekt til Fyrstikken {year}. Fyll ut skjemaet under, så vil prosjektet bli gjennomgått av juryen.</p>
+      <p
+        >Her kan du sende inn ditt prosjekt til Fyrstikken {year}. Fyll ut skjemaet under, så vil prosjektet bli
+        gjennomgått av juryen.</p
+      >
     </header>
 
     <div id="form-wrapper">
       <form id="submit-form" method="POST" action="/api/submit" enctype="multipart/form-data">
-        
         <!-- A) Medlemmer -->
         <div class="form-group">
           <label>Medlemmer <span class="required" aria-hidden="true">*</span></label>
@@ -39,7 +41,12 @@ const year = SITE_CONFIG.submissionYear;
                 <option value="3MKB">3MKB</option>
                 <option value="IMT">IMT</option>
               </select>
-              <button type="button" class="remove-btn remove-member" aria-label="Fjern medlem" style="visibility: hidden;">Fjern</button>
+              <button
+                type="button"
+                class="remove-btn remove-member"
+                aria-label="Fjern medlem"
+                style="visibility: hidden;">Fjern</button
+              >
             </div>
           </div>
           <button type="button" id="add-member-btn" class="outline-btn">Legg til medlem</button>
@@ -59,9 +66,7 @@ const year = SITE_CONFIG.submissionYear;
           <label for="kategori">Kategori <span class="required" aria-hidden="true">*</span></label>
           <select id="kategori" name="category" required>
             <option value="" disabled selected>Velg en kategori</option>
-            {categories.map((cat: { _id: string; title: string }) => (
-              <option value={cat._id}>{cat.title}</option>
-            ))}
+            {categories.map((cat: { _id: string; title: string }) => <option value={cat._id}>{cat.title}</option>)}
           </select>
         </div>
 
@@ -71,10 +76,13 @@ const year = SITE_CONFIG.submissionYear;
           <input type="text" id="tittel" name="title" required />
         </div>
 
-        <!-- B) Thumbnail -->
+        <!-- B) Visningsbilde -->
         <div class="form-group">
-          <label for="prosjektbilde">Thumbnail <span class="required" aria-hidden="true">*</span></label>
-          <p class="field-hint">Dette bildet brukes som thumbnail for prosjektet ditt på nettsiden. Anbefalt format: 16:9 (f.eks. 1920×1080). Aksepterte filtyper: JPG, PNG eller WebP.</p>
+          <label for="prosjektbilde">Visningsbilde <span class="required" aria-hidden="true">*</span></label>
+          <p class="field-hint"
+            >Dette bildet brukes som forhåndsvisningsbilde for prosjektet ditt og er det første man ser. Anbefalt
+            format: 16:9 (f.eks. 1920×1080). Aksepterte filtyper: JPG, PNG eller WebP.</p
+          >
           <input type="file" id="prosjektbilde" name="image" accept="image/jpeg,image/png,image/webp" required />
         </div>
 
@@ -249,7 +257,9 @@ const year = SITE_CONFIG.submissionYear;
     font-size: 1.8rem;
     font-weight: 600;
     cursor: pointer;
-    transition: transform var(--transition-fast, 0.2s ease), opacity var(--transition-fast, 0.2s ease);
+    transition:
+      transform var(--transition-fast, 0.2s ease),
+      opacity var(--transition-fast, 0.2s ease);
   }
 
   .submit-btn:hover {
@@ -311,10 +321,10 @@ const year = SITE_CONFIG.submissionYear;
         const newRow = firstRow.cloneNode(true) as HTMLElement;
 
         const inputs = newRow.querySelectorAll("input");
-        inputs.forEach(input => input.value = "");
+        inputs.forEach((input) => (input.value = ""));
 
         const selects = newRow.querySelectorAll("select");
-        selects.forEach(select => select.value = "");
+        selects.forEach((select) => (select.value = ""));
 
         const removeBtn = newRow.querySelector(".remove-btn") as HTMLButtonElement;
         if (removeBtn) {
@@ -340,7 +350,7 @@ const year = SITE_CONFIG.submissionYear;
     if (!membersList) return "";
     const rows = membersList.querySelectorAll(".member-row");
     const parts: string[] = [];
-    rows.forEach(row => {
+    rows.forEach((row) => {
       const name = (row.querySelector(".member-name") as HTMLInputElement)?.value.trim() ?? "";
       const cls = (row.querySelector(".member-class") as HTMLInputElement)?.value.trim() ?? "";
       if (name !== "" && cls !== "") {
@@ -402,7 +412,7 @@ const year = SITE_CONFIG.submissionYear;
 
         const formData = new FormData(form);
         const attachments = formData.getAll("attachment[]");
-        const hasFile = attachments.some(f => f instanceof File && f.size > 0);
+        const hasFile = attachments.some((f) => f instanceof File && f.size > 0);
         if (!hasFile) {
           throw new Error("Du må laste opp minst én fil.");
         }
