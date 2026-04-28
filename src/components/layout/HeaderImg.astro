@@ -11,6 +11,11 @@ const { variant = "stor" } = Astro.props;
 
 const headerImg = variant === "stor" ? Header1600Stor : Header1600Smal;
 const headerHeight = variant === "stor" ? 500 : 250;
+const headerTitle = variant === "stor" ? `Fyrstikken ${year}` : "Fyrstikken";
+const textContent =
+  variant === "stor"
+    ? "Her kan du stemme på publikumsprisen, se på forskjellige elevprosjekter og lære mer om dem."
+    : "Her kan du se tidligere vinnere og nominerte";
 ---
 
 <header>
@@ -26,8 +31,8 @@ const headerHeight = variant === "stor" ? 500 : 250;
     <NightDay />
   </div>
   <div id="headerText">
-    <h1>Fyrstikken {year}</h1>
-    <p>Her kan du stemme på publikumsprisen, se på forskjellige elevprosjekter og lære mer om dem.</p>
+    <h1>{headerTitle}</h1>
+    <p>{textContent}</p>
   </div>
 </header>
 
