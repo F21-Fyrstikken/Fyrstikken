@@ -1,6 +1,5 @@
 ---
 import { PortableText } from "astro-portabletext";
-import Breadcrumb from "../common/Breadcrumb.astro";
 import { getImageUrl, getImageAlt } from "../../utils/sanity";
 import type { IProjectContentProps } from "../../types";
 
@@ -14,12 +13,6 @@ import File from "../portable-text/File.astro";
 import Embed from "../portable-text/Embed.astro";
 
 const { year, category, projectData, allProjects, basePath = "" } = Astro.props as IProjectContentProps;
-
-// Prepare breadcrumb navigation links
-const breadcrumbItems = [
-  { label: "År", href: "/years" },
-  { label: year, href: `/years/${year}` },
-];
 
 // Helper variables for the main project image
 // const projectImageUrl = getImageUrl(projectData.image);
@@ -58,10 +51,6 @@ const sidebarProjects = allProjects?.map((proj) => {
 ---
 
 <div>
-  <div class="page-header-content">
-    <Breadcrumb items={breadcrumbItems} basePath={basePath} />
-  </div>
-
   <div class="project-layout">
     {/* Sidebar with list of other projects in the same category */}
     <aside class="project-sidebar">

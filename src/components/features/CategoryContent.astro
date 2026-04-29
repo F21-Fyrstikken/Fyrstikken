@@ -1,7 +1,6 @@
 ---
 import ProjectCard from "../common/ProjectCard.astro";
 import ProjectModal from "../common/ProjectModal.astro";
-import BackLink from "../common/BackLink.astro";
 import type { ICategoryContentProps } from "../../types";
 
 const { year, categoryData, projects, basePath = "" } = Astro.props as ICategoryContentProps;
@@ -11,7 +10,6 @@ const hasProjects = projects && projects.length > 0;
 
 <div>
   <div class="page-header-content">
-    <BackLink href={`${basePath}/years/${year}/`} label={`Tilbake til ${year}`} />
     <h1>{categoryData.title}</h1>
     {categoryData.description && <p class="category-description">{categoryData.description}</p>}
   </div>

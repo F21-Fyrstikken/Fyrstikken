@@ -1,13 +1,39 @@
 ---
 import "../styles/global.css";
 import "../styles/typografi.css";
-import type { IBaseLayoutProps } from "../types";
+import Breadcrumb from "../components/common/Breadcrumb.astro";
+import type { IBaseLayoutProps, IBreadcrumbItem } from "../types";
 import { SITE_CONFIG } from "../config";
 
 const { title = "Fyrstikken", description, image } = Astro.props as IBaseLayoutProps;
 const base = import.meta.env.BASE_URL;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? SITE_CONFIG.fallbackUrl);
 const ogImage = image ?? `${canonicalUrl.origin}${base}og-image.png`;
+
+const basePath = base.replace(/\/$/, "");
+const pathname = Astro.url.pathname.replace(basePath, "").replace(/\/$/, "") || "/";
+const isHomePage = pathname === "/";
+
+const segmentLabels: Record<string, string> = {
+  years: "År",
+  about: "Om",
+  "send-inn": "Send inn",
+};
+
+function buildBreadcrumbs(path: string): IBreadcrumbItem[] {
+  if (path === "/") return [];
+  const segments = path.split("/").filter(Boolean);
+  const items: IBreadcrumbItem[] = [{ label: "Hjem", href: "/" }];
+  let href = "";
+  for (const segment of segments) {
+    href += `/${segment}`;
+    const label = segmentLabels[segment] || decodeURIComponent(segment);
+    items.push({ label, href });
+  }
+  return items;
+}
+
+const breadcrumbItems = buildBreadcrumbs(pathname);
 ---
 
 <html lang="no">
@@ -51,6 +77,7 @@ const ogImage = image ?? `${canonicalUrl.origin}${base}og-image.png`;
     </nav> -->
     <main class="main-content" id="main-content">
       <section>
+        {!isHomePage && breadcrumbItems.length > 0 && <Breadcrumb items={breadcrumbItems} basePath={basePath} />}
         <slot />
       </section>
     </main>
