@@ -64,6 +64,10 @@ const year = SITE_CONFIG.submissionYear;
         <!-- C) Kategori -->
         <div class="form-group">
           <label for="kategori">Kategori <span class="required" aria-hidden="true">*</span></label>
+          <p class="field-hint"
+            >Velg kategorien som er nærmest prosjektet sjanger. Prosjekter som leveres i feil kategori, korrigeres i
+            ettertid av juryen.</p
+          >
           <select id="kategori" name="category" required>
             <option value="" disabled selected>Velg en kategori</option>
             {categories.map((cat: { _id: string; title: string }) => <option value={cat._id}>{cat.title}</option>)}
@@ -79,10 +83,10 @@ const year = SITE_CONFIG.submissionYear;
         <!-- B) Visningsbilde -->
         <div class="form-group">
           <label for="prosjektbilde">Visningsbilde <span class="required" aria-hidden="true">*</span></label>
-          <p class="field-hint"
-            >Dette bildet brukes som forhåndsvisningsbilde for prosjektet ditt og er det første man ser. Anbefalt
-            format: 16:9 (f.eks. 1920×1080). Aksepterte filtyper: JPG, PNG eller WebP.</p
-          >
+          <p class="field-hint">
+            Dette bildet brukes som forhåndsvisningsbilde for prosjektet ditt og er det første man ser. Anbefalt format:
+            16:9 (f.eks. 1920x1080, 960x540, 640x360). Aksepterte filtyper: JPG, PNG eller WebP.
+          </p>
           <input type="file" id="prosjektbilde" name="image" accept="image/jpeg,image/png,image/webp" required />
         </div>
 

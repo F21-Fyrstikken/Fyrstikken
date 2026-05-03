@@ -111,13 +111,11 @@ const breadcrumbItems = buildBreadcrumbs(pathname);
   }
 
   body {
-    display: grid;
-    grid-template-rows: auto 1fr auto;
+    /* display: grid;
+    grid-template-rows: auto 1fr auto; */
     background: light-dark(var(--light-bakgrunn), var(--dark-bakgrunn));
     color: light-dark(var(--light-tekst), var(--dark-tekst));
     min-height: 100vh;
-    max-width: 1600px;
-    margin-inline: auto;
     font-family:
       system-ui,
       -apple-system,
@@ -129,6 +127,8 @@ const breadcrumbItems = buildBreadcrumbs(pathname);
     background: light-dark(var(--light-main), var(--dark-main));
     color: light-dark(var(--light-tekst), var(--dark-tekst));
     height: fit-content;
+    max-width: 1600px;
+    margin-inline: auto;
     padding-inline: var(--space-xl);
     padding-block: var(--space-md);
   }
