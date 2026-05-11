@@ -35,11 +35,12 @@ export default defineType({
     }),
     defineField({
       name: "coverImage",
-      title: "Cover Image",
+      title: "Cover Image / Kategori-ikon",
       type: "image",
       options: {
         hotspot: true,
       },
+      description: "Brukes som kategori-ikon på oversiktssider. SVG anbefales for ikoner.",
       fields: [
         {
           name: "alt",
