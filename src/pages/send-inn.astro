@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import HeaderImg from "../components/layout/HeaderImg.astro";
 import { getCategoriesForSubmission } from "../lib/sanity-client";
 import { SITE_CONFIG } from "../config";
 
@@ -8,13 +9,11 @@ const year = SITE_CONFIG.submissionYear;
 ---
 
 <BaseLayout title="Send inn prosjekt — Fyrstikken">
+  <HeaderImg variant="sendinn" slot="header" />
   <div class="submit-page">
     <header class="page-header">
-      <h1>Send inn prosjekt — Fyrstikken {year}</h1>
-      <p
-        >Her kan du sende inn ditt prosjekt til Fyrstikken {year}. Fyll ut skjemaet under, så vil prosjektet bli
-        gjennomgått av juryen.</p
-      >
+      <h1>Send inn prosjekt</h1>
+      <p>Fyll ut skjemaet under, så vil prosjektet bli gjennomgått av juryen for Fyrstikken {year}.</p>
     </header>
 
     <div id="form-wrapper">
@@ -129,6 +128,9 @@ const year = SITE_CONFIG.submissionYear;
     line-height: 1.5;
     color: light-dark(var(--light-tekst), var(--dark-tekst));
     opacity: 0.8;
+  }
+  #form-wrapper {
+    margin-bottom: 10rem;
   }
 
   .form-group {
