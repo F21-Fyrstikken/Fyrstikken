@@ -111,13 +111,11 @@ const breadcrumbItems = buildBreadcrumbs(pathname);
   }
 
   body {
-    display: grid;
-    grid-template-rows: auto 1fr auto;
+    /* display: grid;
+    grid-template-rows: auto 1fr auto; */
     background: light-dark(var(--light-bakgrunn), var(--dark-bakgrunn));
     color: light-dark(var(--light-tekst), var(--dark-tekst));
     min-height: 100vh;
-    max-width: 1600px;
-    margin-inline: auto;
     font-family:
       system-ui,
       -apple-system,
@@ -129,6 +127,8 @@ const breadcrumbItems = buildBreadcrumbs(pathname);
     background: light-dark(var(--light-main), var(--dark-main));
     color: light-dark(var(--light-tekst), var(--dark-tekst));
     height: fit-content;
+    max-width: 1600px;
+    margin-inline: auto;
     padding-inline: var(--space-xl);
     padding-block: var(--space-md);
   }
@@ -147,17 +147,10 @@ const breadcrumbItems = buildBreadcrumbs(pathname);
     justify-content: center;
     background-color: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
     border-top: 3px solid light-dark(var(--light-ramme), var(--dark-ramme));
-    height: 3rem;
     width: 100%;
+    padding-block: 1rem;
     box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.2);
   }
-
-  /* @media (max-width: 768px) {
-    .nav-content {
-      padding: 0 1rem;
-      gap: 1rem;
-    }
-  } */
 </style>
 <script>
   import { getCopyRightYear } from "../lib/utils"; // import i script for å være client-side

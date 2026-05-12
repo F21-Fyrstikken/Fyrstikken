@@ -9,13 +9,34 @@ const year = SITE_CONFIG.currentYear;
 
 const { variant = "stor" } = Astro.props;
 
-const headerImg = variant === "stor" ? Header1600Stor : Header1600Smal;
-const headerHeight = variant === "stor" ? 500 : 250;
-const headerTitle = variant === "stor" ? `Fyrstikken ${year}` : "Fyrstikken";
-const textContent =
-  variant === "stor"
-    ? "Her kan du stemme på publikumsprisen, se på forskjellige elevprosjekter og lære mer om dem."
-    : "Her kan du se tidligere vinnere og nominerte";
+let headerImg, headerHeight, headerTitle, textContent;
+
+switch (variant) {
+  case "stor":
+    headerImg = Header1600Stor;
+    headerHeight = 500;
+    headerTitle = `Fyrstikken ${year}`;
+    textContent = "Her kan du stemme på publikumsprisen, se på forskjellige elevprosjekter og lære mer om dem.";
+    break;
+  case "smal":
+    headerImg = Header1600Smal;
+    headerHeight = 250;
+    headerTitle = "Fyrstikken";
+    textContent = "Her kan du se tidligere vinnere og nominerte";
+    break;
+  case "sendinn":
+    headerImg = Header1600Smal;
+    headerHeight = 250;
+    headerTitle = `Fyrstikken ${year}`;
+    textContent = "Her kan du sende inn ditt prosjekt til Fyrstikken";
+    break;
+  default:
+    headerImg = Header1600Smal;
+    headerHeight = 250;
+    headerTitle = "";
+    textContent = "";
+    break;
+}
 ---
 
 <header>
@@ -27,6 +48,9 @@ const textContent =
     alt="Regnbuefarget abstrakt kunst som symboliserer de ulike fagområdene i oppdragsbanken"
     class="header-img"
   />
+  <a href="/" id="hjem">
+    <div class="svgIkon" id="hjemIkon"></div>
+  </a>
   <div id="nightDay">
     <NightDay />
   </div>
@@ -43,6 +67,7 @@ const textContent =
   header {
     position: relative;
     width: fit-content;
+    max-width: 1600px;
     margin-inline: auto;
   }
   #headerText {
@@ -62,4 +87,24 @@ const textContent =
     color: var(--dark-tekst);
     max-width: 50ch;
   }
+  .svgIkon {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+    vertical-align: middle;
+    background-color: var(--light-main);
+    -webkit-mask: var(--ikon-url) no-repeat center / contain;
+    mask: var(--ikon-url) no-repeat center / contain;
+  }
+  #hjemIkon {
+    --ikon-url: url(../../../public/ikonHjem.svg);
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+  }
+  /* #hjem {
+    display: block;
+    width: 35px;
+    height: 35px;
+  } */
 </style>

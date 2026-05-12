@@ -40,10 +40,10 @@ const buttonId = `voteButton-${categoryIndex}`;
       const votedCard = section.querySelector(`[data-project-id="${projectId}"]`);
       if (votedCard) {
         votedCard.classList.add("voted");
-        
+
         // Gjør alle andre prosjekter i samme kategori grå
         const allCards = section.querySelectorAll(".project-card");
-        allCards.forEach(card => {
+        allCards.forEach((card) => {
           if (card !== votedCard) {
             card.classList.add("inactive");
           }
@@ -163,7 +163,7 @@ const buttonId = `voteButton-${categoryIndex}`;
   button {
     color: light-dark(var(--light-tekst), var(--dark-tekst));
     background-color: light-dark(var(--light-ixDBoks), var(--dark-ixDBoks));
-    padding: 1rem 3rem;
+    padding: var(--space-sm) var(--space-lg);
     border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
     border-radius: 1rem;
     transition: border-color 0.3s ease;

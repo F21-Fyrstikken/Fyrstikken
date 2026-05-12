@@ -5,6 +5,7 @@ import VoteButton from "./VoteButton.astro";
 import VoteModal from "../VoteModal.astro";
 import { THEME_COLORS } from "../../config";
 import type { IYearContentProps } from "../../types";
+import { getImageUrl, getImageAlt } from "../../utils/sanity";
 
 const { yearData, categories, showVoting = true } = Astro.props as IYearContentProps;
 
@@ -43,6 +44,13 @@ const hasCategories = categories && categories.length > 0;
               style={`--category-light-color: ${THEME_COLORS[index % THEME_COLORS.length].light}; --category-dark-color: ${THEME_COLORS[index % THEME_COLORS.length].dark};`}>
               <div class="category-header">
                 <div class="category-header-row">
+                  {category.coverImage && (
+                    <img
+                      src={getImageUrl(category.coverImage)}
+                      alt={getImageAlt(category.coverImage, category.title)}
+                      class="kategori-icon"
+                    />
+                  )}
                   <h2 class="category-title">{category.title}</h2>
                   {showVoting && <VoteButton categoryIndex={index} />}
                 </div>
@@ -52,9 +60,7 @@ const hasCategories = categories && categories.length > 0;
               {hasProjects && (
                 <div class="projects-grid">
                   {category.projects?.map((project) => (
-                    <ProjectCard
-                      project={project}
-                    />
+                    <ProjectCard project={project} />
                   ))}
                 </div>
               )}
@@ -70,8 +76,9 @@ const hasCategories = categories && categories.length > 0;
   }
 </div>
 
-<a href="#" class="scroll-to-top" id="scrollToTop" aria-label="Scroll til toppen">↑</a>
-<!-- TODO: Bytt ut med et ikon -->
+<a href="#" class="scroll-to-top" id="scrollToTop" aria-label="Scroll til toppen">
+  <div class="svgIkon" id="pilOpp"></div>
+</a>
 
 <script>
   const btn = document.getElementById("scrollToTop");
@@ -98,6 +105,7 @@ const hasCategories = categories && categories.length > 0;
 
   .year-content {
     margin-top: 2rem;
+    margin-bottom: 10rem;
   }
 
   .kategorier {
@@ -124,6 +132,13 @@ const hasCategories = categories && categories.length > 0;
         color-mix(in srgb, var(--btn-light-color) 10%, transparent),
         color-mix(in srgb, var(--btn-dark-color) 10%, transparent)
       );
+  }
+
+  /* Sikre at ikon og tittel er på samme linje */
+  .category-header-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
 
   .category-section {
@@ -176,34 +191,40 @@ const hasCategories = categories && categories.length > 0;
 
   .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 2rem;
   }
 
-  @media (max-width: 768px) {
-    .category-title {
-      font-size: 1.75rem;
-    }
-
-    .projects-grid {
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-    }
-
-    .category-section {
-      margin-bottom: 3rem;
-    }
+  .svgIkon {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    vertical-align: middle;
+    background-color: light-dark(var(--light-tekst), var(--dark-tekst));
+    -webkit-mask: var(--ikon-url) no-repeat center / contain;
+    mask: var(--ikon-url) no-repeat center / contain;
   }
+  #pilOpp {
+    --ikon-url: url(../../../public/ikonPilOpp.svg);
+  }
+  .kategoriIkon {
+    background-color: light-dark(var(--light-tekst), var(--dark-tekst));
 
-  @media (min-width: 769px) and (max-width: 1024px) {
-    .projects-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
+    width: 32px;
+    height: 32px;
+  }
+  .kategori-icon {
+    display: flex;
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    margin-right: 0.75rem;
+    vertical-align: middle;
   }
 
   .scroll-to-top {
     position: fixed;
-    bottom: 2rem;
+    bottom: 3rem;
     right: 2rem;
     color: inherit;
     opacity: 0;
@@ -211,6 +232,8 @@ const hasCategories = categories && categories.length > 0;
     transition: opacity 0.3s;
     z-index: 100;
     text-decoration: none;
+    border-radius: 50%;
+    background-color: light-dark(var(--light-ixDBoks), var(--dark-ixDBoks));
   }
 
   .scroll-to-top.visible {
@@ -220,5 +243,30 @@ const hasCategories = categories && categories.length > 0;
 
   .scroll-to-top:hover {
     opacity: 0.8;
+  }
+
+  @media (max-width: 1024px) {
+    .projects-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (max-width: 768px) {
+    .category-title {
+      font-size: 1.75rem;
+    }
+
+    .projects-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    .category-section {
+      margin-bottom: 3rem;
+    }
+  }
+  @media (max-width: 600px) {
+    .projects-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import HeaderImg from "../components/layout/HeaderImg.astro";
 import { getCategoriesForSubmission } from "../lib/sanity-client";
 import { SITE_CONFIG } from "../config";
 
@@ -8,13 +9,11 @@ const year = SITE_CONFIG.submissionYear;
 ---
 
 <BaseLayout title="Send inn prosjekt — Fyrstikken">
+  <HeaderImg variant="sendinn" slot="header" />
   <div class="submit-page">
     <header class="page-header">
-      <h1>Send inn prosjekt — Fyrstikken {year}</h1>
-      <p
-        >Her kan du sende inn ditt prosjekt til Fyrstikken {year}. Fyll ut skjemaet under, så vil prosjektet bli
-        gjennomgått av juryen.</p
-      >
+      <h1>Send inn prosjekt</h1>
+      <p>Fyll ut skjemaet under, så vil prosjektet bli gjennomgått av juryen for Fyrstikken {year}.</p>
     </header>
 
     <div id="form-wrapper">
@@ -64,6 +63,10 @@ const year = SITE_CONFIG.submissionYear;
         <!-- C) Kategori -->
         <div class="form-group">
           <label for="kategori">Kategori <span class="required" aria-hidden="true">*</span></label>
+          <p class="field-hint">
+            Velg kategorien som er nærmest prosjektet sjanger. Prosjekter som leveres i feil kategori, korrigeres i
+            ettertid av juryen.
+          </p>
           <select id="kategori" name="category" required>
             <option value="" disabled selected>Velg en kategori</option>
             {categories.map((cat: { _id: string; title: string }) => <option value={cat._id}>{cat.title}</option>)}
@@ -79,10 +82,10 @@ const year = SITE_CONFIG.submissionYear;
         <!-- B) Visningsbilde -->
         <div class="form-group">
           <label for="prosjektbilde">Visningsbilde <span class="required" aria-hidden="true">*</span></label>
-          <p class="field-hint"
-            >Dette bildet brukes som forhåndsvisningsbilde for prosjektet ditt og er det første man ser. Anbefalt
-            format: 16:9 (f.eks. 1920×1080). Aksepterte filtyper: JPG, PNG eller WebP.</p
-          >
+          <p class="field-hint">
+            Dette bildet brukes som forhåndsvisningsbilde for prosjektet ditt og er det første man ser. Anbefalt format:
+            16:9 (f.eks. 1920x1080, 960x540, 640x360). Aksepterte filtyper: JPG, PNG eller WebP.
+          </p>
           <input type="file" id="prosjektbilde" name="image" accept="image/jpeg,image/png,image/webp" required />
         </div>
 
@@ -125,6 +128,9 @@ const year = SITE_CONFIG.submissionYear;
     line-height: 1.5;
     color: light-dark(var(--light-tekst), var(--dark-tekst));
     opacity: 0.8;
+  }
+  #form-wrapper {
+    margin-bottom: 10rem;
   }
 
   .form-group {
