@@ -51,15 +51,6 @@ const year = SITE_CONFIG.submissionYear;
           <button type="button" id="add-member-btn" class="outline-btn">Legg til medlem</button>
         </div>
 
-        <!-- E) Filer -->
-        <div class="form-group">
-          <label>Filer</label>
-          <div id="attachments-list">
-            <!-- Dynamisk lagt til med JS -->
-          </div>
-          <button type="button" id="add-attachment-btn" class="outline-btn">Legg til fil</button>
-        </div>
-
         <!-- C) Kategori -->
         <div class="form-group">
           <label for="kategori">Kategori <span class="required" aria-hidden="true">*</span></label>
@@ -69,8 +60,38 @@ const year = SITE_CONFIG.submissionYear;
           </p>
           <select id="kategori" name="category" required>
             <option value="" disabled selected>Velg en kategori</option>
-            {categories.map((cat: { _id: string; title: string }) => <option value={cat._id}>{cat.title}</option>)}
+            {
+              categories.map((cat: { _id: string; title: string }) => (
+                <option value={cat._id} data-title={cat.title}>
+                  {cat.title}
+                </option>
+              ))
+            }
           </select>
+        </div>
+
+        <!-- E) Filer -->
+        <div class="form-group" id="files-group" hidden>
+          <label>Filer</label>
+          <div id="attachments-list">
+            <!-- Dynamisk lagt til med JS -->
+          </div>
+          <button type="button" id="add-attachment-btn" class="outline-btn">Legg til fil</button>
+        </div>
+
+        <div class="form-group" id="youtube-group" hidden>
+          <label for="video-url">YouTube/Vimeo-lenke <span class="required" aria-hidden="true">*</span></label>
+          <p class="field-hint">
+            Filmprosjekter leveres som YouTube- eller Vimeo-lenke. Sørg for at videoen er publisert eller satt til «ikke
+            oppført», slik at juryen kan se den. Du kan også sende inn prosjektet som en ZIP-mappe via OneDrive-lenkem mappen deles til marius.riseth@osloskolen.no
+          </p>
+          <input
+            type="url"
+            id="video-url"
+            name="videoUrl"
+            placeholder="https://www.youtube.com/watch?v=... eller https://vimeo.com/..."
+            inputmode="url"
+          />
         </div>
 
         <!-- D) Tittel -->
@@ -158,6 +179,7 @@ const year = SITE_CONFIG.submissionYear;
   }
 
   input[type="text"],
+  input[type="url"],
   select,
   textarea,
   input[type="file"] {
@@ -315,6 +337,38 @@ const year = SITE_CONFIG.submissionYear;
   const successMsg = document.getElementById("success-msg");
   const errorMsg = document.getElementById("form-error");
   const submitBtn = document.getElementById("submit-btn") as HTMLButtonElement | null;
+  const categorySelect = document.getElementById("kategori") as HTMLSelectElement | null;
+  const filesGroup = document.getElementById("files-group");
+  const youtubeGroup = document.getElementById("youtube-group");
+  const videoInput = document.getElementById("video-url") as HTMLInputElement | null;
+
+  function requiresVideoUrl(): boolean {
+    const selectedOption = categorySelect?.selectedOptions[0];
+    const categoryTitle = selectedOption?.dataset.title ?? selectedOption?.textContent ?? "";
+    return categoryTitle.trim().toLowerCase().includes("film");
+  }
+
+  function hasSelectedCategory(): boolean {
+    return (categorySelect?.value ?? "") !== "";
+  }
+
+  function updateDeliveryFields(): void {
+    const categorySelected = hasSelectedCategory();
+    const youtubeRequired = requiresVideoUrl();
+    if (filesGroup) {
+      filesGroup.hidden = !categorySelected || youtubeRequired;
+    }
+    if (youtubeGroup && videoInput) {
+      youtubeGroup.hidden = !categorySelected || !youtubeRequired;
+      videoInput.required = categorySelected && youtubeRequired;
+      if (!youtubeRequired) {
+        videoInput.value = "";
+      }
+    }
+  }
+
+  categorySelect?.addEventListener("change", updateDeliveryFields);
+  updateDeliveryFields();
 
   // Medlemmer Logikk
   const membersList = document.getElementById("members-list");
@@ -418,10 +472,20 @@ const year = SITE_CONFIG.submissionYear;
         }
 
         const formData = new FormData(form);
-        const attachments = formData.getAll("attachment[]");
-        const hasFile = attachments.some((f) => f instanceof File && f.size > 0);
-        if (!hasFile) {
-          throw new Error("Du må laste opp minst én fil.");
+        if (requiresVideoUrl()) {
+          const videoUrl = videoInput?.value.trim() ?? "";
+          if (videoUrl === "") {
+            throw new Error("Du må legge inn en YouTube- eller Vimeo-lenke for filmprosjekter.");
+          }
+          formData.set("videoUrl", videoUrl);
+          formData.delete("attachment[]");
+        } else {
+          const attachments = formData.getAll("attachment[]");
+          const hasFile = attachments.some((f) => f instanceof File && f.size > 0);
+          if (!hasFile) {
+            throw new Error("Du må laste opp minst én fil.");
+          }
+          formData.delete("videoUrl");
         }
 
         formData.append("members", members);
