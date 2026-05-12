@@ -6,6 +6,8 @@ const { years, basePath = "" } = Astro.props as IYearsListProps;
 const hasYears = years && years.length > 0;
 ---
 
+<h4>Fyrstikken fra de siste årene</h4>
+<p>Aktuelle år med mulighet for å stemme på publikumsprisen.</p>
 {
   hasYears ? (
     <div class="years-grid">
@@ -20,6 +22,25 @@ const hasYears = years && years.length > 0;
     <div>Ingen år funnet.</div>
   )
 }
+<h4>Arkivet: Fyrstikken/MK-galla før 2024</h4>
+<p>Utforsk akivet, før det var mulig å stemme frem publikums favoritt. Arkivet lenker til F21.tv</p>
+<div class="years-grid archive-grid">
+  <a
+    class="year-card archive-card"
+    href="https://f21.tv/stikkord/fyrstikken2023/"
+    target="_blank"
+    rel="noopener noreferrer">
+    <h3>Fyrstikken 2023</h3>
+    <span class="external-badge">Ekstern side ↗</span>
+  </a>
+  <a class="year-card" href="https://f21.tv/stikkord/fyrstikken2022/"> Fyrstikken 2022 </a>
+  <a class="year-card" href="https://f21.tv/stikkord/mk-galla-2019/"> MK-galla 2019 </a>
+  <a class="year-card" href="https://f21.tv/stikkord/mk-galla-2018/"> MK-galla 2018 </a>
+  <a class="year-card" href="https://f21.tv/stikkord/mk-galla-2017/"> MK-galla 2017 </a>
+  <a class="year-card" href="https://f21.tv/stikkord/mk-galla-2016/"> MK-galla 2016 </a>
+  <a class="year-card" href="https://f21.tv/stikkord/mk-galla-2015/"> MK-galla 2015 </a>
+  <a class="year-card" href="https://f21.tv/stikkord/mk-galla-2014/"> MK-galla 2014 </a>
+</div>
 
 <style>
   .years-grid {
@@ -27,6 +48,7 @@ const hasYears = years && years.length > 0;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 2rem;
     margin-top: 2rem;
+    margin-bottom: 4rem;
   }
 
   .year-card {
@@ -62,6 +84,57 @@ const hasYears = years && years.length > 0;
     opacity: 0.85;
     font-size: 1rem;
     line-height: 1.5;
+  }
+
+  /* Test */
+  .badge {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    background: light-dark(var(--light-safir), var(--dark-safir));
+    color: white;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+  }
+
+  /* Arkiv-stil */
+  .archive-section {
+    border: 2px dashed light-dark(var(--light-ramme), var(--dark-ramme));
+  }
+
+  .archive-section h2 {
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+
+  .archive-section .section-intro a {
+    color: light-dark(var(--light-safir), var(--dark-safir));
+    text-decoration: underline;
+  }
+
+  .archive-card {
+    border-color: light-dark(var(--light-ramme), var(--dark-ramme));
+  }
+
+  .archive-card:hover {
+    border-color: light-dark(var(--light-amazonitt), var(--dark-amazonitt));
+  }
+
+  .archive-card h3 {
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+  }
+
+  /* Ekstern badge */
+  .external-badge {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    background: light-dark(var(--light-ixDBoks), var(--dark-ixDBoks));
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+    border: 1px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-top: 0.5rem;
   }
 
   @media (max-width: 768px) {
