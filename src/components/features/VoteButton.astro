@@ -164,18 +164,36 @@ const buttonId = `voteButton-${categoryIndex}`;
     color: light-dark(var(--light-tekst), var(--dark-tekst));
     background-color: light-dark(var(--light-ixDBoks), var(--dark-ixDBoks));
     padding: var(--space-sm) var(--space-lg);
-    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    border: 2px solid light-dark(var(--category-light-color), var(--category-dark-color));
     border-radius: 1rem;
-    transition: border-color 0.3s ease;
+    font-weight: 600;
+    font-size: 1.5rem;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  button:hover:not(:disabled) {
+    transform: translateY(-2px) scale(1.02);
   }
 
   button.vote {
-    border-color: light-dark(var(--category-light-color), var(--category-dark-color));
+    border-color: #e74c3c;
+    color: #e74c3c;
   }
 
   button:disabled {
-    opacity: 0.5;
     cursor: not-allowed;
+    background-color: light-dark(var(--category-light-color), var(--category-dark-color));
+    border-color: light-dark(var(--category-light-color), var(--category-dark-color));
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  button:disabled::before {
+    content: "✓";
   }
 
   input:disabled {
