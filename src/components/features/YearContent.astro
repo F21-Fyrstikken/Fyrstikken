@@ -45,10 +45,11 @@ const hasCategories = categories && categories.length > 0;
               <div class="category-header">
                 <div class="category-header-row">
                   {category.coverImage && (
-                    <img
-                      src={getImageUrl(category.coverImage)}
-                      alt={getImageAlt(category.coverImage, category.title)}
+                    <div
                       class="kategori-icon"
+                      role="img"
+                      aria-label={getImageAlt(category.coverImage, category.title)}
+                      style={`--mask-url: url(${getImageUrl(category.coverImage)});`}
                     />
                   )}
                   <h2 class="category-title">{category.title}</h2>
@@ -214,12 +215,12 @@ const hasCategories = categories && categories.length > 0;
     height: 32px;
   }
   .kategori-icon {
-    display: flex;
     width: 32px;
     height: 32px;
-    object-fit: contain;
     margin-right: 0.75rem;
-    vertical-align: middle;
+    background-color: light-dark(var(--light-tekst), var(--dark-tekst));
+    -webkit-mask: var(--mask-url) no-repeat center / contain;
+    mask: var(--mask-url) no-repeat center / contain;
   }
 
   .scroll-to-top {
