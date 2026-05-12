@@ -24,7 +24,11 @@ const hasCategories = categories && categories.length > 0;
         <a
           class="kategori-knapp"
           href={"#" + category.slug.current}
+          data-category-slug={category.slug.current}
           style={`--btn-light-color: ${THEME_COLORS[index % THEME_COLORS.length].light}; --btn-dark-color: ${THEME_COLORS[index % THEME_COLORS.length].dark};`}>
+          {category.coverImage && (
+            <span class="kategori-knapp-icon" style={`--mask-url: url(${getImageUrl(category.coverImage)});`} />
+          )}
           {category.title}
         </a>
       ))
@@ -49,6 +53,7 @@ const hasCategories = categories && categories.length > 0;
                       class="kategori-icon"
                       role="img"
                       aria-label={getImageAlt(category.coverImage, category.title)}
+                      data-category-slug={category.slug.current}
                       style={`--mask-url: url(${getImageUrl(category.coverImage)});`}
                     />
                   )}
@@ -94,6 +99,35 @@ const hasCategories = categories && categories.length > 0;
     );
     observer.observe(kategorier);
   }
+
+  // Marker ikoner som "stemt" basert på localStorage
+  function updateVotedIcons() {
+    const votes = JSON.parse(localStorage.getItem("fyrstikken-votes") || "{}");
+
+    Object.keys(votes).forEach((categorySlug) => {
+      // Finn section for å hente kategorifargen
+      const section = document.getElementById(categorySlug) as HTMLElement;
+      const lightColor = section?.style.getPropertyValue("--category-light-color");
+      const darkColor = section?.style.getPropertyValue("--category-dark-color");
+
+      // Oppdater alle ikoner med denne kategorien
+      document.querySelectorAll(`[data-category-slug="${categorySlug}"]`).forEach((el) => {
+        el.classList.add("voted");
+        if (lightColor && darkColor) {
+          (el as HTMLElement).style.setProperty("--voted-light-color", lightColor);
+          (el as HTMLElement).style.setProperty("--voted-dark-color", darkColor);
+        }
+      });
+    });
+  }
+
+  // Kjør ved sideinnlasting
+  updateVotedIcons();
+
+  // Lytt etter stemmer
+  document.addEventListener("voteConfirmed", () => {
+    updateVotedIcons();
+  });
 </script>
 
 <style>
@@ -117,6 +151,9 @@ const hasCategories = categories && categories.length > 0;
   }
 
   .kategori-knapp {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     background-color: light-dark(var(--light-ixDBoks), var(--dark-ixDBoks));
     padding: 0.5rem 1.5rem;
     border: 2px solid light-dark(var(--btn-light-color), var(--btn-dark-color));
@@ -125,6 +162,26 @@ const hasCategories = categories && categories.length > 0;
     text-decoration: none;
     color: inherit;
     cursor: pointer;
+  }
+
+  .kategori-knapp-icon {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: light-dark(var(--light-tekst), var(--dark-tekst));
+    -webkit-mask: var(--mask-url) no-repeat center / contain;
+    mask: var(--mask-url) no-repeat center / contain;
+  }
+
+  .kategori-knapp.voted .kategori-knapp-icon,
+  .kategori-knapp-icon.voted {
+    background-color: light-dark(var(--light-ixDBoks), var(--dark-ixDBoks));
+  }
+
+  .kategori-knapp.voted {
+    background-color: light-dark(var(--voted-light-color), var(--voted-dark-color));
+    border-color: light-dark(var(--voted-light-color), var(--voted-dark-color));
+    color: light-dark(var(--light-ixDBoks), var(--dark-ixDBoks));
   }
 
   .kategori-knapp:hover {
@@ -220,6 +277,10 @@ const hasCategories = categories && categories.length > 0;
     background-color: light-dark(var(--light-tekst), var(--dark-tekst));
     -webkit-mask: var(--mask-url) no-repeat center / contain;
     mask: var(--mask-url) no-repeat center / contain;
+  }
+
+  .kategori-icon.voted {
+    background-color: light-dark(var(--voted-light-color), var(--voted-dark-color));
   }
 
   .scroll-to-top {
