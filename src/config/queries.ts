@@ -108,6 +108,10 @@ export const GROQ_QUERIES = {
     title,
     slug,
     description,
+    coverImage {
+      asset->{ url },
+      alt
+    },
     order,
     "projects": *[_type == "project" && category._ref == ^._id] | order(order asc) {
       _id,
