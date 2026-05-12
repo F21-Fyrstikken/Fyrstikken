@@ -27,6 +27,9 @@ const textContent =
     alt="Regnbuefarget abstrakt kunst som symboliserer de ulike fagområdene i oppdragsbanken"
     class="header-img"
   />
+  <a href="/" id="hjem">
+    <div class="svgIkon" id="hjemIkon"></div>
+  </a>
   <div id="nightDay">
     <NightDay />
   </div>
@@ -63,4 +66,24 @@ const textContent =
     color: var(--dark-tekst);
     max-width: 50ch;
   }
+  .svgIkon {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+    vertical-align: middle;
+    background-color: light-dark(var(--light-main), var(--dark-main));
+    -webkit-mask: var(--ikon-url) no-repeat center / contain;
+    mask: var(--ikon-url) no-repeat center / contain;
+  }
+  #hjemIkon {
+    --ikon-url: url(../../../public/ikonHjem.svg);
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+  }
+  /* #hjem {
+    display: block;
+    width: 35px;
+    height: 35px;
+  } */
 </style>
