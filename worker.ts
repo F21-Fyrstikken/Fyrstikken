@@ -14,7 +14,10 @@ interface IContentBlock {
   _type: string;
   _key: string;
   asset?: { _type: "reference"; _ref: string };
+  url?: string;
 }
+
+class SubmissionValidationError extends Error {}
 
 function jsonResponse(data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), {
@@ -25,6 +28,38 @@ function jsonResponse(data: unknown, status = 200): Response {
 
 function sanityUrl(endpoint: string): string {
   return `https://${SANITY_PROJECT_ID}.api.sanity.io/v${SANITY_API_VERSION}/${endpoint}`;
+}
+
+function formString(formData: FormData, key: string): string {
+  const value = formData.get(key);
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function isFilmCategoryTitle(title: string): boolean {
+  return title.toLowerCase().includes("film");
+}
+
+function videoBlockType(value: string): "youtube" | "vimeo" | null {
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    return null;
+  }
+
+  const hostname = url.hostname.toLowerCase();
+  if (hostname === "youtu.be") {
+    return url.pathname.split("/").find(Boolean)?.length === 11 ? "youtube" : null;
+  }
+  if (hostname === "youtube.com" || hostname === "www.youtube.com") {
+    const id = url.pathname === "/watch" ? (url.searchParams.get("v") ?? "") : (url.pathname.split("/")[2] ?? "");
+    return id.length === 11 ? "youtube" : null;
+  }
+  if (hostname === "vimeo.com" || hostname === "www.vimeo.com") {
+    return url.pathname.split("/").some((part) => /^\d+$/.test(part)) ? "vimeo" : null;
+  }
+
+  return null;
 }
 
 async function uploadAsset(type: "images" | "files", file: File, token: string): Promise<string> {
@@ -44,6 +79,27 @@ async function uploadAsset(type: "images" | "files", file: File, token: string):
 
   const result = (await response.json()) as { document: { _id: string } };
   return result.document._id;
+}
+
+async function fetchCategoryTitle(categoryId: string, token: string): Promise<string | null> {
+  if (!/^[a-zA-Z0-9_.-]+$/.test(categoryId)) {
+    return null;
+  }
+
+  const query = `*[_type == "category" && _id == ${JSON.stringify(categoryId)}][0].title`;
+  const queryEndpoint = sanityUrl(`data/query/${SANITY_DATASET}`);
+  const queryUrl = `${queryEndpoint}?query=${encodeURIComponent(query)}`;
+  const response = await fetch(queryUrl, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Category lookup failed: ${text}`);
+  }
+
+  const data = (await response.json()) as { result?: unknown };
+  return typeof data.result === "string" ? data.result : null;
 }
 
 function slugify(text: string): string {
@@ -70,25 +126,65 @@ function validateImage(image: File | null): string | null {
   return null;
 }
 
-async function buildContentFromAttachments(formData: FormData, token: string): Promise<IContentBlock[]> {
-  const files = formData.getAll("attachment[]");
+function validateRequiredFields(categoryId: string, title: string, members: string, image: File | null): void {
+  if (categoryId === "" || title === "") {
+    throw new SubmissionValidationError("Kategori og tittel er påkrevd.");
+  }
+  if (title.length > 200) {
+    throw new SubmissionValidationError("Tittelen er for lang (maks 200 tegn).");
+  }
+  if (members === "") {
+    throw new SubmissionValidationError("Minst ett medlem (navn og klasse) er påkrevd.");
+  }
+
+  const imageError = validateImage(image);
+  if (imageError !== null) {
+    throw new SubmissionValidationError(imageError);
+  }
+}
+
+function buildVideoContent(formData: FormData): IContentBlock[] {
+  const videoUrl = formString(formData, "videoUrl");
+  if (videoUrl === "") {
+    throw new SubmissionValidationError("Du må legge inn en YouTube- eller Vimeo-lenke for filmprosjekter.");
+  }
+  if (formData.getAll("attachment[]").some((file) => file instanceof File && file.size > 0)) {
+    throw new SubmissionValidationError("Filmprosjekter skal leveres med YouTube- eller Vimeo-lenke, ikke filopplasting.");
+  }
+
+  const type = videoBlockType(videoUrl);
+  if (type === null) {
+    throw new SubmissionValidationError("Lenken må være en gyldig YouTube- eller Vimeo-lenke.");
+  }
+
+  return [{ _type: type, _key: "0", url: videoUrl }];
+}
+
+async function buildFileContent(formData: FormData, token: string): Promise<IContentBlock[]> {
+  if (formString(formData, "videoUrl") !== "") {
+    throw new SubmissionValidationError("Denne kategorien skal leveres med filopplasting, ikke videolenke.");
+  }
+
   const blocks: IContentBlock[] = [];
-  let key = 0;
   let totalSize = 0;
 
-  for (const file of files) {
+  for (const file of formData.getAll("attachment[]")) {
     if (file instanceof File && file.size > 0) {
       totalSize += file.size;
       if (totalSize > MAX_TOTAL_FILE_SIZE) {
-        throw new Error("Total filstørrelse overskrider grensen på 1 GB.");
+        throw new SubmissionValidationError("Total filstørrelse overskrider grensen på 1 GB.");
       }
       const assetId = await uploadAsset("files", file, token);
       blocks.push({
         _type: "file",
-        _key: String(key++),
+        _key: String(blocks.length),
         asset: { _type: "reference", _ref: assetId },
       });
     }
+  }
+
+  if (blocks.length === 0) {
+    throw new SubmissionValidationError("Du må laste opp minst én fil.");
   }
 
   return blocks;
@@ -113,15 +209,9 @@ function buildDocument(
     title,
     slug: { _type: "slug", current: slugify(title) },
     category: { _type: "reference", _ref: categoryId },
+    description: `Laget av ${members}`,
+    content,
   };
-
-  if (members !== "") {
-    doc.description = `Laget av ${members}`;
-  }
-
-  if (content.length > 0) {
-    doc.content = content;
-  }
 
   if (imageAssetId !== undefined) {
     doc.image = {
@@ -145,35 +235,26 @@ async function handleSubmission(request: Request, env: IEnv): Promise<Response> 
     return jsonResponse({ error: "Ugyldig skjemadata." }, 400);
   }
 
-  const categoryId = (formData.get("category") as string | null) ?? "";
-  const title = (formData.get("title") as string | null) ?? "";
-  const image = formData.get("image") as File | null;
-
-  if (categoryId === "" || title === "") {
-    return jsonResponse({ error: "Kategori og tittel er påkrevd." }, 400);
-  }
-
-  if (title.length > 200) {
-    return jsonResponse({ error: "Tittelen er for lang (maks 200 tegn)." }, 400);
-  }
-
-  const members = (formData.get("members") as string | null)?.trim() ?? "";
-  if (members === "") {
-    return jsonResponse({ error: "Minst ett medlem (navn og klasse) er påkrevd." }, 400);
-  }
-
-  const imageError = validateImage(image);
-  if (imageError !== null) {
-    return jsonResponse({ error: imageError }, 400);
-  }
-
   try {
+    const categoryId = formString(formData, "category");
+    const title = formString(formData, "title");
+    const members = formString(formData, "members");
+    const imageValue = formData.get("image");
+    const image = imageValue instanceof File ? imageValue : null;
+
+    validateRequiredFields(categoryId, title, members, image);
+
+    const categoryTitle = await fetchCategoryTitle(categoryId, env.SANITY_WRITE_TOKEN);
+    if (categoryTitle === null) {
+      return jsonResponse({ error: "Ugyldig kategori." }, 400);
+    }
+
+    const content = isFilmCategoryTitle(categoryTitle)
+      ? buildVideoContent(formData)
+      : await buildFileContent(formData, env.SANITY_WRITE_TOKEN);
     const imageAssetId = await processImage(image, env.SANITY_WRITE_TOKEN);
-    const content = await buildContentFromAttachments(formData, env.SANITY_WRITE_TOKEN);
     const document = buildDocument(title, categoryId, members, content, imageAssetId);
     const slug = slugify(title);
-
-    const mutations = [{ createOrReplace: { ...document, _id: `drafts.${slug}` } }];
 
     const response = await fetch(sanityUrl(`data/mutate/${SANITY_DATASET}`), {
       method: "POST",
@@ -181,7 +262,7 @@ async function handleSubmission(request: Request, env: IEnv): Promise<Response> 
         Authorization: `Bearer ${env.SANITY_WRITE_TOKEN}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ mutations }),
+      body: JSON.stringify({ mutations: [{ createOrReplace: { ...document, _id: `drafts.${slug}` } }] }),
     });
 
     if (!response.ok) {
@@ -191,6 +272,10 @@ async function handleSubmission(request: Request, env: IEnv): Promise<Response> 
 
     return jsonResponse({ success: true });
   } catch (error) {
+    if (error instanceof SubmissionValidationError) {
+      return jsonResponse({ error: error.message }, 400);
+    }
+
     const message = error instanceof Error ? error.message : "Ukjent feil";
     console.error("Submission error:", message);
     return jsonResponse({ error: "Noe gikk galt. Prøv igjen senere." }, 500);
