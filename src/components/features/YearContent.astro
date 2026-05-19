@@ -65,8 +65,8 @@ const hasCategories = categories && categories.length > 0;
 
               {hasProjects && (
                 <div class="projects-grid">
-                  {category.projects?.map((project) => (
-                    <ProjectCard project={project} />
+                  {category.projects?.map((project, projectIndex) => (
+                    <ProjectCard project={project} projectIndex={projectIndex} />
                   ))}
                 </div>
               )}
