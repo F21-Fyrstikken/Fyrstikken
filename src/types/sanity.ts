@@ -4,7 +4,10 @@ import type { PortableTextBlock, ArbitraryTypedObject } from "@portabletext/type
 export type IPortableTextContent = Array<PortableTextBlock | ArbitraryTypedObject>;
 
 export interface ISanityImage {
-  asset?: { url: string };
+  asset?: {
+    url?: string;
+    _ref?: string;
+  };
   alt?: string;
 }
 
@@ -59,6 +62,7 @@ export interface ICategoryWithProjects {
   title: string;
   slug: ISlug;
   description?: string;
+  coverImage?: ISanityImage;
   order?: number;
   projects?: IProject[];
 }

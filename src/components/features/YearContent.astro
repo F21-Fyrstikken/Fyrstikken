@@ -1,20 +1,19 @@
 ---
 import ProjectCard from "../common/ProjectCard.astro";
 import ProjectModal from "../common/ProjectModal.astro";
-import BackLink from "../common/BackLink.astro";
 import VoteButton from "./VoteButton.astro";
 import VoteModal from "../VoteModal.astro";
 import { THEME_COLORS } from "../../config";
 import type { IYearContentProps } from "../../types";
+import { getImageUrl, getImageAlt } from "../../utils/sanity";
 
-const { yearData, categories, basePath = "", showVoting = true } = Astro.props as IYearContentProps;
+const { yearData, categories, showVoting = true } = Astro.props as IYearContentProps;
 
 const hasCategories = categories && categories.length > 0;
 ---
 
 <div>
   <div class="page-header-content">
-    <BackLink href={`${basePath}/years/`} label="Tilbake til år" />
     <h1>Fyrstikken {yearData.year}</h1>
     {yearData.description && <p class="year-description">{yearData.description}</p>}
   </div>
@@ -25,7 +24,11 @@ const hasCategories = categories && categories.length > 0;
         <a
           class="kategori-knapp"
           href={"#" + category.slug.current}
+          data-category-slug={category.slug.current}
           style={`--btn-light-color: ${THEME_COLORS[index % THEME_COLORS.length].light}; --btn-dark-color: ${THEME_COLORS[index % THEME_COLORS.length].dark};`}>
+          {category.coverImage && (
+            <span class="kategori-knapp-icon" style={`--mask-url: url(${getImageUrl(category.coverImage)});`} />
+          )}
           {category.title}
         </a>
       ))
@@ -45,6 +48,15 @@ const hasCategories = categories && categories.length > 0;
               style={`--category-light-color: ${THEME_COLORS[index % THEME_COLORS.length].light}; --category-dark-color: ${THEME_COLORS[index % THEME_COLORS.length].dark};`}>
               <div class="category-header">
                 <div class="category-header-row">
+                  {category.coverImage && (
+                    <div
+                      class="kategori-icon"
+                      role="img"
+                      aria-label={getImageAlt(category.coverImage, category.title)}
+                      data-category-slug={category.slug.current}
+                      style={`--mask-url: url(${getImageUrl(category.coverImage)});`}
+                    />
+                  )}
                   <h2 class="category-title">{category.title}</h2>
                   {showVoting && <VoteButton categoryIndex={index} />}
                 </div>
@@ -54,9 +66,7 @@ const hasCategories = categories && categories.length > 0;
               {hasProjects && (
                 <div class="projects-grid">
                   {category.projects?.map((project) => (
-                    <ProjectCard
-                      project={project}
-                    />
+                    <ProjectCard project={project} />
                   ))}
                 </div>
               )}
@@ -72,8 +82,9 @@ const hasCategories = categories && categories.length > 0;
   }
 </div>
 
-<a href="#" class="scroll-to-top" id="scrollToTop" aria-label="Scroll til toppen">↑</a>
-<!-- TODO: Bytt ut med et ikon -->
+<a href="#" class="scroll-to-top" id="scrollToTop" aria-label="Scroll til toppen">
+  <div class="svgIkon" id="pilOpp"></div>
+</a>
 
 <script>
   const btn = document.getElementById("scrollToTop");
@@ -88,6 +99,35 @@ const hasCategories = categories && categories.length > 0;
     );
     observer.observe(kategorier);
   }
+
+  // Marker ikoner som "stemt" basert på localStorage
+  function updateVotedIcons() {
+    const votes = JSON.parse(localStorage.getItem("fyrstikken-votes") || "{}");
+
+    Object.keys(votes).forEach((categorySlug) => {
+      // Finn section for å hente kategorifargen
+      const section = document.getElementById(categorySlug) as HTMLElement;
+      const lightColor = section?.style.getPropertyValue("--category-light-color");
+      const darkColor = section?.style.getPropertyValue("--category-dark-color");
+
+      // Oppdater alle ikoner med denne kategorien
+      document.querySelectorAll(`[data-category-slug="${categorySlug}"]`).forEach((el) => {
+        el.classList.add("voted");
+        if (lightColor && darkColor) {
+          (el as HTMLElement).style.setProperty("--voted-light-color", lightColor);
+          (el as HTMLElement).style.setProperty("--voted-dark-color", darkColor);
+        }
+      });
+    });
+  }
+
+  // Kjør ved sideinnlasting
+  updateVotedIcons();
+
+  // Lytt etter stemmer
+  document.addEventListener("voteConfirmed", () => {
+    updateVotedIcons();
+  });
 </script>
 
 <style>
@@ -100,6 +140,7 @@ const hasCategories = categories && categories.length > 0;
 
   .year-content {
     margin-top: 2rem;
+    margin-bottom: 10rem;
   }
 
   .kategorier {
@@ -110,6 +151,9 @@ const hasCategories = categories && categories.length > 0;
   }
 
   .kategori-knapp {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     background-color: light-dark(var(--light-ixDBoks), var(--dark-ixDBoks));
     padding: 0.5rem 1.5rem;
     border: 2px solid light-dark(var(--btn-light-color), var(--btn-dark-color));
@@ -120,12 +164,39 @@ const hasCategories = categories && categories.length > 0;
     cursor: pointer;
   }
 
+  .kategori-knapp-icon {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: light-dark(var(--light-tekst), var(--dark-tekst));
+    -webkit-mask: var(--mask-url) no-repeat center / contain;
+    mask: var(--mask-url) no-repeat center / contain;
+  }
+
+  .kategori-knapp.voted .kategori-knapp-icon,
+  .kategori-knapp-icon.voted {
+    background-color: light-dark(var(--light-ixDBoks), var(--dark-ixDBoks));
+  }
+
+  .kategori-knapp.voted {
+    background-color: light-dark(var(--voted-light-color), var(--voted-dark-color));
+    border-color: light-dark(var(--voted-light-color), var(--voted-dark-color));
+    color: light-dark(var(--light-ixDBoks), var(--dark-ixDBoks));
+  }
+
   .kategori-knapp:hover {
     box-shadow: inset 0 0 0 1000px
       light-dark(
         color-mix(in srgb, var(--btn-light-color) 10%, transparent),
         color-mix(in srgb, var(--btn-dark-color) 10%, transparent)
       );
+  }
+
+  /* Sikre at ikon og tittel er på samme linje */
+  .category-header-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
 
   .category-section {
@@ -166,7 +237,7 @@ const hasCategories = categories && categories.length > 0;
   .category-title {
     font-size: 2rem;
     font-weight: 700;
-    margin-bottom: 0.5rem;
+    margin: 0;
     color: light-dark(var(--light-tekst), var(--dark-tekst));
   }
 
@@ -178,34 +249,43 @@ const hasCategories = categories && categories.length > 0;
 
   .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 2rem;
   }
 
-  @media (max-width: 768px) {
-    .category-title {
-      font-size: 1.75rem;
-    }
+  .svgIkon {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    vertical-align: middle;
+    background-color: light-dark(var(--light-tekst), var(--dark-tekst));
+    -webkit-mask: var(--ikon-url) no-repeat center / contain;
+    mask: var(--ikon-url) no-repeat center / contain;
+  }
+  #pilOpp {
+    --ikon-url: url(../../../public/ikonPilOpp.svg);
+  }
+  .kategoriIkon {
+    background-color: light-dark(var(--light-tekst), var(--dark-tekst));
 
-    .projects-grid {
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-    }
-
-    .category-section {
-      margin-bottom: 3rem;
-    }
+    width: 32px;
+    height: 32px;
+  }
+  .kategori-icon {
+    width: 32px;
+    height: 32px;
+    background-color: light-dark(var(--light-tekst), var(--dark-tekst));
+    -webkit-mask: var(--mask-url) no-repeat center / contain;
+    mask: var(--mask-url) no-repeat center / contain;
   }
 
-  @media (min-width: 769px) and (max-width: 1024px) {
-    .projects-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
+  .kategori-icon.voted {
+    background-color: light-dark(var(--voted-light-color), var(--voted-dark-color));
   }
 
   .scroll-to-top {
     position: fixed;
-    bottom: 2rem;
+    bottom: 3rem;
     right: 2rem;
     color: inherit;
     opacity: 0;
@@ -213,6 +293,8 @@ const hasCategories = categories && categories.length > 0;
     transition: opacity 0.3s;
     z-index: 100;
     text-decoration: none;
+    border-radius: 50%;
+    background-color: light-dark(var(--light-ixDBoks), var(--dark-ixDBoks));
   }
 
   .scroll-to-top.visible {
@@ -222,5 +304,30 @@ const hasCategories = categories && categories.length > 0;
 
   .scroll-to-top:hover {
     opacity: 0.8;
+  }
+
+  @media (max-width: 1024px) {
+    .projects-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (max-width: 768px) {
+    .category-title {
+      font-size: 1.75rem;
+    }
+
+    .projects-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    .category-section {
+      margin-bottom: 3rem;
+    }
+  }
+  @media (max-width: 600px) {
+    .projects-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

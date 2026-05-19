@@ -63,7 +63,6 @@
   src: url("../fonts/roboto-serif-300.woff2") format("woff2");
 }
 
-
 html {
   font-size: 62.5%;
 }
@@ -172,4 +171,9 @@ ol li ol li {
 article p {
   margin-block-end: 1rem;
   line-height: 1.4;
+}
+@media screen and (max-width: 500px) {
+  footer p {
+    font-size: 1rem;
+  }
 }
