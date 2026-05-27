@@ -34,6 +34,14 @@ export default defineType({
       type: "text",
     }),
     defineField({
+      name: "projectDescription",
+      title: "Prosjektbeskrivelse",
+      type: "text",
+      description: "En lengre beskrivelse av prosjektet (valgfritt)",
+      rows: 4,
+      validation: (rule) => rule.max(2000), // Maks 2000 tegn
+    }),
+    defineField({
       name: "content",
       title: "Content",
       type: "array",

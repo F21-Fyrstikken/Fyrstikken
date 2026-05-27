@@ -35,10 +35,17 @@ function formString(formData: FormData, key: string): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function isFilmCategoryTitle(title: string): boolean {
-  return title.toLowerCase().includes("film");
+function supportsHybridSubmission(title: string): boolean {
+  const lower = title.trim().toLowerCase();
+  return (
+    lower.includes("film") ||
+    lower === "lyddesign" ||
+    lower === "reklame" ||
+    lower === "spillutvikling" ||
+    lower === "journalistikk" ||
+    lower === "web og interaktivitet"
+  );
 }
-
 function videoBlockType(value: string): "youtube" | "vimeo" | null {
   let url: URL;
   try {
@@ -143,21 +150,51 @@ function validateRequiredFields(categoryId: string, title: string, members: stri
   }
 }
 
-function buildVideoContent(formData: FormData): IContentBlock[] {
+/**
+ * Bygger innholdsblokker for hybrid-innsending (både video-lenker og filer)
+ * Tillater:
+ * - Kun video-lenke
+ * - Kun filer
+ * - Både video-lenke og filer
+ */
+async function buildHybridContent(formData: FormData, token: string): Promise<IContentBlock[]> {
+  const blocks: IContentBlock[] = [];
+  let totalFileSize = 0;
+
+  // 1. Håndter video-lenke hvis oppgitt
   const videoUrl = formString(formData, "videoUrl");
-  if (videoUrl === "") {
-    throw new SubmissionValidationError("Du må legge inn en YouTube- eller Vimeo-lenke for filmprosjekter.");
-  }
-  if (formData.getAll("attachment[]").some((file) => file instanceof File && file.size > 0)) {
-    throw new SubmissionValidationError("Filmprosjekter skal leveres med YouTube- eller Vimeo-lenke, ikke filopplasting.");
-  }
-
-  const type = videoBlockType(videoUrl);
-  if (type === null) {
-    throw new SubmissionValidationError("Lenken må være en gyldig YouTube- eller Vimeo-lenke.");
+  if (videoUrl !== "") {
+    const type = videoBlockType(videoUrl);
+    if (type === null) {
+      throw new SubmissionValidationError(
+        "Du må laste opp minst én fil eller legge inn en YouTube-/Vimeo-lenke for denne kategorien."
+      );
+    }
+    blocks.push({ _type: type, _key: String(blocks.length), url: videoUrl });
   }
 
-  return [{ _type: type, _key: "0", url: videoUrl }];
+  // 2. Håndter filer hvis oppgitt
+  for (const file of formData.getAll("attachment[]")) {
+    if (file instanceof File && file.size > 0) {
+      totalFileSize += file.size;
+      if (totalFileSize > MAX_TOTAL_FILE_SIZE) {
+        throw new SubmissionValidationError("Total filstørrelse overskrider grensen på 1 GB.");
+      }
+      const assetId = await uploadAsset("files", file, token);
+      blocks.push({
+        _type: "file",
+        _key: String(blocks.length),
+        asset: { _type: "reference", _ref: assetId },
+      });
+    }
+  }
+
+  // 3. Minst ett innholdselement må være til stede
+  if (blocks.length === 0) {
+    throw new SubmissionValidationError("Du må laste opp minst én fil eller legge inn en YouTube-/Vimeo-lenke.");
+  }
+
+  return blocks;
 }
 
 async function buildFileContent(formData: FormData, token: string): Promise<IContentBlock[]> {
@@ -202,6 +239,7 @@ function buildDocument(
   categoryId: string,
   members: string,
   content: IContentBlock[],
+  projectDescription: string,
   imageAssetId: string | undefined
 ): Record<string, unknown> {
   const doc: Record<string, unknown> = {
@@ -212,6 +250,11 @@ function buildDocument(
     description: `Laget av ${members}`,
     content,
   };
+
+  // Kun inkluder projectDescription hvis det har innhold
+  if (projectDescription.trim() !== "") {
+    doc.projectDescription = projectDescription;
+  }
 
   if (imageAssetId !== undefined) {
     doc.image = {
@@ -239,6 +282,7 @@ async function handleSubmission(request: Request, env: IEnv): Promise<Response> 
     const categoryId = formString(formData, "category");
     const title = formString(formData, "title");
     const members = formString(formData, "members");
+    const projectDescription = formString(formData, "projectDescription");
     const imageValue = formData.get("image");
     const image = imageValue instanceof File ? imageValue : null;
 
@@ -249,11 +293,17 @@ async function handleSubmission(request: Request, env: IEnv): Promise<Response> 
       return jsonResponse({ error: "Ugyldig kategori." }, 400);
     }
 
-    const content = isFilmCategoryTitle(categoryTitle)
-      ? buildVideoContent(formData)
-      : await buildFileContent(formData, env.SANITY_WRITE_TOKEN);
+    // Eksplisitt typeannotasjon løser "unsafe assignment"-feilen
+    let content: IContentBlock[];
+
+    if (supportsHybridSubmission(categoryTitle)) {
+      content = await buildHybridContent(formData, env.SANITY_WRITE_TOKEN);
+    } else {
+      content = await buildFileContent(formData, env.SANITY_WRITE_TOKEN);
+    }
+
     const imageAssetId = await processImage(image, env.SANITY_WRITE_TOKEN);
-    const document = buildDocument(title, categoryId, members, content, imageAssetId);
+    const document = buildDocument(title, categoryId, members, content, projectDescription, imageAssetId);
     const slug = slugify(title);
 
     const response = await fetch(sanityUrl(`data/mutate/${SANITY_DATASET}`), {

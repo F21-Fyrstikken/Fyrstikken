@@ -7,7 +7,8 @@ import { THEME_COLORS } from "../../config";
 import type { IYearContentProps } from "../../types";
 import { getImageUrl, getImageAlt } from "../../utils/sanity";
 
-const { yearData, categories, showVoting = true } = Astro.props as IYearContentProps;
+// Aktiver eller deaktiver avstemning ved å endre verdien til showVoting
+const { yearData, categories, showVoting = false } = Astro.props as IYearContentProps;
 
 const hasCategories = categories && categories.length > 0;
 ---

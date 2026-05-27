@@ -6,6 +6,8 @@ const { years, basePath = "" } = Astro.props as IYearsListProps;
 const hasYears = years && years.length > 0;
 ---
 
+<h4>Fyrstikken fra de siste årene</h4>
+<p>Aktuelle år med mulighet for å stemme på publikumsprisen.</p>
 {
   hasYears ? (
     <div class="years-grid">
@@ -20,6 +22,50 @@ const hasYears = years && years.length > 0;
     <div>Ingen år funnet.</div>
   )
 }
+<h4>Arkivet: Fyrstikken/MK-galla før 2024</h4>
+<p
+  >Utforsk akivet, før det var mulig å stemme frem publikums favoritt. Arkivet lenker til <a href="https://f21.tv"
+    >F21.tv</a
+  >, skolens egne medienettside</p
+>
+<div class="years-grid archive-grid">
+  <a
+    class="year-card archive-card"
+    href="https://f21.tv/stikkord/fyrstikken2023/"
+    target="_blank"
+    rel="noopener noreferrer">
+    <h2>2023</h2>
+    <p>Fyrstikken 2023 ↗</p>
+  </a>
+  <a class="year-card" href="https://f21.tv/stikkord/fyrstikken2022/">
+    <h2>2022</h2>
+    <p>Fyrstikken 2022 ↗</p>
+  </a>
+  <a class="year-card" href="https://f21.tv/stikkord/mk-galla-2019/">
+    <h2>2019</h2>
+    <p>MK-galla 2019 ↗</p>
+  </a>
+  <a class="year-card" href="https://f21.tv/stikkord/mk-galla-2018/">
+    <h2>2018</h2>
+    <p>MK-galla 2018 ↗</p>
+  </a>
+  <a class="year-card" href="https://f21.tv/stikkord/mk-galla-2017/">
+    <h2>2017</h2>
+    <p>MK-galla 2017 ↗</p>
+  </a>
+  <a class="year-card" href="https://f21.tv/stikkord/mk-galla-2016/">
+    <h2>2016</h2>
+    <p>MK-galla 2016 ↗</p>
+  </a>
+  <a class="year-card" href="https://f21.tv/stikkord/mk-galla-2015/">
+    <h2>2015</h2>
+    <p>MK-galla 2015 ↗</p>
+  </a>
+  <a class="year-card" href="https://f21.tv/stikkord/mk-galla-2014/">
+    <h2>2014</h2>
+    <p>MK-galla 2014 ↗</p>
+  </a>
+</div>
 
 <style>
   .years-grid {
@@ -27,6 +73,7 @@ const hasYears = years && years.length > 0;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 2rem;
     margin-top: 2rem;
+    margin-bottom: 4rem;
   }
 
   .year-card {
@@ -62,6 +109,18 @@ const hasYears = years && years.length > 0;
     opacity: 0.85;
     font-size: 1rem;
     line-height: 1.5;
+  }
+
+  /* Test */
+  .badge {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    background: light-dark(var(--light-safir), var(--dark-safir));
+    color: white;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
   }
 
   @media (max-width: 768px) {

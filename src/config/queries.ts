@@ -85,6 +85,7 @@ export const GROQ_QUERIES = {
     title,
     slug,
     description,
+    projectDescription,
     content,
     image {
       asset->{ url },
@@ -137,6 +138,7 @@ export const GROQ_QUERIES = {
     title,
     slug,
     description,
+    projectDescription,
     content,
     image {
       asset->{ url },
