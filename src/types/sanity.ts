@@ -36,6 +36,7 @@ export interface IProject {
   title: string;
   slug: ISlug;
   description?: string;
+  projectDescription?: string;
   image?: ISanityImage;
   order?: number;
   category: string;

@@ -1,5 +1,4 @@
 ---
-import Link from "../components/common/Link.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import HeaderImg from "../components/layout/HeaderImg.astro";
 import YearContent from "../components/features/YearContent.astro";
@@ -21,13 +20,69 @@ const categories = yearData ? await getCategoriesWithProjectsForYear(String(curr
   <HeaderImg variant="stor" slot="header" />
   <h1 slot="pageTitle">Fyrstikken</h1>
 
-  <section>
-    <h2>Info</h2>
-    <p>Fyrstikken er F21s årlige kåring av de beste IT og medieproduktene laget av våre elever.</p>
-    <Link href={`${base}years/`}>Utforsk tidligere år</Link>
+  <section id="info">
+    <details class="">
+      <summary>Info</summary>
+      <div class="infoIntro">
+        <p>
+          <em>
+            Fyrstikken er F21s årlige kåring av de beste IT og medieprosjekter laget av elevene på skolen. Arrangemetnet
+            er laget av elevene, for elevene. Denne nettsiden er også kodet av tidligere F21ere.
+          </em>
+        </p>
+      </div>
+    </details>
+    <a href={`${base}years/`}>Arkivet</a>
   </section>
 
   {/* Vis inneværende års kategorier og prosjekter */}
   {yearData && categories.length > 0 && <YearContent yearData={yearData} categories={categories} basePath={basePath} />}
 </BaseLayout>
-<style></style>
+
+<style>
+  a,
+  details {
+    text-align: center;
+    width: 100px;
+    margin-block-start: 1rem;
+    padding: var(--space-md) var(--space-lg);
+    background: light-dark(var(--light-main), var(--dark-main));
+    border-bottom-left-radius: var(--radius-sm);
+    border-bottom-right-radius: var(--radius-md);
+    border-top-left-radius: var(--radius-lg);
+    border-top-right-radius: var(--radius-sm);
+    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+  }
+  #info {
+    display: flex;
+    justify-content: space-between;
+    width: fit-content;
+    gap: 12rem;
+    margin-block-start: -1rem;
+    margin-block-end: 2rem;
+    margin-inline: auto;
+    @media (max-width: 375px) {
+      gap: 4rem;
+      margin-block-start: 3rem;
+    }
+  }
+  #info:has(details[open]) {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  details[open] {
+    margin-block-start: 2rem;
+    margin-block-end: 0;
+    width: 750px;
+    text-align: start;
+    @media (max-width: 992px) {
+      width: 650px;
+    }
+    @media (max-width: 768px) {
+      width: 550px;
+    }
+    @media (max-width: 600px) {
+      width: 100%;
+    }
+  }
+</style>

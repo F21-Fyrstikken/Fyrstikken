@@ -50,8 +50,28 @@ const year = SITE_CONFIG.submissionYear;
           </div>
           <button type="button" id="add-member-btn" class="outline-btn">Legg til medlem</button>
         </div>
+        <!-- B) Tittel -->
+        <div class="form-group">
+          <label for="tittel">Tittel <span class="required" aria-hidden="true">*</span></label>
+          <input type="text" id="tittel" name="title" required />
+        </div>
 
-        <!-- C) Kategori -->
+        <!-- C: Prosjektbeskrivelse -->
+        <div class="form-group">
+          <label for="prosjektbeskrivelse">Prosjektbeskrivelse</label>
+          <p class="field-hint">
+            Forklar kort hva prosjektet ditt handler om, hvilken tankegang du har hatt, eller tekniske detaljer som ikke
+            fremgår direkte av bildet/videoen.
+          </p>
+          <textarea
+            id="prosjektbeskrivelse"
+            name="projectDescription"
+            rows="3"
+            maxlength="2000"
+            placeholder="(Valgfritt) beskriv prosjektet ditt..."></textarea>
+        </div>
+
+        <!-- D) Kategori -->
         <div class="form-group">
           <label for="kategori">Kategori <span class="required" aria-hidden="true">*</span></label>
           <p class="field-hint">
@@ -73,17 +93,19 @@ const year = SITE_CONFIG.submissionYear;
         <!-- E) Filer -->
         <div class="form-group" id="files-group" hidden>
           <label>Filer</label>
+          <p class="field-hint" id="files-hint">
+            For denne kategorien kan du laste opp filer, legge til en YouTube-/Vimeo-lenke, eller bruke begge deler.
+          </p>
           <div id="attachments-list">
             <!-- Dynamisk lagt til med JS -->
           </div>
           <button type="button" id="add-attachment-btn" class="outline-btn">Legg til fil</button>
         </div>
-
         <div class="form-group" id="youtube-group" hidden>
-          <label for="video-url">YouTube/Vimeo-lenke <span class="required" aria-hidden="true">*</span></label>
+          <label for="video-url">YouTube/Vimeo-lenke</label>
           <p class="field-hint">
-            Filmprosjekter leveres som YouTube- eller Vimeo-lenke. Sørg for at videoen er publisert eller satt til «ikke
-            oppført», slik at juryen kan se den. Du kan også sende inn prosjektet som en ZIP-mappe via OneDrive-lenkem mappen deles til marius.riseth@osloskolen.no
+            Videofiler over 100MB må sendes inn som en YouTube- eller Vimeo-lenke. Sørg for at videoen er publisert
+            eller satt til «ikke oppført», slik at juryen kan se den.
           </p>
           <input
             type="url"
@@ -93,14 +115,7 @@ const year = SITE_CONFIG.submissionYear;
             inputmode="url"
           />
         </div>
-
-        <!-- D) Tittel -->
-        <div class="form-group">
-          <label for="tittel">Tittel <span class="required" aria-hidden="true">*</span></label>
-          <input type="text" id="tittel" name="title" required />
-        </div>
-
-        <!-- B) Visningsbilde -->
+        <!-- F) Visningsbilde -->
         <div class="form-group">
           <label for="prosjektbilde">Visningsbilde <span class="required" aria-hidden="true">*</span></label>
           <p class="field-hint">
@@ -110,7 +125,7 @@ const year = SITE_CONFIG.submissionYear;
           <input type="file" id="prosjektbilde" name="image" accept="image/jpeg,image/png,image/webp" required />
         </div>
 
-        <!-- F) Submit Actions -->
+        <!-- G) Submit Actions -->
         <div class="form-actions">
           <button type="submit" id="submit-btn" class="submit-btn">Send inn prosjekt</button>
         </div>
@@ -181,7 +196,6 @@ const year = SITE_CONFIG.submissionYear;
   input[type="text"],
   input[type="url"],
   select,
-  textarea,
   input[type="file"] {
     height: 4rem;
     display: block;
@@ -202,7 +216,26 @@ const year = SITE_CONFIG.submissionYear;
   }
 
   input:focus,
-  select:focus,
+  select:focus {
+    outline: none;
+    border-color: light-dark(var(--light-safir), var(--dark-safir));
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 90px;
+    background: light-dark(var(--light-ixDBoks), var(--dark-ixDBoks));
+    border: 1px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    color: light-dark(var(--light-tekst), var(--dark-tekst));
+    border-radius: var(--radius-md, 8px);
+    padding: var(--space-sm, 0.8rem) var(--space-md, 1.6rem);
+    font-size: 1.6rem;
+    font-family: inherit;
+    resize: vertical; /* Lar brukeren endre høyden, ikke bredden */
+    transition: border-color var(--transition-fast, 0.2s ease);
+    box-sizing: border-box;
+  }
+
   textarea:focus {
     outline: none;
     border-color: light-dark(var(--light-safir), var(--dark-safir));
@@ -228,6 +261,9 @@ const year = SITE_CONFIG.submissionYear;
     min-width: 0;
   }
 
+  #add-attachment-btn {
+    background: light-dark(var(--light-ixDBoks), var(--dark-ixDBoks));
+  }
   .outline-btn {
     display: inline-block;
     background: transparent;
@@ -342,33 +378,70 @@ const year = SITE_CONFIG.submissionYear;
   const youtubeGroup = document.getElementById("youtube-group");
   const videoInput = document.getElementById("video-url") as HTMLInputElement | null;
 
+  //GAMMEL FUNKSJON: Usikker på om denne fremdeles er nødvendig
   function requiresVideoUrl(): boolean {
     const selectedOption = categorySelect?.selectedOptions[0];
     const categoryTitle = selectedOption?.dataset.title ?? selectedOption?.textContent ?? "";
     return categoryTitle.trim().toLowerCase().includes("film");
   }
 
+  // NY FUNKSJON: Sjekk om kategorien støtter hybrid-innsending (video OG/ELLER filer)
+  function supportsHybridSubmission(): boolean {
+    const selectedOption = categorySelect?.selectedOptions[0];
+    const categoryTitle = selectedOption?.dataset.title ?? selectedOption?.textContent ?? "";
+    const lowerTitle = categoryTitle.trim().toLowerCase();
+
+    return (
+      lowerTitle.includes("film") ||
+      lowerTitle === "lyddesign" ||
+      lowerTitle === "reklame" ||
+      lowerTitle === "spillutvikling" ||
+      lowerTitle === "journalistikk" ||
+      lowerTitle === "web og interaktivitet"
+    );
+  }
   function hasSelectedCategory(): boolean {
     return (categorySelect?.value ?? "") !== "";
   }
 
   function updateDeliveryFields(): void {
     const categorySelected = hasSelectedCategory();
-    const youtubeRequired = requiresVideoUrl();
+    const isHybrid = supportsHybridSubmission();
+    const requiresVideo = requiresVideoUrl();
+
     if (filesGroup) {
-      filesGroup.hidden = !categorySelected || youtubeRequired;
+      // Vis fil-feltet hvis kategori er valgt
+      // For hybrid-kategorier: alltid vis
+      // For ikke-hybrid: vis kun hvis ikke krever video
+      filesGroup.hidden = !categorySelected || (requiresVideo && !isHybrid);
     }
+
     if (youtubeGroup && videoInput) {
-      youtubeGroup.hidden = !categorySelected || !youtubeRequired;
-      videoInput.required = categorySelected && youtubeRequired;
-      if (!youtubeRequired) {
+      // Vis video-feltet for film-kategorier OG hybrid-kategorier
+      youtubeGroup.hidden = !categorySelected || (!requiresVideo && !isHybrid);
+
+      // Video-input er kun påkrevd hvis det er en ren film-kategori (ikke hybrid)
+      // For hybrid: ikke påkrevd siden det er OR-validering
+      videoInput.required = requiresVideo && !isHybrid;
+
+      if (!requiresVideo && !isHybrid) {
         videoInput.value = "";
       }
     }
   }
+  // Legg til etter categorySelect?.addEventListener("change", updateDeliveryFields);
+  categorySelect?.addEventListener("change", () => {
+    updateDeliveryFields();
 
-  categorySelect?.addEventListener("change", updateDeliveryFields);
-  updateDeliveryFields();
+    // Oppdater hint-tekst for fil-feltet basert på kategori
+    const filesHint = document.getElementById("files-hint");
+    if (filesHint && supportsHybridSubmission()) {
+      filesHint.textContent =
+        "For denne kategorien kan du laste opp filer, legge til en YouTube-/Vimeo-lenke, eller bruke begge deler.";
+    } else if (filesHint) {
+      filesHint.textContent = "Last opp filer som er relevant for prosjektet ditt.";
+    }
+  });
 
   // Medlemmer Logikk
   const membersList = document.getElementById("members-list");
@@ -472,17 +545,36 @@ const year = SITE_CONFIG.submissionYear;
         }
 
         const formData = new FormData(form);
-        if (requiresVideoUrl()) {
-          const videoUrl = videoInput?.value.trim() ?? "";
-          if (videoUrl === "") {
+
+        const videoUrl = videoInput?.value.trim() ?? "";
+        const attachments = formData.getAll("attachment[]");
+        const hasVideo = videoUrl !== "";
+        const hasFiles = attachments.some((f) => f instanceof File && f.size > 0);
+
+        const isHybrid = supportsHybridSubmission();
+        const requiresVideoOnly = requiresVideoUrl() && !isHybrid;
+
+        if (isHybrid) {
+          // HYBRID-MODE: OR-validering - minst ett av video eller filer må være utfylt
+          if (!hasVideo && !hasFiles) {
+            throw new Error("Du må laste opp minst én fil eller legge inn en YouTube-/Vimeo-lenke.");
+          }
+
+          // Legg til begge hvis de finnes
+          if (hasVideo) {
+            formData.set("videoUrl", videoUrl);
+          }
+          // Filer beholdes automatisk i formData
+        } else if (requiresVideoOnly) {
+          // REN VIDEO-MODE: Kun video-lenke kreves
+          if (!hasVideo) {
             throw new Error("Du må legge inn en YouTube- eller Vimeo-lenke for filmprosjekter.");
           }
           formData.set("videoUrl", videoUrl);
           formData.delete("attachment[]");
         } else {
-          const attachments = formData.getAll("attachment[]");
-          const hasFile = attachments.some((f) => f instanceof File && f.size > 0);
-          if (!hasFile) {
+          // REN FIL-MODE: Kun filer kreves
+          if (!hasFiles) {
             throw new Error("Du må laste opp minst én fil.");
           }
           formData.delete("videoUrl");
@@ -507,7 +599,7 @@ const year = SITE_CONFIG.submissionYear;
             } else if (data.error) {
               errorText = data.error;
             }
-          } catch (e) {
+          } catch (parseError) {
             // response was not JSON or failed to parse
           }
           throw new Error(errorText);

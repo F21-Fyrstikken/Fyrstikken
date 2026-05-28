@@ -1,40 +1,45 @@
 ---
 import { Image } from "astro:assets";
+import fyrstikkenLogo from "../../images/svg/logo.svg";
 import Header1600Stor from "../../images/img/banner/banner_00-stor_1600px.webp";
 import Header1600Smal from "../../images/img/banner/banner_00-smal_1600px.webp";
-import { SITE_CONFIG } from "../../config";
+//import { SITE_CONFIG } from "../../config";
 import NightDay from "../layout/NightDay.astro";
 
-const year = SITE_CONFIG.currentYear;
+//const year = SITE_CONFIG.currentYear;
 
 const { variant = "stor" } = Astro.props;
 
-let headerImg, headerHeight, headerTitle, textContent;
+let headerImg, headerHeight, headerTitle, textContent, emblemSize;
 
 switch (variant) {
   case "stor":
     headerImg = Header1600Stor;
     headerHeight = 500;
-    headerTitle = `Fyrstikken ${year}`;
+    headerTitle = `Fyrstikken`;
     textContent = "Utforsk årets beste prosjekter og stem på dine favoritter!";
+    emblemSize = 80;
     break;
   case "smal":
     headerImg = Header1600Smal;
     headerHeight = 250;
     headerTitle = "Fyrstikken";
     textContent = "Her kan du se tidligere vinnere og nominerte";
+    emblemSize = 50;
     break;
   case "sendinn":
     headerImg = Header1600Smal;
     headerHeight = 250;
-    headerTitle = `Fyrstikken ${year}`;
+    headerTitle = `Fyrstikken`;
     textContent = "Her kan du sende inn ditt prosjekt til Fyrstikken";
+    emblemSize = 50;
     break;
   default:
     headerImg = Header1600Smal;
     headerHeight = 250;
     headerTitle = "";
     textContent = "";
+    emblemSize = "";
     break;
 }
 ---
@@ -42,7 +47,7 @@ switch (variant) {
 <header>
   <Image
     src={headerImg}
-    height={headerHeight}
+    height={headerHeight as number}
     quality={"max"}
     loading="eager"
     alt="Regnbuefarget abstrakt kunst som symboliserer de ulike fagområdene i oppdragsbanken"
@@ -58,12 +63,12 @@ switch (variant) {
     <h1>{headerTitle}</h1>
     <p>{textContent}</p>
   </div>
+  <div id="headerEmblem">
+    <Image src={fyrstikkenLogo} height={emblemSize as number} alt="Logoen til Fyrstikken" />
+  </div>
 </header>
 
 <style>
-  .header-img {
-    width: 100vw;
-  }
   header {
     position: relative;
     width: fit-content;
@@ -77,10 +82,34 @@ switch (variant) {
     transform: translate(-50%, -75%);
     text-align: center;
   }
+  #headerText h1 {
+    @media (max-width: 600px) {
+      font-size: 3rem;
+      margin-block-start: -5rem;
+    }
+  }
+  #headerText p {
+    @media (max-width: 600px) {
+      display: none;
+    }
+  }
   #nightDay {
     position: absolute;
     top: 1rem;
     right: 0;
+  }
+  #headerEmblem {
+    position: absolute;
+    bottom: -40;
+    left: 50%;
+    background: light-dark(var(--light-tekstBoks), var(--light-main));
+    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
+    border-radius: 50%;
+    padding: 0.25rem;
+    transform: translate(-50%, -50%);
+  }
+  .header-img {
+    width: 100vw;
   }
   h1,
   p {
@@ -97,7 +126,7 @@ switch (variant) {
     mask: var(--ikon-url) no-repeat center / contain;
   }
   #hjemIkon {
-    --ikon-url: url(../../../public/ikonHjem.svg);
+    --ikon-url: url(/ikonHjem.svg);
     position: absolute;
     top: 1rem;
     left: 1rem;
