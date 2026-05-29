@@ -7,7 +7,7 @@ const TS_JS_FILES = "**/*.{js,mjs,cjs,ts,tsx}";
 
 export default [
   {
-    ignores: ["dist", "node_modules", "**/.astro/**", ".netlify/**", "studio/**"],
+    ignores: ["dist", "node_modules", "**/.astro/**", ".netlify/**", ".sanity/**", "studio/**"],
   },
   eslint.configs.recommended,
   // Astro config MUST come before TypeScript configs
