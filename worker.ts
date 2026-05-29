@@ -42,6 +42,8 @@ function supportsHybridSubmission(title: string): boolean {
     lower === "lyddesign" ||
     lower === "reklame" ||
     lower === "spillutvikling" ||
+    lower === "animasjon" ||
+    lower === "grafisk design" ||
     lower === "journalistikk" ||
     lower === "web og interaktivitet"
   );
