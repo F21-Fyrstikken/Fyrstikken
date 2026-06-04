@@ -4,13 +4,13 @@ import type { IPortableTextNode, IImageNode } from "../../types";
 
 const { node } = Astro.props as IPortableTextNode<IImageNode>;
 
-const imageUrl = node.asset?._ref ? buildImageUrl(node.asset._ref) : "";
+const imageUrl = node.asset?._ref ? buildImageUrl(node.asset._ref, { width: 1200, quality: 75 }) : "";
 ---
 
 {
   imageUrl && (
     <figure class="content-image">
-      <img src={imageUrl} alt={node.alt || ""} loading="lazy" />
+      <img src={imageUrl} alt={node.alt || ""} loading="lazy" decoding="async" />
       {node.caption && <figcaption>{node.caption}</figcaption>}
     </figure>
   )

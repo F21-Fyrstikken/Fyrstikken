@@ -28,7 +28,10 @@ const hasCategories = categories && categories.length > 0;
           data-category-slug={category.slug.current}
           style={`--btn-light-color: ${THEME_COLORS[index % THEME_COLORS.length].light}; --btn-dark-color: ${THEME_COLORS[index % THEME_COLORS.length].dark};`}>
           {category.coverImage && (
-            <span class="kategori-knapp-icon" style={`--mask-url: url(${getImageUrl(category.coverImage)});`} />
+            <span
+              class="kategori-knapp-icon"
+              style={`--mask-url: url(${getImageUrl(category.coverImage, { width: 64, height: 64, quality: 60 })});`}
+            />
           )}
           {category.title}
         </a>
@@ -55,7 +58,7 @@ const hasCategories = categories && categories.length > 0;
                       role="img"
                       aria-label={getImageAlt(category.coverImage, category.title)}
                       data-category-slug={category.slug.current}
-                      style={`--mask-url: url(${getImageUrl(category.coverImage)});`}
+                      style={`--mask-url: url(${getImageUrl(category.coverImage, { width: 64, height: 64, quality: 60 })});`}
                     />
                   )}
                   <h2 class="category-title">{category.title}</h2>

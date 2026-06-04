@@ -45,6 +45,7 @@ describe("GROQ queries", () => {
       expect(GROQ_QUERIES.CATEGORIES_WITH_PROJECTS_FOR_YEAR).toBeDefined();
       expect(GROQ_QUERIES.CATEGORIES_WITH_PROJECTS_FOR_YEAR).toContain('"projects"');
       expect(GROQ_QUERIES.CATEGORIES_WITH_PROJECTS_FOR_YEAR).toContain("^._id");
+      expect(GROQ_QUERIES.CATEGORIES_WITH_PROJECTS_FOR_YEAR).not.toContain("content,");
     });
 
     it("ALL_PROJECTS_WITH_DETAILS includes sibling projects", () => {
@@ -58,6 +59,12 @@ describe("GROQ queries", () => {
       expect(GROQ_QUERIES.ALL_CATEGORIES_WITH_PROJECTS).toContain('_type == "category"');
       expect(GROQ_QUERIES.ALL_CATEGORIES_WITH_PROJECTS).toContain('"projects"');
       expect(GROQ_QUERIES.ALL_CATEGORIES_WITH_PROJECTS).toContain('"year"');
+    });
+  });
+
+  describe("asset bandwidth safeguards", () => {
+    it("uses asset references instead of dereferencing image URLs", () => {
+      expect(Object.values(GROQ_QUERIES).join("\n")).not.toContain("asset->{ url }");
     });
   });
 

@@ -34,7 +34,7 @@ export const GROQ_QUERIES = {
     slug,
     description,
     coverImage {
-      asset->{ url },
+      asset { _ref },
       alt
     },
     order,
@@ -51,7 +51,7 @@ export const GROQ_QUERIES = {
     slug,
     description,
     coverImage {
-      asset->{ url },
+      asset { _ref },
       alt
     },
     order,
@@ -68,7 +68,7 @@ export const GROQ_QUERIES = {
     slug,
     description,
     image {
-      asset->{ url },
+      asset { _ref },
       alt
     },
     order,
@@ -88,7 +88,7 @@ export const GROQ_QUERIES = {
     projectDescription,
     content,
     image {
-      asset->{ url },
+      asset { _ref },
       alt
     },
     order,
@@ -110,7 +110,7 @@ export const GROQ_QUERIES = {
     slug,
     description,
     coverImage {
-      asset->{ url },
+      asset { _ref },
       alt
     },
     order,
@@ -119,9 +119,8 @@ export const GROQ_QUERIES = {
       title,
       slug,
       description,
-      content,
       image {
-        asset->{ url },
+        asset { _ref },
         alt
       },
       order
@@ -141,7 +140,7 @@ export const GROQ_QUERIES = {
     projectDescription,
     content,
     image {
-      asset->{ url },
+      asset { _ref },
       alt
     },
     order,
@@ -157,7 +156,7 @@ export const GROQ_QUERIES = {
       slug,
       description,
       image {
-        asset->{ url },
+        asset { _ref },
         alt
       },
       order
@@ -174,7 +173,7 @@ export const GROQ_QUERIES = {
     slug,
     description,
     coverImage {
-      asset->{ url },
+      asset { _ref },
       alt
     },
     order,
@@ -185,7 +184,7 @@ export const GROQ_QUERIES = {
       slug,
       description,
       image {
-        asset->{ url },
+        asset { _ref },
         alt
       },
       order

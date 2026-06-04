@@ -13,8 +13,10 @@ import type { ISanityImage } from "../types/sanity";
 
 // Test constants
 const EXAMPLE_IMAGE_URL = "https://example.com/image.jpg";
+const SANITY_IMAGE_URL = "https://cdn.sanity.io/images/531mn2v8/production/abc123-800x600.jpg";
 const EXAMPLE_FILE_URL = "https://example.com/file.pdf";
 const FILE_REF = "file-abc123-pdf";
+const IMAGE_REF = "image-abc123-800x600-jpg";
 const CDN_FILES_PATH = "cdn.sanity.io/files";
 const CDN_IMAGES_PATH = "cdn.sanity.io/images";
 const AUDIO_MPEG = "audio/mpeg";
@@ -24,6 +26,18 @@ describe("sanity utilities", () => {
     it("returns URL from image asset", () => {
       const image: ISanityImage = { asset: { url: EXAMPLE_IMAGE_URL } };
       expect(getImageUrl(image)).toBe(EXAMPLE_IMAGE_URL);
+    });
+
+    it("adds optimization params to direct Sanity image URLs", () => {
+      const image: ISanityImage = { asset: { url: SANITY_IMAGE_URL } };
+      expect(getImageUrl(image, { width: 640, quality: 70 })).toBe(
+        `${SANITY_IMAGE_URL}?w=640&auto=format&fit=max&q=70`
+      );
+    });
+
+    it("builds optimized URL from image asset reference", () => {
+      const image: ISanityImage = { asset: { _ref: IMAGE_REF } };
+      expect(getImageUrl(image, { width: 320 })).toContain("abc123-800x600.jpg?w=320&auto=format&fit=max&q=75");
     });
 
     it("returns undefined for image without asset", () => {
@@ -86,16 +100,24 @@ describe("sanity utilities", () => {
 
   describe("buildImageUrl", () => {
     it("builds URL from image reference", () => {
-      const ref = "image-abc123-800x600-jpg";
-      const url = buildImageUrl(ref);
+      const url = buildImageUrl(IMAGE_REF);
       expect(url).toContain(CDN_IMAGES_PATH);
       expect(url).toContain("abc123-800x600.jpg");
+      expect(url).toContain("auto=format");
+      expect(url).toContain("q=75");
     });
 
     it("handles reference without image- prefix", () => {
       const ref = "abc123-800x600-png";
       const url = buildImageUrl(ref);
       expect(url).toContain("abc123-800x600.png");
+    });
+
+    it("supports custom image dimensions and quality", () => {
+      const url = buildImageUrl(IMAGE_REF, { width: 640, height: 440, quality: 70 });
+      expect(url).toContain("w=640");
+      expect(url).toContain("h=440");
+      expect(url).toContain("q=70");
     });
   });
 
