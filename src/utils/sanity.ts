@@ -6,13 +6,59 @@
 import { SANITY_CONFIG } from "../config";
 import type { ISanityImage } from "../types/sanity";
 
+export interface IImageUrlOptions {
+  width?: number;
+  height?: number;
+  quality?: number;
+  fit?: "clip" | "crop" | "fill" | "fillmax" | "max" | "scale" | "min";
+  autoFormat?: boolean;
+}
+
+const DEFAULT_IMAGE_QUALITY = 75;
+const SANITY_IMAGE_CDN_HOST = "https://cdn.sanity.io/images/";
+
+function buildImageParams(options: IImageUrlOptions): string {
+  const params = new URLSearchParams();
+  const quality = options.quality ?? DEFAULT_IMAGE_QUALITY;
+  const fit = options.fit ?? "max";
+
+  if (options.width !== undefined) {
+    params.set("w", String(options.width));
+  }
+  if (options.height !== undefined) {
+    params.set("h", String(options.height));
+  }
+  if (options.autoFormat !== false) {
+    params.set("auto", "format");
+  }
+  params.set("fit", fit);
+  params.set("q", String(quality));
+
+  return params.toString();
+}
+
+function appendImageParams(url: string, options?: IImageUrlOptions): string {
+  if (options === undefined || !url.startsWith(SANITY_IMAGE_CDN_HOST)) {
+    return url;
+  }
+
+  const params = buildImageParams(options);
+  return `${url}${url.includes("?") ? "&" : "?"}${params}`;
+}
+
 /**
  * Gets the URL from a Sanity image object
  * @param image - Sanity image object with asset reference
  * @returns The image URL, or undefined if not available
  */
-export function getImageUrl(image?: ISanityImage): string | undefined {
-  return image?.asset?.url;
+export function getImageUrl(image?: ISanityImage, options?: IImageUrlOptions): string | undefined {
+  if (image?.asset?._ref !== undefined) {
+    return buildImageUrl(image.asset._ref, options);
+  }
+  if (image?.asset?.url !== undefined) {
+    return appendImageParams(image.asset.url, options);
+  }
+  return undefined;
 }
 
 /**
@@ -56,13 +102,16 @@ export function buildFileUrl(ref: string): string {
  * @example
  * buildImageUrl('image-abc123-800x600-jpg') // 'https://cdn.sanity.io/images/{projectId}/{dataset}/abc123-800x600.jpg'
  */
-export function buildImageUrl(ref: string): string {
+export function buildImageUrl(ref: string, options?: IImageUrlOptions): string {
   const refWithoutPrefix = ref.replace(/^image-/, "");
   const parts = refWithoutPrefix.split("-");
   const format = parts[parts.length - 1];
   const dimensions = parts[parts.length - 2];
   const id = parts.slice(0, -2).join("-");
-  return `https://cdn.sanity.io/images/${SANITY_CONFIG.projectId}/${SANITY_CONFIG.dataset}/${id}-${dimensions}.${format}`;
+  return appendImageParams(
+    `https://cdn.sanity.io/images/${SANITY_CONFIG.projectId}/${SANITY_CONFIG.dataset}/${id}-${dimensions}.${format}`,
+    options
+  );
 }
 
 /**

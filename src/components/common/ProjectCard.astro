@@ -3,7 +3,7 @@ import type { IProjectCardProps } from "../../types";
 import { getImageUrl, getImageAlt } from "../../utils/sanity";
 
 const { project, projectIndex } = Astro.props as IProjectCardProps;
-const imageUrl = getImageUrl(project.image);
+const imageUrl = getImageUrl(project.image, { width: 640, height: 440, quality: 60 });
 const imageAlt = getImageAlt(project.image, project.title);
 ---
 
