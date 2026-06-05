@@ -17,7 +17,7 @@ export interface IImageUrlOptions {
 const DEFAULT_IMAGE_QUALITY = 75;
 const SANITY_IMAGE_CDN_HOST = "https://cdn.sanity.io/images/";
 
-function buildImageParams(options: IImageUrlOptions = {}): string {
+function buildImageParams(options: IImageUrlOptions): string {
   const params = new URLSearchParams();
   const quality = options.quality ?? DEFAULT_IMAGE_QUALITY;
   const fit = options.fit ?? "max";
@@ -38,7 +38,7 @@ function buildImageParams(options: IImageUrlOptions = {}): string {
 }
 
 function appendImageParams(url: string, options?: IImageUrlOptions): string {
-  if (!url.startsWith(SANITY_IMAGE_CDN_HOST)) {
+  if (options === undefined || !url.startsWith(SANITY_IMAGE_CDN_HOST)) {
     return url;
   }
 
@@ -100,7 +100,7 @@ export function buildFileUrl(ref: string): string {
  * @param ref - Sanity image reference (e.g., 'image-abc123-800x600-jpg')
  * @returns Full CDN URL to the image
  * @example
- * buildImageUrl('image-abc123-800x600-jpg') // 'https://cdn.sanity.io/images/{projectId}/{dataset}/abc123-800x600.jpg?auto=format&fit=max&q=75'
+ * buildImageUrl('image-abc123-800x600-jpg') // 'https://cdn.sanity.io/images/{projectId}/{dataset}/abc123-800x600.jpg'
  */
 export function buildImageUrl(ref: string, options?: IImageUrlOptions): string {
   const refWithoutPrefix = ref.replace(/^image-/, "");

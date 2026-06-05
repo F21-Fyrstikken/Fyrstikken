@@ -90,16 +90,6 @@ async function uploadAsset(type: "images" | "files", file: File, token: string):
   return result.document._id;
 }
 
-async function buildUploadedContentBlock(file: File, key: string, token: string): Promise<IContentBlock> {
-  const isImage = file.type.startsWith("image/");
-  const assetId = await uploadAsset(isImage ? "images" : "files", file, token);
-  return {
-    _type: isImage ? "image" : "file",
-    _key: key,
-    asset: { _type: "reference", _ref: assetId },
-  };
-}
-
 async function fetchCategoryTitle(categoryId: string, token: string): Promise<string | null> {
   if (!/^[a-zA-Z0-9_.-]+$/.test(categoryId)) {
     return null;
@@ -192,7 +182,12 @@ async function buildHybridContent(formData: FormData, token: string): Promise<IC
       if (totalFileSize > MAX_TOTAL_FILE_SIZE) {
         throw new SubmissionValidationError("Total filstørrelse overskrider grensen på 1 GB.");
       }
-      blocks.push(await buildUploadedContentBlock(file, String(blocks.length), token));
+      const assetId = await uploadAsset("files", file, token);
+      blocks.push({
+        _type: "file",
+        _key: String(blocks.length),
+        asset: { _type: "reference", _ref: assetId },
+      });
     }
   }
 
@@ -218,7 +213,12 @@ async function buildFileContent(formData: FormData, token: string): Promise<ICon
       if (totalSize > MAX_TOTAL_FILE_SIZE) {
         throw new SubmissionValidationError("Total filstørrelse overskrider grensen på 1 GB.");
       }
-      blocks.push(await buildUploadedContentBlock(file, String(blocks.length), token));
+      const assetId = await uploadAsset("files", file, token);
+      blocks.push({
+        _type: "file",
+        _key: String(blocks.length),
+        asset: { _type: "reference", _ref: assetId },
+      });
     }
   }
 

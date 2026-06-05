@@ -19,15 +19,14 @@ const isPdf = ext === "pdf";
 ---
 
 {fileUrl && isImage && (
-  <div class="file-download">
-    <a href={fileUrl} target="_blank" rel="noopener noreferrer">Åpne bilde i ny fane</a>
-    <a href={fileUrl} download>{fileName}</a>
-  </div>
+  <figure class="content-image">
+    <img src={fileUrl} alt={fileName} loading="lazy" />
+  </figure>
 )}
 
 {fileUrl && isVideo && (
   <div class="video-container">
-    <video controls preload="none">
+    <video controls preload="metadata">
       <source src={fileUrl} type={`video/${ext === "mov" ? "quicktime" : ext}`} />
       Nettleseren din støtter ikke videoavspilling.
     </video>
@@ -39,7 +38,7 @@ const isPdf = ext === "pdf";
 
 {fileUrl && isAudio && (
   <div class="audio-container">
-    <audio controls preload="none">
+    <audio controls preload="metadata">
       <source src={fileUrl} type={`audio/${ext === "mp3" ? "mpeg" : ext === "m4a" ? "mp4" : ext}`} />
       Nettleseren din støtter ikke lydavspilling.
     </audio>
@@ -51,6 +50,15 @@ const isPdf = ext === "pdf";
 
 {fileUrl && isPdf && (
   <div class="pdf-container">
+    <div class="pdf-preview">
+      <embed src={fileUrl} type="application/pdf" width="100%" height="600px" />
+      <p class="pdf-fallback">
+        PDF-forhåndsvisning støttes ikke i nettleseren din.
+        <a href={fileUrl} target="_blank" rel="noopener noreferrer">Åpne PDF i ny fane</a>
+        {" "}eller{" "}
+        <a href={fileUrl} download>last ned PDF</a>.
+      </p>
+    </div>
     <div class="file-actions">
       <a href={fileUrl} target="_blank" rel="noopener noreferrer">Åpne i ny fane</a>
       <a href={fileUrl} download>Last ned PDF</a>
@@ -67,6 +75,18 @@ const isPdf = ext === "pdf";
 )}
 
 <style>
+  .content-image {
+    margin: 2.5rem 0;
+    text-align: center;
+  }
+
+  .content-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
   .video-container,
   .audio-container,
   .pdf-container {

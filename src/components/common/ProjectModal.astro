@@ -236,45 +236,6 @@
     font-weight: 500;
   }
 
-  .project-modal-body :global(.deferred-media) {
-    margin: 1.5rem 0;
-    padding: 1.25rem 1.5rem;
-    background: light-dark(var(--light-tekstBoks), var(--dark-tekstBoks));
-    border-radius: 12px;
-    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
-  }
-
-  .project-modal-body :global(.deferred-media-title) {
-    margin: 0 0 1rem 0;
-    font-weight: 600;
-  }
-
-  .project-modal-body :global(.media-actions) {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-
-  .project-modal-body :global(.media-load-button),
-  .project-modal-body :global(.media-actions a) {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.5rem 1rem;
-    border: 2px solid light-dark(var(--light-ramme), var(--dark-ramme));
-    border-radius: 8px;
-    background: light-dark(var(--light-main), var(--dark-main));
-    color: light-dark(var(--light-safir), var(--dark-safir));
-    font: inherit;
-    font-weight: 500;
-    text-decoration: none;
-    cursor: pointer;
-  }
-
-  .project-modal-body :global(.media-load-button:hover),
-  .project-modal-body :global(.media-actions a:hover) {
-    border-color: light-dark(var(--light-safir), var(--dark-safir));
-  }
-
   .project-detail-description {
     margin: 2rem 0;
     padding: 1.5rem;
@@ -316,11 +277,11 @@
 <script>
   import { createClient } from "@sanity/client";
   import { toHTML } from "@portabletext/to-html";
-  import { SANITY_CONFIG } from "../../config";
-  import { buildImageUrl, getFileUrl, getFilenameFromUrl } from "../../utils/sanity";
 
   const client = createClient({
-    ...SANITY_CONFIG,
+    projectId: "531mn2v8",
+    dataset: "production",
+    apiVersion: "2024-01-01",
     useCdn: true,
   });
 
@@ -329,10 +290,24 @@
     title,
     description,
     projectDescription,
-    content
+    content[] {
+      ...,
+      _type == "image" => {
+        ...,
+        "imageUrl": asset->url
+      },
+      _type == "file" => {
+        ...,
+        "fileUrl": asset->url
+      },
+      _type == "audio" => {
+        ...,
+        "fileUrl": asset->url
+      }
+    }
   }`;
 
-  // --- Client-side helpers ---
+  // --- Utility functions (mirrored from src/utils/) ---
 
   function getYouTubeId(url: string): string | null {
     const match = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/.exec(url);
@@ -347,54 +322,27 @@
     return match ? match[1] : null;
   }
 
-  const HTML_ESCAPE_MAP: Record<string, string> = {
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;",
-  };
-
-  function escapeHtml(value: string): string {
-    return value.replace(/[&<>"']/g, (char) => HTML_ESCAPE_MAP[char]);
+  function buildImageUrl(ref: string): string {
+    const refWithoutPrefix = ref.replace(/^image-/, "");
+    const parts = refWithoutPrefix.split("-");
+    const format = parts[parts.length - 1];
+    const dimensions = parts[parts.length - 2];
+    const id = parts.slice(0, -2).join("-");
+    return `https://cdn.sanity.io/images/531mn2v8/production/${id}-${dimensions}.${format}`;
   }
 
-  function renderDeferredMedia(kind: "image" | "video" | "audio" | "pdf", fileUrl: string, fileName: string): string {
-    const safeUrl = escapeHtml(fileUrl);
-    const safeFileName = escapeHtml(fileName);
-    const actionLabel =
-      kind === "image" ? "Vis bilde" : kind === "video" ? "Last inn video" : kind === "audio" ? "Last inn lyd" : "Vis PDF";
-
-    return `
-      <div class="deferred-media">
-        <p class="deferred-media-title">${safeFileName}</p>
-        <div class="media-actions">
-          <button type="button" class="media-load-button" data-media-kind="${kind}" data-media-src="${safeUrl}" data-media-name="${safeFileName}">
-            ${actionLabel}
-          </button>
-          <a href="${safeUrl}" target="_blank" rel="noopener noreferrer">Åpne i ny fane</a>
-          <a href="${safeUrl}" download>Last ned</a>
-        </div>
-      </div>
-    `;
+  function buildFileUrl(ref: string): string {
+    const refWithoutPrefix = ref.replace(/^file-/, "");
+    const lastDashIndex = refWithoutPrefix.lastIndexOf("-");
+    const id = refWithoutPrefix.substring(0, lastDashIndex);
+    const extension = refWithoutPrefix.substring(lastDashIndex + 1);
+    return `https://cdn.sanity.io/files/531mn2v8/production/${id}.${extension}`;
   }
 
-  function renderLoadedMedia(kind: string, fileUrl: string, fileName: string): string {
-    const safeUrl = escapeHtml(fileUrl);
-    const safeFileName = escapeHtml(fileName);
-
-    if (kind === "image") {
-      return `<figure class="content-image"><img src="${safeUrl}" alt="${safeFileName}" loading="lazy" decoding="async" /></figure>`;
-    }
-    if (kind === "video") {
-      return `<div class="video-container"><video controls preload="metadata"><source src="${safeUrl}" /></video></div>`;
-    }
-    if (kind === "audio") {
-      return `<div class="audio-player"><audio controls preload="metadata"><source src="${safeUrl}" /></audio></div>`;
-    }
-    if (kind === "pdf") {
-      return `<div class="embed-container" style="height: 600px"><embed src="${safeUrl}" type="application/pdf" width="100%" height="100%" /></div>`;
-    }
+  function getFileUrl(asset?: { url?: string; _ref?: string }): string {
+    if (!asset) return "";
+    if (asset.url) return asset.url;
+    if (asset._ref) return buildFileUrl(asset._ref);
     return "";
   }
 
@@ -415,40 +363,39 @@
       image: ({
         value,
       }: {
-        value: { asset?: { _ref?: string }; alt?: string; caption?: string };
+        value: { imageUrl?: string; asset?: { _ref?: string }; alt?: string; caption?: string };
       }) => {
-        const imageUrl = value.asset?._ref ? buildImageUrl(value.asset._ref, { width: 1200, quality: 75 }) : "";
+        const imageUrl = value.imageUrl || (value.asset?._ref ? buildImageUrl(value.asset._ref) : "");
         if (!imageUrl) return "";
-        const caption = value.caption ? `<figcaption>${escapeHtml(value.caption)}</figcaption>` : "";
-        return `<figure class="content-image"><img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(value.alt || "")}" loading="lazy" decoding="async" />${caption}</figure>`;
+        const caption = value.caption ? `<figcaption>${value.caption}</figcaption>` : "";
+        return `<figure class="content-image"><img src="${imageUrl}" alt="${value.alt || ""}" loading="lazy" />${caption}</figure>`;
       },
       audio: ({ value }: { value: { fileUrl?: string; asset?: { _ref?: string; url?: string } } }) => {
         const audioUrl = value.fileUrl || getFileUrl(value.asset);
         if (!audioUrl) return "";
-        const fileName = getFilenameFromUrl(audioUrl, "Lydfil");
-        return renderDeferredMedia("audio", audioUrl, fileName);
+        return `<div class="audio-player"><audio controls><source src="${audioUrl}" /></audio></div>`;
       },
       file: ({ value }: { value: { fileUrl?: string; asset?: { _ref?: string; url?: string } } }) => {
         const fileUrl = value.fileUrl || getFileUrl(value.asset);
         if (!fileUrl) return "";
-        const fileName = getFilenameFromUrl(fileUrl, "file");
+        const fileName = fileUrl.split("/").pop() || "file";
         const ext = fileName.split(".").pop()?.toLowerCase() ?? "";
         const imageExts = ["jpg", "jpeg", "png", "gif", "webp", "svg", "avif"];
         const videoExts = ["mp4", "webm", "mov", "avi", "mkv"];
         const audioExts = ["mp3", "wav", "ogg", "m4a", "flac", "aac"];
         if (imageExts.includes(ext)) {
-          return renderDeferredMedia("image", fileUrl, fileName);
+          return `<figure class="content-image"><img src="${fileUrl}" alt="${fileName}" loading="lazy" /></figure>`;
         }
         if (videoExts.includes(ext)) {
-          return renderDeferredMedia("video", fileUrl, fileName);
+          return `<div class="video-container"><video controls preload="metadata"><source src="${fileUrl}" type="video/${ext === "mov" ? "quicktime" : ext}" /></video></div>`;
         }
         if (audioExts.includes(ext)) {
-          return renderDeferredMedia("audio", fileUrl, fileName);
+          return `<div class="audio-player"><audio controls><source src="${fileUrl}" /></audio></div>`;
         }
         if (ext === "pdf") {
-          return renderDeferredMedia("pdf", fileUrl, fileName);
+          return `<div class="embed-container" style="height: 600px"><embed src="${fileUrl}" type="application/pdf" width="100%" height="100%" /></div>`;
         }
-        return `<div class="file-download"><a href="${escapeHtml(fileUrl)}" download target="_blank" rel="noopener noreferrer">${escapeHtml(fileName)}</a></div>`;
+        return `<div class="file-download"><a href="${fileUrl}" download target="_blank" rel="noopener noreferrer">${fileName}</a></div>`;
       },
       embed: ({ value }: { value: { url: string; height?: number } }) => {
         const height = value.height ?? 450;
@@ -521,24 +468,6 @@
   }
 
   closeBtn?.addEventListener("click", closeProjectModal);
-
-  modalBody?.addEventListener("click", (e) => {
-    const loadButton = (e.target as HTMLElement).closest<HTMLButtonElement>(".media-load-button");
-    if (!loadButton) return;
-
-    const mediaContainer = loadButton.closest(".deferred-media");
-    const mediaKind = loadButton.dataset.mediaKind;
-    const mediaSrc = loadButton.dataset.mediaSrc;
-    const mediaName = loadButton.dataset.mediaName ?? "media";
-
-    if (!mediaContainer || mediaKind === undefined || mediaSrc === undefined) return;
-
-    const loadedMedia = renderLoadedMedia(mediaKind, mediaSrc, mediaName);
-    if (loadedMedia === "") return;
-
-    mediaContainer.insertAdjacentHTML("afterbegin", loadedMedia);
-    loadButton.remove();
-  });
 
   overlay?.addEventListener("click", (e) => {
     if (e.target === overlay) closeProjectModal();

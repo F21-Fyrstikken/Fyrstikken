@@ -28,16 +28,18 @@ describe("sanity utilities", () => {
       expect(getImageUrl(image)).toBe(EXAMPLE_IMAGE_URL);
     });
 
-    it("adds optimization params to direct Sanity image URLs", () => {
+    it("adds optimization params to direct Sanity image URLs when requested", () => {
       const image: ISanityImage = { asset: { url: SANITY_IMAGE_URL } };
-      expect(getImageUrl(image, { width: 640, quality: 70 })).toBe(
-        `${SANITY_IMAGE_URL}?w=640&auto=format&fit=max&q=70`
+      expect(getImageUrl(image, { width: 640, height: 440, quality: 60 })).toBe(
+        `${SANITY_IMAGE_URL}?w=640&h=440&auto=format&fit=max&q=60`
       );
     });
 
-    it("builds optimized URL from image asset reference", () => {
+    it("builds optimized URL from image asset reference when requested", () => {
       const image: ISanityImage = { asset: { _ref: IMAGE_REF } };
-      expect(getImageUrl(image, { width: 320 })).toContain("abc123-800x600.jpg?w=320&auto=format&fit=max&q=75");
+      expect(getImageUrl(image, { width: 640, quality: 60 })).toContain(
+        "abc123-800x600.jpg?w=640&auto=format&fit=max&q=60"
+      );
     });
 
     it("returns undefined for image without asset", () => {
@@ -103,8 +105,7 @@ describe("sanity utilities", () => {
       const url = buildImageUrl(IMAGE_REF);
       expect(url).toContain(CDN_IMAGES_PATH);
       expect(url).toContain("abc123-800x600.jpg");
-      expect(url).toContain("auto=format");
-      expect(url).toContain("q=75");
+      expect(url).not.toContain("auto=format");
     });
 
     it("handles reference without image- prefix", () => {
@@ -114,10 +115,10 @@ describe("sanity utilities", () => {
     });
 
     it("supports custom image dimensions and quality", () => {
-      const url = buildImageUrl(IMAGE_REF, { width: 640, height: 440, quality: 70 });
+      const url = buildImageUrl(IMAGE_REF, { width: 640, height: 440, quality: 60 });
       expect(url).toContain("w=640");
       expect(url).toContain("h=440");
-      expect(url).toContain("q=70");
+      expect(url).toContain("q=60");
     });
   });
 

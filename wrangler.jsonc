@@ -2,9 +2,6 @@
   "name": "fyrstikken",
   "main": "./worker.ts",
   "compatibility_date": "2026-01-20",
-  "build": {
-    "command": "node scripts/ensure-dist.js",
-  },
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",

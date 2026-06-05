@@ -34,7 +34,7 @@ const portableTextComponents = {
 // Prepare the list of projects for the sidebar navigation
 // We verify that each project has an image before trying to render it
 const sidebarProjects = allProjects?.map((proj) => {
-  const imageUrl = getImageUrl(proj.image, { width: 160, height: 160, quality: 65 });
+  const imageUrl = getImageUrl(proj.image);
   const imageAlt = getImageAlt(proj.image, proj.title);
   const isActive = proj.slug.current === projectData.slug.current;
   const link = `${basePath}/years/${year}/${category}/${proj.slug.current}/`;
